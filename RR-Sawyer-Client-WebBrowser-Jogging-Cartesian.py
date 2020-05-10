@@ -9,11 +9,13 @@ from js import print_div_flag_info
 from js import print_div_num_info
 from js import print_div_end_info
 from js import print_div_ik_info
+from js import print_div_cur_pose
 
 from RobotRaconteur.Client import *
 import time
 import numpy as np
 import sys
+import math
 
 sys.path.append("./my_source.zip")
 import general_robotics_toolbox as rox
@@ -254,41 +256,46 @@ def go_sel_pose_func(self):
 
 def playback_poses_func(self):
     print_div("Playing Back Poses..")
+    loop.call_soon(async_playback_poses_func())
 
+async def async_playback_poses_func():
     global d, num_joints, joint_lower_limits, joint_upper_limits, joint_vel_limits
-    
-    element_id = "saved_poses_list"
-    poses_list = document.getElementById(element_id)
+
+    poses_list = document.getElementById("saved_poses_list")
+    num_loops_elem = document.getElementById("num_loops_in")
+    num_loops = int(num_loops_elem.value)
+    joint_vel_range = document.getElementById("joint_vel_range")
+    joint_vel_ratio = float(joint_vel_range.value)/100.0
+
     
     if poses_list.length > 0:
-        index = 0
-        while index < (poses_list.length):
-            sel_pose = poses_list.options[index].value # angles as str
+        i = 0 # loop
+        while i < num_loops:
+            index = 0 # index in saved poses list
+            while index < (poses_list.length):
+                sel_pose = poses_list.options[index].value # angles as str
+                joint_angles = np.fromstring(sel_pose, dtype=float, sep=',')*np.deg2rad(1) # in rad
+
+                if not (joint_angles <= joint_upper_limits).all() or not (joint_angles >= joint_lower_limits).all():
+                    window.alert("Specified joints are out of range")
+                    return
+                else:
+                    try:
+                        await d.async_jog_joint(joint_angles, joint_vel_limits*joint_vel_ratio, False, True, None)
+                    except:
+                        window.alert("Specified joints might be out of range")
+                        return
+
+                index += 1
+            # Complete the loop, go back the first pose
+            sel_pose = poses_list.options[0].value # angles as str
             joint_angles = np.fromstring(sel_pose, dtype=float, sep=',')*np.deg2rad(1) # in rad
 
-            if not (joint_angles <= joint_upper_limits).all() or not (joint_angles >= joint_lower_limits).all():
-                window.alert("Specified joints are out of range")
-                return
-            else:
-                try:
-                    d.async_jog_joint(joint_angles, joint_vel_limits, False, True,None)
-                except:
-                    window.alert("Specified joints might be out of range")
-                    return
-
-            index += 1
+            i += 1
 
     else:
         window.alert("Add some poses to Saved Poses and try again")
         return
-
-
-
-
-
-
-
-    
 
 ###############################################################
 async def update_state_flags():
@@ -410,6 +417,18 @@ async def update_end_info():
        
     print_div_end_info(str(pose))
     # print_div_end_info( np.array_str(pose.R, precision=4, suppress_small=True).replace('\n', '\n' + ' '*4))
+    
+    # Calculate euler ZYX angles from pose and write them into:
+    x,y,z = euler_angles_from_rotation_matrix(pose.R)
+    str_rx = "%.2f" % (np.rad2deg(x))
+    str_ry = "%.2f" % (np.rad2deg(y))
+    str_rz = "%.2f" % (np.rad2deg(z))
+    str_px = "%.3f" % (pose.p[0])
+    str_py = "%.3f" % (pose.p[1])
+    str_pz = "%.3f" % (pose.p[2])
+    xyz_orient_str = "[" + str_rx + ", " + str_ry + ", " + str_rz + "]"
+    xyz_positi_str = "[" + str_px + ", " + str_py + ", " + str_pz + "]"
+    print_div_cur_pose(xyz_orient_str,xyz_positi_str)
     return pose
     
 def update_ik_info(R_d, p_d):
@@ -485,7 +504,30 @@ def update_ik_info(R_d, p_d):
         joints_text+= "(%.3f, %.3f) " % (np.rad2deg(i), i)   
     print_div_ik_info(str(rox.Transform(R_d,p_d)) +"<br>"+ joints_text +"<br>"+ str(converged) + ", itr = " + str(itr))
     return q_cur, converged
+#########################################################
+# ZYX Euler angles calculation from rotation matrix
+def isclose(x, y, rtol=1.e-5, atol=1.e-8):
+    return abs(x-y) <= atol + rtol * abs(y)
 
+def euler_angles_from_rotation_matrix(R):
+    '''
+    From a paper by Gregory G. Slabaugh (undated),
+    "Computing Euler angles from a rotation matrix
+    '''
+    phi = 0.0
+    if isclose(R[2,0],-1.0):
+        theta = math.pi/2.0
+        psi = math.atan2(R[0,1],R[0,2])
+    elif isclose(R[2,0],1.0):
+        theta = -math.pi/2.0
+        psi = math.atan2(-R[0,1],-R[0,2])
+    else:
+        theta = -math.asin(R[2,0])
+        cos_theta = math.cos(theta)
+        psi = math.atan2(R[2,1]/cos_theta, R[2,2]/cos_theta)
+        phi = math.atan2(R[1,0]/cos_theta, R[0,0]/cos_theta)
+    return psi, theta, phi #  x y z for Rz * Ry * Rx
+#########################################################
 #########################################################
 
 
@@ -653,4 +695,7 @@ async def client_drive():
         print_div(traceback.format_exc())
         raise
 
-RR.WebLoop.run(client_drive())
+loop = RR.WebLoop()
+loop.call_soon(client_drive())
+
+# RR.WebLoop.run(client_drive())
