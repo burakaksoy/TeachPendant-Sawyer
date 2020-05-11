@@ -274,9 +274,9 @@ async def async_playback_poses_func():
 
     # Put robot to trajectory mode
     await d.async_set_command_mode(halt_mode,None,5)
-    await RRN.AsyncSleep(0.1,None)
+    await RRN.AsyncSleep(1,None)
     await d.async_set_command_mode(trajectory_mode,None,5)
-    await RRN.AsyncSleep(0.1,None)
+    await RRN.AsyncSleep(1,None)
 
     # Time to complete the playback
     t_complete = 5.0 #seconds
@@ -344,6 +344,12 @@ async def async_playback_poses_func():
         i += 1
 
     print_div("DONE2")
+
+    # Put robot to jogging mode back
+    await d.async_set_command_mode(halt_mode,None,5)
+    await RRN.AsyncSleep(1,None)
+    await d.async_set_command_mode(jog_mode,None,5)
+    await RRN.AsyncSleep(1,None)
 
     # ##############################################################
     # if poses_list.length > 0:
