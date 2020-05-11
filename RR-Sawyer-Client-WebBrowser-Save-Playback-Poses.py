@@ -272,6 +272,9 @@ async def async_playback_poses_func():
     joint_vel_range = document.getElementById("joint_vel_range")
     joint_vel_ratio = float(joint_vel_range.value)/100.0
 
+    time_loops_elem = document.getElementById("time_loops_in")
+    time_loops = float(time_loops_elem.value)
+
     # Put robot to trajectory mode
     await d.async_set_command_mode(halt_mode,None,5)
     await RRN.AsyncSleep(1,None)
@@ -279,7 +282,7 @@ async def async_playback_poses_func():
     await RRN.AsyncSleep(1,None)
 
     # Time to complete the playback
-    t_complete = 5.0 #seconds
+    t_complete = time_loops #seconds
 
     # Create waypoints array 
     waypoints = []
@@ -315,7 +318,6 @@ async def async_playback_poses_func():
         return
 
     print_div("Here000")
-
     # Create the trajectory
     traj = JointTrajectory()
     traj.joint_names = joint_names
