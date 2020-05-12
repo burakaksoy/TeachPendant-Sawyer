@@ -283,75 +283,79 @@ async def async_playback_poses_func():
 
     # Time to complete the playback
     t_complete = time_loops #seconds
+    try:
+        # Create waypoints array 
+        waypoints = []
+        if poses_list.length > 0:
+            index = 0 # index in saved poses list
+            while index < (poses_list.length):
+                sel_pose = poses_list.options[index].value # angles as str
+                joint_angles = np.fromstring(sel_pose, dtype=float, sep=',')*np.deg2rad(1) # in rad
 
-    # Create waypoints array 
-    waypoints = []
-    if poses_list.length > 0:
-        index = 0 # index in saved poses list
-        while index < (poses_list.length):
-            sel_pose = poses_list.options[index].value # angles as str
-            joint_angles = np.fromstring(sel_pose, dtype=float, sep=',')*np.deg2rad(1) # in rad
+                if not (joint_angles <= joint_upper_limits).all() or not (joint_angles >= joint_lower_limits).all():
+                    window.alert("Specified joints are out of range")
+                    return
+                else:
+                    # Define the time to be at that waypoint
+                    t = float(index)*(float(t_complete)/float(poses_list.length))
+                    # Add the joint angles to waypoints array
+                    wp = JointTrajectoryWaypoint()
+                    wp.joint_position = joint_angles # (j_end - j_start)*(float(i)/10.0) + j_start
+                    wp.time_from_start = t
+                    waypoints.append(wp)
 
-            if not (joint_angles <= joint_upper_limits).all() or not (joint_angles >= joint_lower_limits).all():
-                window.alert("Specified joints are out of range")
-                return
-            else:
-                # Define the time to be at that waypoint
-                t = float(index)*(float(t_complete)/float(poses_list.length))
-                # Add the joint angles to waypoints array
-                wp = JointTrajectoryWaypoint()
-                wp.joint_position = joint_angles # (j_end - j_start)*(float(i)/10.0) + j_start
-                wp.time_from_start = t
-                waypoints.append(wp)
+                index += 1
+            # Complete the loop, Add the 1st joint angles to waypoints array again
+            t = float(index)*(float(t_complete)/float(poses_list.length))
+            # Add the joint angles to waypoints array
+            wp = JointTrajectoryWaypoint()
+            wp.joint_position = waypoints[0].joint_position
+            wp.time_from_start = t
+            waypoints.append(wp)
 
-            index += 1
-        # Complete the loop, Add the 1st joint angles to waypoints array again
-        t = float(index)*(float(t_complete)/float(poses_list.length))
-        # Add the joint angles to waypoints array
-        wp = JointTrajectoryWaypoint()
-        wp.joint_position = waypoints[0].joint_position
-        wp.time_from_start = t
-        waypoints.append(wp)
+        else:
+            window.alert("Add some poses to Saved Poses and try again")
+            return
 
-    else:
-        window.alert("Add some poses to Saved Poses and try again")
-        return
-
-    print_div("Here000")
-    # Create the trajectory
-    traj = JointTrajectory()
-    traj.joint_names = joint_names
-    traj.waypoints = waypoints
-    print_div("Here001")
-    d.async_set_speed_ratio(joint_vel_ratio,None,5)
-    print_div("Here002")
-    traj_gen = await d.async_execute_trajectory(traj, None)
-    print_div("DONE")
+        print_div("Here000")
+        # Create the trajectory
+        traj = JointTrajectory()
+        traj.joint_names = joint_names
+        traj.waypoints = waypoints
+        print_div("Here001")
+        d.async_set_speed_ratio(joint_vel_ratio,None,5)
+        print_div("Here002")
+        traj_gen = await d.async_execute_trajectory(traj)
+        print_div("DONE")
 
 
-    # Execute the trajectory number of loops times
-    i = 0 # loop
-    while i < num_loops:
-        while (True):
-            t = time.time()
+        # Execute the trajectory number of loops times
+        i = 0 # loop
+        while i < num_loops:
+            while (True):
+                t = time.time()
 
-            # robot_state = state_w.InValue
-            try:
-                print_div("Here")
-                res = await traj_gen.AsyncNext(None)        
-                print_div(res.action_status)
-            except RR.StopIterationException:
-                break
+                # robot_state = state_w.InValue
+                try:
+                    print_div("Here")
+                    res = await traj_gen.AsyncNext(None)        
+                    print_div(res.action_status)
+                except RR.StopIterationException:
+                    break
 
-        i += 1
+            i += 1
 
-    print_div("DONE2")
+        print_div("DONE2")
 
-    # Put robot to jogging mode back
-    await d.async_set_command_mode(halt_mode,None,5)
-    await RRN.AsyncSleep(1,None)
-    await d.async_set_command_mode(jog_mode,None,5)
-    await RRN.AsyncSleep(1,None)
+        # Put robot to jogging mode back
+        await d.async_set_command_mode(halt_mode,None,5)
+        await RRN.AsyncSleep(1,None)
+        await d.async_set_command_mode(jog_mode,None,5)
+        await RRN.AsyncSleep(1,None)
+    except:
+        import traceback
+        print_div(traceback.format_exc())
+        raise
 
     # ##############################################################
     # if poses_list.length > 0:
