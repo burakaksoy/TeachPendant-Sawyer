@@ -275,87 +275,95 @@ async def async_playback_poses_func():
     time_loops_elem = document.getElementById("time_loops_in")
     time_loops = float(time_loops_elem.value)
 
-    # Put robot to trajectory mode
-    await d.async_set_command_mode(halt_mode,None,5)
-    await RRN.AsyncSleep(1,None)
-    await d.async_set_command_mode(trajectory_mode,None,5)
-    await RRN.AsyncSleep(1,None)
-
     # Time to complete the playback
     t_complete = time_loops #seconds
+    
+    # Create waypoints array 
+    waypoints = []
+    if poses_list.length >= 4:
+        index = 0 # index in saved poses list
+        while index < (poses_list.length):
+            sel_pose = poses_list.options[index].value # angles as str
+            joint_angles = np.fromstring(sel_pose, dtype=float, sep=',')*np.deg2rad(1) # in rad
+
+            if not (joint_angles <= joint_upper_limits).all() or not (joint_angles >= joint_lower_limits).all():
+                window.alert("Specified joints are out of range")
+                return
+            else:
+                # Go to initial waypoint
+                if index == 0:
+                    await d.async_jog_joint(joint_angles, joint_vel_limits, False, True,None)
+                    await RRN.AsyncSleep(2,None)
+
+                # Define the time to be at that waypoint
+                t = float(index)*(float(t_complete)/float(poses_list.length))
+                # Add the joint angles to waypoints array
+                wp = JointTrajectoryWaypoint()
+                wp.joint_position = joint_angles # (j_end - j_start)*(float(i)/10.0) + j_start
+                wp.time_from_start = t
+                waypoints.append(wp)
+
+            index += 1
+        # Complete the loop, Add the 1st joint angles to waypoints array again
+        t = float(index)*(float(t_complete)/float(poses_list.length))
+        # Add the joint angles to waypoints array
+        wp = JointTrajectoryWaypoint()
+        wp.joint_position = waypoints[0].joint_position
+        wp.time_from_start = t
+        waypoints.append(wp)
+
+    else:
+        window.alert("You need at least 4 different points. Add some poses to Saved Poses and try again")
+        # # Put robot to jogging mode back
+        # await d.async_set_command_mode(halt_mode,None,5)
+        # await RRN.AsyncSleep(0.01,None)
+        # await d.async_set_command_mode(jog_mode,None,5)
+        # await RRN.AsyncSleep(0.01,None)
+        return
+
+    # Put robot to trajectory mode
+    await d.async_set_command_mode(halt_mode,None,5)
+    await RRN.AsyncSleep(0.01,None)
+    await d.async_set_command_mode(trajectory_mode,None,5)
+    await RRN.AsyncSleep(0.01,None)
+
+    # Create the trajectory
+    traj = JointTrajectory()
+    traj.joint_names = joint_names
+    traj.waypoints = waypoints
+    d.async_set_speed_ratio(joint_vel_ratio,None,5)
+
     try:
-        # Create waypoints array 
-        waypoints = []
-        if poses_list.length > 0:
-            index = 0 # index in saved poses list
-            while index < (poses_list.length):
-                sel_pose = poses_list.options[index].value # angles as str
-                joint_angles = np.fromstring(sel_pose, dtype=float, sep=',')*np.deg2rad(1) # in rad
-
-                if not (joint_angles <= joint_upper_limits).all() or not (joint_angles >= joint_lower_limits).all():
-                    window.alert("Specified joints are out of range")
-                    return
-                else:
-                    # Define the time to be at that waypoint
-                    t = float(index)*(float(t_complete)/float(poses_list.length))
-                    # Add the joint angles to waypoints array
-                    wp = JointTrajectoryWaypoint()
-                    wp.joint_position = joint_angles # (j_end - j_start)*(float(i)/10.0) + j_start
-                    wp.time_from_start = t
-                    waypoints.append(wp)
-
-                index += 1
-            # Complete the loop, Add the 1st joint angles to waypoints array again
-            t = float(index)*(float(t_complete)/float(poses_list.length))
-            # Add the joint angles to waypoints array
-            wp = JointTrajectoryWaypoint()
-            wp.joint_position = waypoints[0].joint_position
-            wp.time_from_start = t
-            waypoints.append(wp)
-
-        else:
-            window.alert("Add some poses to Saved Poses and try again")
-            return
-
-        print_div("Here000")
-        # Create the trajectory
-        traj = JointTrajectory()
-        traj.joint_names = joint_names
-        traj.waypoints = waypoints
-        print_div("Here001")
-        d.async_set_speed_ratio(joint_vel_ratio,None,5)
-        print_div("Here002")
-        traj_gen = await d.async_execute_trajectory(traj)
-        print_div("DONE")
-
-
         # Execute the trajectory number of loops times
         i = 0 # loop
         while i < num_loops:
+            traj_gen = await d.async_execute_trajectory(traj, None)
+        
             while (True):
                 t = time.time()
 
                 # robot_state = state_w.InValue
                 try:
-                    print_div("Here")
-                    res = await traj_gen.AsyncNext(None)        
-                    print_div(res.action_status)
+                    # print_div("Here")
+                    res = await traj_gen.AsyncNext(None, None)        
+                    # print_div(res.action_status)
                 except RR.StopIterationException:
                     break
 
             i += 1
-
-        print_div("DONE2")
-
-        # Put robot to jogging mode back
-        await d.async_set_command_mode(halt_mode,None,5)
-        await RRN.AsyncSleep(1,None)
-        await d.async_set_command_mode(jog_mode,None,5)
-        await RRN.AsyncSleep(1,None)
+            print_div("Loop:" + str(i) + "is done..")
     except:
-        import traceback
-        print_div(traceback.format_exc())
-        raise
+        # import traceback
+        # print_div(traceback.format_exc())
+        window.alert("Robot accelaration or velocity limits might be out of range. Increase the loop time or slow down the speed ratio")
+        # return
+        # raise
+
+    # Put robot to jogging mode back
+    await d.async_set_command_mode(halt_mode,None,5)
+    await RRN.AsyncSleep(0.01,None)
+    await d.async_set_command_mode(jog_mode,None,5)
+    await RRN.AsyncSleep(0.01,None)
 
     # ##############################################################
     # if poses_list.length > 0:
