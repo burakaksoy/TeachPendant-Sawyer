@@ -1,0 +1,225 @@
+.lm_header .lm_tab {
+  font-family:Arial,sans-serif;
+  font-size:16px;
+  /*! color:#888888; */
+  background:#fafafa;
+  margin-right:2px;
+  /*padding-top: 5px;*/
+  padding-bottom:4px;
+  border:1px solid #cccccc;
+  border-bottom:none;
+  /*height: auto;*/
+  height: 24px;
+}
+
+.lm_header .lm_tab .lm_title {
+ padding-top:5px;
+}
+
+.lm_controls>li {
+ position:relative;
+ background-position:center bottom;
+ background-repeat:no-repeat;
+ opacity:.4;
+ transition:opacity 300ms ease
+}
+
+.lm_tab:hover,
+.lm_tab.lm_active {
+ background:#e1e1e1;
+ font-weight: bold;
+}
+
+h2{
+  font: 14px Arial, sans-serif;
+  color:#fff;
+  padding: 10px;
+  text-align: center;
+}
+
+html, body{
+  height: 100%;
+}
+
+body .lm_content{
+  overflow: auto;
+}
+
+table{
+  table-layout: fixed;
+  /*word-break: break-all;*/
+  /*word-wrap: break-word;*/
+  text-align: center; 
+  /*display: block; */
+  display: table;
+  margin: 0px; 
+  padding:0px; 
+  width: 100%; 
+  height: 100%;
+  object-fit:cover;
+
+  /*zoom: .5;*/
+  /*transform: scale(.5);*/
+}
+
+table#table_RobotStatus {
+  table-layout: fixed;
+  /*word-break: break-all;*/
+  /*word-wrap: break-word;*/
+  text-align: center; 
+  /*display: block; */
+  display: table;
+  margin: 0px; 
+  padding:0px; 
+  width: 100%; 
+  height: 100%;
+  object-fit:cover;
+}
+
+/*table#table_JointSpaceControl td {
+  width: 16.666666% ;
+}*/
+
+table#table_TaskSpaceControl td {
+  width: 50% ;
+}
+
+table#table_SavePlaybackPoses td {
+  width: 50%; 
+}
+
+table#table_RobotStatus td {
+  width: 70% ;
+}
+
+/**/
+button {
+  -moz-box-shadow:inset 0px 1px 0px 0px #777;
+  -webkit-box-shadow:inset 0px 1px 0px 0px #777;
+  box-shadow:inset 0px 1px 0px 0px #777;
+  background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #403f40), color-stop(1, #1f1f1f));
+  background:-moz-linear-gradient(top, #403f40 5%, #1f1f1f 100%);
+  background:-webkit-linear-gradient(top, #403f40 5%, #1f1f1f 100%);
+  background:-o-linear-gradient(top, #403f40 5%, #1f1f1f 100%);
+  background:-ms-linear-gradient(top, #403f40 5%, #1f1f1f 100%);
+  background:linear-gradient(to bottom, #403f40 5%, #1f1f1f 100%);
+  filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#403f40', endColorstr='#1f1f1f',GradientType=0);
+  background-color:#403f40;
+  -moz-border-radius:6px;
+  -webkit-border-radius:6px;
+  border-radius:6px;
+  border:1px solid #2e2e2e;
+  /*margin: 0 10px;*/
+  display:inline-block;
+  cursor:pointer;
+  color:#d6d6d6;
+  font-family:arial;
+  font-size:16px;
+  font-weight:bold;
+  outline: none;
+  padding:5px 5px;
+  text-decoration:none;
+  text-shadow:0px 1px 0px #000000;
+  width: 100%;
+  /*height: 100%;*/
+  
+}
+button:hover {
+  background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #1f1f1f), color-stop(1, #403f40));
+  background:-moz-linear-gradient(top, #1f1f1f 5%, #403f40 100%);
+  background:-webkit-linear-gradient(top, #1f1f1f 5%, #403f40 100%);
+  background:-o-linear-gradient(top, #1f1f1f 5%, #403f40 100%);
+  background:-ms-linear-gradient(top, #1f1f1f 5%, #403f40 100%);
+  background:linear-gradient(to bottom, #1f1f1f 5%, #403f40 100%);
+  filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#1f1f1f', endColorstr='#403f40',GradientType=0);
+  background-color:#1f1f1f;
+}
+button:active {
+  position:relative;
+  top:1px;
+}
+/**/
+
+td{
+  width: 100%; 
+  padding:0px 0px;
+}
+
+input{
+  text-align:center;
+  width: 100%;
+  /*margin: 0px 8px;*/
+  font-size: 16px;
+  padding: 12px 12px;
+  box-sizing: border-box;
+}
+
+*{
+  margin: 0;
+  padding: 0;
+  list-style-type:none;
+  /*font-size: 15pt;*/
+  /*font-family: sans-serif;*/
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+#wrapper{
+  height: 100%;
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+#menuContainer{
+  width: 10%;
+  height: 80%;
+  position:absolute;
+  top: 0;
+  left: 0;
+  background: #222;
+  overflow: auto;
+}
+
+#menuContainer li{
+  cursor: move;
+  border-bottom: 1px solid #000;
+  border-top: 1px solid #333;
+  cursor: pointer;
+  padding: 10px 5px;
+  color: #BBB;
+  background: #1a1a1a;
+  font: 12px Arial, sans-serif;
+}
+
+#menuContainer li:hover{
+  background: #111;
+  color: #CCC;
+}
+
+#saveLayoutStateContainer{
+  overflow: auto;
+  width: 10%;
+  height: 20%;
+  position:relative;
+  top: 80%;
+  left: 0;
+  background: #222222;
+  /*background: #555;*/
+}
+
+
+.btn-group button {
+  font: 12px Arial, sans-serif;
+  height: 33.333333% ;
+  /*display: block;  Make the buttons appear below each other */
+}
+
+
+#layoutContainer{
+  width: 90%;
+  height: 100%;
+  position:absolute;
+  top: 0;
+  left: 10%;
+  box-shadow: -3px 0px 9px 0px rgba( 0, 0, 0, 0.4 );
+}

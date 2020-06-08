@@ -1,0 +1,289 @@
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <script src="https://code.jquery.com/jquery-latest.js"></script>
+        <script src="https://robotraconteur.github.io/robotraconteur_pyodide/pyodide.js"></script>  
+        <!-- INCLUDING DEPENDENCIES OF GOLDEN LAYOUT -->
+        <!-- GoldenLayout needs jQuery to work -->
+        <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+        <!-- add GoldenLayout's main JS and CSS file, -->
+        <script type="text/javascript" src="https://golden-layout.com/files/latest/js/goldenlayout.min.js"></script>
+        <link type="text/css" rel="stylesheet" href="https://golden-layout.com/files/latest/css/goldenlayout-base.css" />
+        <!-- goldenlayout-base.css contains purely the structural bits, so you also need a theme.  -->
+        <!-- Just pick one of the available ones and include its CSS file -->
+        <!-- <link type="text/css" rel="stylesheet" href="https://golden-layout.com/files/latest/css/goldenlayout-dark-theme.css" /> -->
+        <link type="text/css" rel="stylesheet" href="https://golden-layout.com/files/latest/css/goldenlayout-light-theme.css" />
+
+        <link rel="stylesheet" type="text/css" href="styles.css">
+    </head>
+    
+    <body>
+         <!-- Golden Layout Containers -->
+        <div id="wrapper">
+            <ul id="menuContainer"></ul>
+            <div id="layoutContainer"></div>
+            
+            <div id="saveLayoutStateContainer">
+                <div class="btn-group">
+                    <button id="saveLayoutState_btn" type="button">Save Current Layout State</button>
+                    <button id="loadSavedLayoutState_btn" type="button">Reload with Saved Layout</button>
+                    <button id="defaultLayoutState_btn" type="button">Reload with Default Layout</button>
+                </div> 
+            </div> 
+
+            
+        </div>
+
+        <!-- General JS -->
+        <!-- <script type="text/javascript" src="./scripts.js"></script> -->
+
+        <!-- Content HTMLs -->
+        <template id="template_JointSpaceControl">
+            <table  id="table_JointSpaceControl" border="1" > <!-- border="1" > -->
+                <Tr>
+                    <TH align="center" COLSPAN="6"> <H3>Joint Space Control</H3> </TH>
+                </Tr>
+                <Tr>
+                    <TH> <H4>Min<br>(deg)</H4></TH>
+                    <TH> <H4></H4></TH>
+                    <TH> <H4>Current<br>(deg)</H4></TH>
+                    <TH> <H4></H4></TH>
+                    <TH> <H4>Max<br>(deg)</H4></TH>
+                    <TH> <H4>Angle Input<br>(deg)</H4></TH>
+                </Tr>
+                <tr>
+                    <td> <div align="center" id="j1_neg_limit"> N/A </div> </td>
+                    <td> <button id="j1_neg_btn" type="button">J1-</button></td>
+                    <td> <div align="center" id="j1_angle_out"> N/A </div> </td>
+                    <td> <button id="j1_pos_btn" type="button">J1+</button></td>
+                    <td> <div align="center" id="j1_pos_limit"> N/A </div> </td>
+                    <td> <input type="text" id="j1_angle_in" placeholder="deg_j1" value="0" > </td>
+                </tr>
+                <tr>
+                    <td> <div align="center" id="j2_neg_limit"> N/A </div> </td>
+                    <td> <button id="j2_neg_btn" type="button">J2-</button></td>
+                    <td> <div align="center" id="j2_angle_out"> N/A </div> </td>
+                    <td> <button id="j2_pos_btn" type="button">J2+</button></td>
+                    <td> <div align="center" id="j2_pos_limit"> N/A </div> </td>
+                    <td> <input type="text" id="j2_angle_in" placeholder="deg_2" value="0" > </td>
+                </tr>         
+                <tr>
+                    <td> <div align="center" id="j3_neg_limit"> N/A </div> </td>
+                    <td> <button id="j3_neg_btn" type="button">J3-</button></td>
+                    <td> <div align="center" id="j3_angle_out"> N/A </div> </td>
+                    <td> <button id="j3_pos_btn" type="button">J3+</button></td>
+                    <td> <div align="center" id="j3_pos_limit"> N/A </div> </td>
+                    <td> <input type="text" id="j3_angle_in" placeholder="deg_j3" value="0" > </td>
+                </tr>      
+                <tr>
+                    <td> <div align="center" id="j4_neg_limit"> N/A </div> </td>
+                    <td> <button id="j4_neg_btn" type="button">J4-</button></td>
+                    <td> <div align="center" id="j4_angle_out"> N/A </div> </td>
+                    <td> <button id="j4_pos_btn" type="button">J4+</button></td>
+                    <td> <div align="center" id="j4_pos_limit"> N/A </div> </td>
+                    <td> <input type="text" id="j4_angle_in" placeholder="deg_j4" value="0" > </td>
+                </tr>  
+                <tr>
+                    <td> <div align="center" id="j5_neg_limit"> N/A </div> </td>
+                    <td> <button id="j5_neg_btn" type="button">J5-</button></td>
+                    <td> <div align="center" id="j5_angle_out"> N/A </div> </td>
+                    <td> <button id="j5_pos_btn" type="button">J5+</button></td>
+                    <td> <div align="center" id="j5_pos_limit"> N/A </div> </td>
+                    <td> <input type="text" id="j5_angle_in" placeholder="deg_j5" value="0" > </td>
+                </tr>               
+                <tr>
+                    <td> <div align="center" id="j6_neg_limit"> N/A </div> </td>
+                    <td> <button id="j6_neg_btn" type="button">J6-</button></td>
+                    <td> <div align="center" id="j6_angle_out"> N/A </div> </td>
+                    <td> <button id="j6_pos_btn" type="button">J6+</button></td>
+                    <td> <div align="center" id="j6_pos_limit"> N/A </div> </td>
+                    <td> <input type="text" id="j6_angle_in" placeholder="deg_j6" value="0" > </td>
+                </tr>
+                <tr>
+                    <td> <div align="center" id="j7_neg_limit"> N/A </div> </td>
+                    <td> <button id="j7_neg_btn" type="button">J7-</button></td>
+                    <td> <div align="center" id="j7_angle_out"> N/A </div> </td>
+                    <td> <button id="j7_pos_btn" type="button">J7+</button></td>
+                    <td> <div align="center" id="j7_pos_limit"> N/A </div> </td>
+                    <td> <input type="text" id="j7_angle_in" placeholder="deg_j7" value="0" > </td>
+                </tr>
+                <tr>
+                    <td> </td>
+                    <td> </td>
+                    <td> </td>
+                    <td> </td>
+                    <td> </td>
+                    <td> <button id="j_angles_submit_btn" type="button">Move to angles!</button> </td>
+                </tr>
+                <tr>
+                    <td COLSPAN="6"> <button id="stop_btn" type="button" >STOP! </button> </td>
+                </tr>
+            </table>
+        </template>
+
+        <template id="template_TaskSpaceControl">
+            <table id="table_TaskSpaceControl" border="1" >
+                <Tr>
+                    <TH align="center" COLSPAN="2"> <H3>Task Space Control</H3> </TH>
+                </Tr>
+                <Tr>
+                    <TH align="center" COLSPAN="2"> <H4>Position</H4> </TH>
+                </Tr>
+                <tr>
+                    <td> <button id="X_neg_btn" type="button">X-</button> </td>
+                    <td> <button id="X_pos_btn" type="button">X+</button> </td>
+                </tr>
+                <tr>
+                    <td > <button id="Y_neg_btn" type="button">Y-</button> </td>
+                    <td > <button id="Y_pos_btn" type="button">Y+</button> </td>
+                </tr>         
+                <tr>
+                    <td > <button id="Z_neg_btn" type="button">Z-</button> </td>
+                    <td > <button id="Z_pos_btn" type="button">Z+</button> </td>
+                </tr>
+                <Tr>
+                    <TH align="center" COLSPAN="2"> <H4><br>Orientation</H4> </TH>
+                </Tr>      
+                <tr>
+                    <td > <button id="theta_X_neg_btn" type="button">&theta;<sub>X</sub>-</button> </td>
+                    <td > <button id="theta_X_pos_btn" type="button">&theta;<sub>X</sub>+</button> </td>
+                </tr>  
+                <tr>
+                    <td > <button id="theta_Y_neg_btn" type="button">&theta;<sub>Y</sub>-</button> </td>
+                    <td > <button id="theta_Y_pos_btn" type="button">&theta;<sub>Y</sub>+</button> </td>
+                </tr>
+                <tr>
+                    <td >  <button id="theta_Z_neg_btn" type="button">&theta;<sub>Z</sub>-</button> </td>
+                    <td > <button id="theta_Z_pos_btn" type="button">&theta;<sub>Z</sub>+</button> </td>
+                </tr>
+                <tr>
+                    <td COLSPAN="2">
+                    <table style="text-align: center; display: block; border: 1px solid; ">
+                        <Tr> <TH > <H4>Current Pose wrt Base</H4> </TH> </Tr>
+                        <tr> <td align="left"> ZYX Angles (deg):  </td> </tr>
+                        <tr> <td> <div align="left" id="cur_ZYX_angles"></div> </td></tr>
+                        <tr> <td align="left"> Position (m): </td> </tr>
+                        <tr> <td> <div align="left" id="cur_position"></div>  </td></tr>    
+                    </table>
+                    </td>
+                </tr>  
+            </table>
+        </template>
+
+        <template id="template_SavePlaybackPoses">
+            <table id="table_SavePlaybackPoses" border="1" > 
+                <Tr>
+                    <TH align="center" COLSPAN="3"> <H3>Save & Playback Poses</H3> </TH>
+                </Tr>
+                <Tr>
+                    <TH align="center" COLSPAN="3"> <H4>Saved Poses</H4> </TH>
+                </Tr>
+                     
+                <tr>
+                    <td COLSPAN="3"> <!-- <ul id="ss_imp_list" tabindex="0" role="listbox" >
+                              <li id="ss_opt1" role="option"> Hello1 </li>
+                              <li id="ss_opt2" role="option"> Hello2 </li> 
+                          </ul> -->
+                          <select id="saved_poses_list" name="saved_poses_list" size="5" multiple style="width: 100%; font-size: 16px;">
+                            <option value="0,0,0,0,0,0,0">0,0,0,0,0,0,0</option>
+                          </select>
+                    </td>    
+                </tr>
+                
+                <tr>
+                    <td COLSPAN="3"> <button id="save_pose_btn" type="button" style="width: 100%;">SAVE Current Pose</button> </td>
+                </tr>
+                <tr>
+                    <td COLSPAN="3"> <button id="up_sel_pose_btn" type="button" style="width: 100%;" onclick="upSelPose()">Move UP Selected Pose</button> </td>
+                </tr>
+                <tr>
+                    <td COLSPAN="3"> <button id="down_sel_pose_btn" type="button" style="width: 100%;" onclick="downSelPose()">Move DOWN Selected Pose</button> </td>
+                </tr>
+                <tr>
+                    <td COLSPAN="3"> <button id="del_sel_pose_btn" type="button" style="width: 100%;" onclick="delSelPose()">REMOVE Selected Pose</button> </td>
+                </tr>
+                <tr>
+                    <td COLSPAN="3"> <button id="go_sel_pose_btn" type="button" style="width: 100%;">GO to Selected Pose</button> </td>
+                </tr>
+                <tr>
+                    <td> Speed (%): </td> 
+                    <td> <input id="joint_vel_range" type="range" min="0" max="100" value="100" step="5" 
+                        oninput="showJointVelValue()" onchange="showJointVelValue()"> </td>
+                    <td> <div align="center" id="joint_vel_percentage"> 100 </div> </td> 
+                </tr>
+                <tr>
+                    <td COLSPAN="2"> Number of Loops: </td> 
+                    <td> <input type="number" id="num_loops_in" placeholder="number of loops" value="1" min="1"> </td>
+                </tr>
+                <tr>
+                    <td COLSPAN="2"> Loop Time (s): </td> 
+                    <td> <input type="number" id="time_loops_in" placeholder="1 Loop time when speed is 100%" value="3.0" min="0" step="0.001"> </td>
+                </tr>
+                <tr>
+                     <td COLSPAN="3"> <button id="playback_poses_btn" type="button" style="width: 100%;">(GO to initial pose and) <br> PLAYBACK Saved Poses!</button> </td>
+                </tr>
+            </table>
+        </template>
+
+        <template id="template_RobotStatus"> 
+            <table id="table_RobotStatus" border="1"  > <!-- CELLPADDING="4" CELLSPACING="3"> -->
+                <Tr>
+                    <TH align="center" COLSPAN="2">
+                        <H3><BR> Robot Status</H3>
+                    </TH>
+                </Tr>
+                
+                <tr>              
+                    <TH> Robot State Flags: </TH>
+                    <td>
+                        <div align="left" id="print_div_flag_info"></div>
+                    </td>
+                </tr>
+                
+                <tr>              
+                    <TH>Joint Kinematic Info: </TH>
+                    <td>
+                        <div align="left" id="print_div_kin_info"></div>
+                    </td>
+                </tr>
+                
+                
+                <tr>              
+                    <TH>Number of Joints:<br>
+                        Joints Types (0:unkown, 1:revolute, 2:continuous, 3:prismatic, 4:wheel):<br>
+                        Joint Velocity Limits:<br>
+                        Joint Acceleration Limits:<br>
+                    </TH>
+                    <td>
+                        <div align="left" id="print_div_num_info"></div>
+                    </td>
+                </tr>
+                
+                <tr>              
+                    <TH>End Effector Pose (wrt. Base Frame): </TH>
+                    <td>
+                        <div align="left" id="print_div_end_info"></div>
+                    </td>
+                </tr>
+                
+                <tr>              
+                    <TH>Desired Pose:<br>
+                        Desired Inverse Kinematics Joint Angles (deg, rad):<br>
+                        Is IK Solution Converged:
+                    </TH>
+                    <td>
+                        <div align="left" id="print_div_ik_info"></div>
+                    </td>
+                </tr>
+            </table>
+        </template>
+
+        <template id="template_print_div">
+            <div id="print_div"></div> 
+        </template>
+
+        <!-- Golden Layout JS -->
+        <script type="text/javascript" src="./scripts-GL.js" class="gl_keep"></script>
+
+    </body>
+</html>

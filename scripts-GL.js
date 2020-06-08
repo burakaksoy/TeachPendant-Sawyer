@@ -1,0 +1,279 @@
+var newJointSpaceControlConfig = {
+    width: 45,
+    type:'component',
+    componentName: 'Joint Space Control',
+    componentState: {comp_name: 'joint_space_control'}
+};
+
+var newTaskSpaceControlConfig = {
+    width: 15,
+    type:'component',
+    componentName: 'Task Space Control',
+    componentState: {comp_name: 'task_space_control'}
+};
+
+var newSavePlaybackPosesConfig = {
+    width: 40,
+    type:'component',
+    componentName: 'Save Playback Poses',
+    componentState: {comp_name: 'save_playback_poses' }
+};
+
+var newRobotStatusConfig = {
+    type:'component',
+    componentName: 'Robot Status',
+    componentState: {comp_name: 'robot_status'}
+};
+
+var newDebugOutputDivConfig = {                                    
+    isClosable: false,
+    type:'component',
+    componentName: 'Debug Output Div',
+    componentState: {message: 'Debug Output will be shown here..'}
+};
+
+var config = 
+{
+    settings:{
+        hasHeaders: true,
+        constrainDragToContainer: true,
+        reorderEnabled: true,
+        selectionEnabled: false,
+        popoutWholeStack: false,
+        blockedPopoutsThrowError: true,
+        closePopoutsOnUnload: true,
+        showPopoutIcon: false, 
+        showMaximiseIcon: true,
+        showCloseIcon: false,
+    },
+    dimensions: 
+    {
+        borderWidth: 5,
+        minItemHeight: 10,
+        minItemWidth: 10,
+        headerHeight: 30,
+        dragProxyWidth: 300,
+        dragProxyHeight: 200
+    },
+    labels: 
+    {
+        close: 'close',
+        maximise: 'maximise',
+        minimise: 'minimise',
+        popout: 'open in new window'
+    },
+    content:
+    [
+        {
+            type: 'column',
+            content: 
+            [
+                {
+                    height: 65,
+                    type:'row',
+                    content: 
+                    [
+                        {
+                            width: 35,
+                            isClosable: false,
+                            type:'component',
+                            componentName: 'Joint Space Control',
+                            componentState: {comp_name: 'joint_space_control'}
+                        },
+                        {
+                            width: 25,
+                            isClosable: false,
+                            type:'component',
+                            componentName: 'Task Space Control',
+                            componentState: {comp_name: 'task_space_control'}
+                        },
+                        {
+                            width: 40,
+                            isClosable: false,
+                            type:'component',
+                            componentName: 'Save Playback Poses',
+                            componentState: {comp_name: 'save_playback_poses' }
+                        }
+                    ]
+                },
+                {
+                    type:'stack',
+                    content: 
+                    [
+                        {
+                            isClosable: false,
+                            type:'component',
+                            componentName: 'Robot Status',
+                            componentState: {comp_name: 'robot_status'}
+                        },
+                        {                                    
+                            isClosable: false,
+                            type:'component',
+                            componentName: 'Debug Output Div',
+                            componentState: {message: 'Debug Output will be shown here..'}
+                        },
+                    ]
+                },
+            ]
+        }
+    ]
+};
+
+function initializeLayout(){
+    var myLayout;
+    var savedState = localStorage.getItem( 'savedState' );
+
+    if( savedState !== null ) {
+        myLayout = new window.GoldenLayout( JSON.parse( savedState ), $('#layoutContainer')  );
+    } else {
+        myLayout = new window.GoldenLayout( config, $('#layoutContainer') );
+    }
+
+    myLayout.registerComponent( 'Joint Space Control', function( container, state ){
+        // var table_JointSpaceControl = $('#table_JointSpaceControl'); 
+        // container.getElement().append(table_JointSpaceControl);
+
+        var temp = document.getElementById('template_JointSpaceControl');
+        var clon = temp.content.cloneNode(true);
+        container.getElement().append(clon);
+    });
+
+    myLayout.registerComponent( 'Task Space Control', function( container, state ){
+        // var table_TaskSpaceControl = $('#table_TaskSpaceControl'); 
+        // container.getElement().append(table_TaskSpaceControl);
+
+        var temp = document.getElementById('template_TaskSpaceControl');
+        var clon = temp.content.cloneNode(true);
+        container.getElement().append(clon);
+    });
+
+    myLayout.registerComponent( 'Save Playback Poses', function( container, state ){
+        // var table_SavePlaybackPoses = $('#table_SavePlaybackPoses'); 
+        // container.getElement().append(table_SavePlaybackPoses);
+
+        var temp = document.getElementById('template_SavePlaybackPoses');
+        var clon = temp.content.cloneNode(true);
+        container.getElement().append(clon);
+    });
+
+    myLayout.registerComponent( 'Robot Status', function( container, state ){
+        // var table_RobotStatus = $('#table_RobotStatus'); 
+        // container.getElement().append(table_RobotStatus);
+
+        var temp = document.getElementById('template_RobotStatus');
+        var clon = temp.content.cloneNode(true);
+        container.getElement().append(clon);
+    });
+
+    myLayout.registerComponent( 'Debug Output Div', function( container, state ){
+        // var div_print = $('#print_div');
+        // container.getElement().append(div_print);
+
+        var temp = document.getElementById('template_print_div');
+        var clon = temp.content.cloneNode(true);
+        container.getElement().append(clon);
+    });
+
+    myLayout.init();
+    return myLayout;
+}
+
+$(document).ready(function() {
+    var myLayout = initializeLayout();
+
+    // $("#print_div_ik_info").html("message")
+
+    var addMenuItem = function(component_name) {
+        var element_name = $( '<li>' + component_name + '</li>' );
+        $( '#menuContainer' ).append( element_name );
+        
+/*        var newItemConfig;
+        var element;
+        switch(component_name) {
+            case 'Joint Space Control':
+                newItemConfig = newJointSpaceControlConfig;
+                element = $('#table_RobotStatus'); 
+                break;
+            case 'Task Space Control':
+                newItemConfig = newTaskSpaceControlConfig;
+                element = $('#table_RobotStatus'); 
+                break;
+            case 'Save Playback Poses':
+                newItemConfig = newSavePlaybackPosesConfig;
+                element = $('#table_RobotStatus'); 
+                break;
+            case 'Robot Status':
+                newItemConfig = newRobotStatusConfig;
+                element = $('#table_RobotStatus'); 
+                break;
+            case 'Debug Output Div':
+                newItemConfig = newDebugOutputDivConfig;
+                element = $('#print_div'); 
+                break;
+            default:
+                // code block
+        }  
+        myLayout.createDragSource( element_name, newItemConfig );*/
+
+        element_name.click(function(){
+            // console.log( myLayout.root.contentItems[0].getItemsByType('stack'));
+
+            for (var i = 0; i < myLayout._getAllContentItems().length; i++) {
+                // console.log(myLayout._getAllContentItems()[i].componentName);
+                if (myLayout._getAllContentItems()[i].componentName == component_name) {
+                    var contentItem = myLayout._getAllContentItems()[i];
+                    // contentItem.tab.header.parent.setActiveContentItem(contentItem);
+                    contentItem.parent.setActiveContentItem(contentItem);
+                    // contentItem.parent.header.parent.setActiveContentItem(contentItem);
+                }
+            }
+        });
+    };
+
+    addMenuItem( 'Joint Space Control');
+    addMenuItem( 'Task Space Control');
+    addMenuItem( 'Save Playback Poses');
+    addMenuItem( 'Robot Status');
+    addMenuItem( 'Debug Output Div');
+
+    $(window).resize(function(){
+        myLayout.updateSize();
+    });
+
+    // Save the current layout configuration state.
+    // var save_layout_btn = document.getElementById('saveLayoutState_btn');
+    var save_layout_btn = $('#saveLayoutState_btn');
+    save_layout_btn.click(function(){
+        console.log("Layout is Saved!");
+        var state = JSON.stringify( myLayout.toConfig() );
+        localStorage.setItem( 'savedState', state );
+    });
+
+    // Load the saved layout configuration state
+    var load_layout_btn = $('#loadSavedLayoutState_btn');
+    load_layout_btn.click(function(){
+        console.log("Saved Layout is loading!");
+        
+        var savedState = localStorage.getItem( 'savedState' );
+
+        if( savedState !== null ) {
+            // myLayout.destroy();
+            // myLayout = initializeLayout();
+            window.location.reload(false); 
+        }
+    });
+
+    // Load the default layout configuration state
+    var def_layout_btn = $('#defaultLayoutState_btn');
+    def_layout_btn.click(function(){
+        console.log("Default Layout is loading!");
+        
+        localStorage.clear();
+
+        // myLayout.destroy();
+        // myLayout = initializeLayout();
+        window.location.reload(false); 
+    });
+   
+});
+

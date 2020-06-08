@@ -1,0 +1,91 @@
+Layout Managers
+To create browser based multi-window/screen web apps.
+There are several frameworks:
+
+- PhosphorJS
+    - http://phosphorjs.github.io/
+    - "A collection of libraries to build 
+        - Desktop style 
+        - Pluggable
+        - High Performance (Emphasized) web applications"
+    - BSD-3 Clause license
+
+- wcDocker (Web Cabin Docker)
+    - http://docker.webcabin.org/
+    - "A responsive IDE interface designed for the developer
+        - environment into smaller components
+        - docker panels
+        - organize "
+    - MIT license
+
+- Masonry
+    - https://masonry.desandro.com/
+    - "A JS grid layout library that
+        - Place elements in optimal position 
+        - based on available vertical space
+        - Like mason fitting stones in a wall"
+    - MIT license
+
+- Isotope
+    - https://isotope.metafizzy.co/
+    - "Filter and sort magical layouts"
+    - GPLv3 license 
+    - Commercial License 
+        -$25, 1 developer, 
+        -$110, 8 developers
+
+- GoldenLayout
+    - https://golden-layout.com/
+    - "Native pop out windows"
+    - "Completely themeable"
+    - "Comprehensive API"
+    - "Powerful persistance and works in IE8+, FF, Chrome"
+    - MIT license (It was GPL before)
+
+We will start developing from GoldenLayout.
+- v2.0 arrived but v1.5.9 (from July 2017) is the stable one
+- Installation:
+    - Add golden-layout to your bower.json, or download the source.
+    - $ npm i golden-layout (npm is Default package manager for JS runtime env Node.js)
+
+- add new items to an existing layout
+    - turn any DOM element into a 'dragSource', that turns into a layoutItem when dragged
+    - let the user select an element and add items to it
+    - add items to a specified element
+    
+There are view managers for JS:
+- ReactJS
+    - https://reactjs.org/
+    - "React is a JS library for building user interfaces."
+    - A facebook open-source project
+    - "React makes it painless to create interactive UIs. 
+    - "Design simple views for each state in your application, and React will efficiently update and render just the right components when your data changes."
+    - "React is, in our opinion, the premier way to build big, fast Web apps with JavaScript. It has scaled very well for us at Facebook and Instagram."
+    - "React components implement a render() method that takes input data and returns what to display"
+    
+    - Developing tips in react
+        - Step 1: Break The UI Into A Component Hierarchy
+            - a component should ideally only do one thing
+        - Step 2: Build A Static Version in React
+            - building a static version requires a lot of typing and no thinking, and adding interactivity requires a lot of thinking and not a lot of typing.
+            - Only use props for static version
+            - don’t use state at all to build this static version. State is reserved only for interactivity.
+        - Step 3: Identify The Minimal (but complete) Representation Of UI State
+            - think of the minimal set of mutable state that your app needs. The key here is DRY: Don’t Repeat Yourself.
+            - What is NOT a state:
+                Is it passed in from a parent via props? If so, it probably isn’t state.
+                Does it remain unchanged over time? If so, it probably isn’t state.
+                Can you compute it based on any other state or props in your component? If so, it isn’t state.
+            - What IS a state:
+        - Step 4: Identify Where Your State Should Live
+            - identify which component mutates, or owns, this state.
+            - For each piece of state in your application:
+                Identify every component that renders something based on that state.
+                Find a common owner component (a single component above all the components that need the state in the hierarchy).
+                Either the common owner or another component higher up in the hierarchy should own the state.
+                If you can’t find a component where it makes sense to own the state, create a new component solely for holding the state and add it somewhere in the hierarchy above the common owner component.
+        - Step 5: Add Inverse Data Flow
+            - 
+
+- Function Components in React
+    Function components are a simpler way to write components that only contain a render method and don’t have their own state. Instead of defining a class which extends React.Component, we can write a function that takes props as input and returns what should be rendered. Function components are less tedious to write than classes, and many components can be expressed this way.
