@@ -633,9 +633,6 @@ async def client_drive():
     # rr+ws : WebSocket connection without encryption
     url ='rr+ws://localhost:58653?service=sawyer'    
     print_div('Program started, please wait..<br>')
-    # To print debug info to the web console
-    RRN.SetLogLevel(RR.LogLevel_Debug)
-    # RRN.SetLogLevel(RR.LogLevel_Trace)
 
     try:
         #Connect to the service
