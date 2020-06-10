@@ -7,7 +7,7 @@
 
 **NOTE:** 
 
-*A question: Can I use Ubuntu Xenial(16.04) and ROS kinetic instead of Bionic and Melodic?* 
+*A question: Can I use Ubuntu Xenial(16.04) and ROS kinetic, (or previous Ubuntu and ROS versions)?* 
 
 *Answer: The teach pendant will be targeting a minimum Python version of 3.6. Version 3.6 added some important features like type hints. Unfortunately Ubuntu Xenial uses Python 3.5, so we will need to use a minimum of Ubuntu Bionic.* 
 
@@ -86,17 +86,14 @@ roslaunch sawyer_gazebo sawyer_world.launch
 ```
 
 ***Note:***
-
 *No need to execute $./intera.sh sim before this command as suggested in the website above since everything is in localhost.*
 
 ***Note:***
-
 *If you see a REST error at roslaunch (source: https://www.youtube.com/watch?v=ftDz_EVoatw)*
 ```
 cd ~/.ignition/fuel
 gedit config.yaml
 ```
-
 *Edit lines:*
 ```
     # url: https://api.ignitionfuel.org
@@ -105,7 +102,6 @@ gedit config.yaml
 *and save.*
 
 ***Note:***
-
 *You can check the status of the robot in Gazebo simulation with ROS command $ rostopic echo /robot/state.*
 
 ***Note:***
