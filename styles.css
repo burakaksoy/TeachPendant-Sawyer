@@ -76,6 +76,12 @@ table#table_RobotStatus {
   object-fit:cover;
 }
 
+table#table_CameraFeedback tr{
+  text-align: center; 
+  margin:auto;  
+  display:block;  
+}
+
 /*table#table_JointSpaceControl td {
   width: 16.666666% ;
 }*/
@@ -90,6 +96,10 @@ table#table_SavePlaybackPoses td {
 
 table#table_RobotStatus td {
   width: 70% ;
+}
+
+canvas {
+  border:0px solid #000000;
 }
 
 /**/

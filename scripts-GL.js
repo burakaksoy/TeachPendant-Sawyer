@@ -112,6 +112,12 @@ var config =
                             componentName: 'Debug Output Div',
                             componentState: {message: 'Debug Output will be shown here..'}
                         },
+                        {                                    
+                            isClosable: false,
+                            type:'component',
+                            componentName: 'Camera Feedback',
+                            componentState: {comp_name: 'camera_feedback'}
+                        },
                     ]
                 },
             ]
@@ -170,6 +176,15 @@ function initializeLayout(){
         // container.getElement().append(div_print);
 
         var temp = document.getElementById('template_print_div');
+        var clon = temp.content.cloneNode(true);
+        container.getElement().append(clon);
+    });
+
+    myLayout.registerComponent( 'Camera Feedback', function( container, state ){
+        // var div_print = $('#print_div');
+        // container.getElement().append(div_print);
+
+        var temp = document.getElementById('template_CameraFeedback');
         var clon = temp.content.cloneNode(true);
         container.getElement().append(clon);
     });
@@ -235,6 +250,7 @@ $(document).ready(function() {
     addMenuItem( 'Save Playback Poses');
     addMenuItem( 'Robot Status');
     addMenuItem( 'Debug Output Div');
+    addMenuItem( 'Camera Feedback');
 
     $(window).resize(function(){
         myLayout.updateSize();
