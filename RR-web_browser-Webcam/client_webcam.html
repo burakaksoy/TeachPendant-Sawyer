@@ -1,0 +1,31 @@
+
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <script src="https://code.jquery.com/jquery-latest.js"></script>
+        <script src="https://robotraconteur.github.io/robotraconteur_pyodide/pyodide.js"></script>  
+    </head>
+    <body>
+        
+        <script>
+        
+            function print_div(message)
+            {
+                $("#print_div").append("<p>" + message)
+            }
+
+            async function run_test(){
+                await languagePluginLoader;
+                await pyodide.loadPackage(["numpy"]);      
+                const response = await fetch("client_webcam.py", {cache: "no-store"});
+                const client_py = await response.text();
+                pyodide.runPython(client_py)
+            }
+            run_test()
+        </script>
+
+        <H2>Robot Raconteur Demo USING PIPE</H2>
+        <tr style="text-align: center"><td><canvas id="image" width="320" height="240" style="border:0px solid #000000;"></canvas></td></tr>
+        <div id="print_div"></div>  
+    </body>
+</html>
