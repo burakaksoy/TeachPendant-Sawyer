@@ -1,4 +1,4 @@
-var newJointSpaceControlConfig = {
+/*var newJointSpaceControlConfig = {
     width: 45,
     type:'component',
     componentName: 'Joint Space Control',
@@ -30,7 +30,7 @@ var newDebugOutputDivConfig = {
     type:'component',
     componentName: 'Debug Output Div',
     componentState: {message: 'Debug Output will be shown here..'}
-};
+};*/
 
 var config = 
 {
@@ -118,6 +118,12 @@ var config =
                             componentName: 'Camera Feedback',
                             componentState: {comp_name: 'camera_feedback'}
                         },
+                        {                                    
+                            isClosable: false,
+                            type:'component',
+                            componentName: 'Blockly',
+                            componentState: {comp_name: 'blockly'}
+                        },
                     ]
                 },
             ]
@@ -189,6 +195,12 @@ function initializeLayout(){
         container.getElement().append(clon);
     });
 
+    myLayout.registerComponent( 'Blockly', function( container, state ){
+        var temp = document.getElementById('template_Blockly');
+        var clon = temp.content.cloneNode(true);
+        container.getElement().append(clon);
+    });
+
     myLayout.init();
     return myLayout;
 }
@@ -251,9 +263,11 @@ $(document).ready(function() {
     addMenuItem( 'Robot Status');
     addMenuItem( 'Debug Output Div');
     addMenuItem( 'Camera Feedback');
+    addMenuItem( 'Blockly');
 
     $(window).resize(function(){
         myLayout.updateSize();
+        // console.log("resized22..");
     });
 
     // Save the current layout configuration state.

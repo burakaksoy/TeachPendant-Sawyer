@@ -3,7 +3,9 @@
         <meta charset="utf-8"/>
         <script src="https://code.jquery.com/jquery-latest.js"></script>
         <script src="https://robotraconteur.github.io/robotraconteur_pyodide/pyodide.js"></script>  
-        <!-- INCLUDING DEPENDENCIES OF GOLDEN LAYOUT -->
+
+
+        <!-- INCLUDE DEPENDENCIES OF GOLDEN LAYOUT -->
         <!-- GoldenLayout needs jQuery to work -->
         <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
         <!-- add GoldenLayout's main JS and CSS file, -->
@@ -14,6 +16,12 @@
         <!-- <link type="text/css" rel="stylesheet" href="https://golden-layout.com/files/latest/css/goldenlayout-dark-theme.css" /> -->
         <link type="text/css" rel="stylesheet" href="https://golden-layout.com/files/latest/css/goldenlayout-light-theme.css" />
 
+        <!-- INCLUDE BLOCKLY -->
+        <script src="./blockly/blockly_compressed.js"></script>
+        <script src="./blockly/blocks_compressed.js"></script>
+        <script src="./blockly/msg/js/en.js"></script>
+
+        <!-- INCLUDE STYLES -->
         <link rel="stylesheet" type="text/css" href="styles.css">
     </head>
     
@@ -293,8 +301,37 @@
             <div id="print_div"></div> 
         </template>
 
+        <!-- Blockly Interface Template -->
+        <template id="template_Blockly">
+            <table id="table_Blockly"   > <!-- border="1" -->
+                <tr> 
+                    <td id="blocklyArea">
+                        <div id="blocklyDiv"></div> 
+
+                        <!-- Blockly Structure of the toolbox -->
+                        <xml xmlns="https://developers.google.com/blockly/xml" id="toolbox" style="display: none">
+                            <block type="controls_if"></block>
+                            <block type="logic_compare"></block>
+                            <block type="controls_repeat_ext"></block>
+                            <block type="math_number">
+                                <field name="NUM">123</field>
+                            </block>
+                            <block type="math_arithmetic"></block>
+                            <block type="text"></block>
+                            <block type="text_print"></block>
+                        </xml>
+                    </td>          
+                </tr>
+            </table>
+
+            
+        </template>
+
         <!-- Golden Layout JS -->
         <script type="text/javascript" src="./scripts-GL.js" class="gl_keep"></script>
+
+        <!-- Blockly JS -->
+        <script type="text/javascript" src="./scripts-Blockly.js"></script>
 
     </body>
 </html>
