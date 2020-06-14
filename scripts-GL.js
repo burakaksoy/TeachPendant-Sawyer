@@ -118,11 +118,30 @@ var config =
                             componentName: 'Camera Feedback',
                             componentState: {comp_name: 'camera_feedback'}
                         },
-                        {                                    
+                        {
+                            reorderEnabled: false,
                             isClosable: false,
-                            type:'component',
-                            componentName: 'Blockly',
-                            componentState: {comp_name: 'blockly'}
+                            title:'BLOCKLY',
+                            type:'row',
+                            content: 
+                            [
+                                {
+                                    width: 70,
+                                    reorderEnabled: false,
+                                    isClosable: false,
+                                    type:'component',
+                                    componentName: 'Blockly Workspace',
+                                    componentState: {comp_name: 'blockly_workspace'}
+                                },
+                                {
+                                    width: 30,
+                                    // reorderEnabled: false,
+                                    isClosable: false,
+                                    type:'component',
+                                    componentName: 'Blockly Code',
+                                    componentState: {comp_name: 'blockly_code'}
+                                },
+                            ]
                         },
                     ]
                 },
@@ -195,8 +214,14 @@ function initializeLayout(){
         container.getElement().append(clon);
     });
 
-    myLayout.registerComponent( 'Blockly', function( container, state ){
-        var temp = document.getElementById('template_Blockly');
+    myLayout.registerComponent( 'Blockly Workspace', function( container, state ){
+        var temp = document.getElementById('template_BlocklyWorkspace');
+        var clon = temp.content.cloneNode(true);
+        container.getElement().append(clon);
+    });
+
+    myLayout.registerComponent( 'Blockly Code', function( container, state ){
+        var temp = document.getElementById('template_BlocklyCode');
         var clon = temp.content.cloneNode(true);
         container.getElement().append(clon);
     });
@@ -212,6 +237,12 @@ $(document).ready(function() {
 
     var addMenuItem = function(component_name) {
         var element_name = $( '<li>' + component_name + '</li>' );
+        
+        if (component_name == 'BLOCKLY'){
+            var seperator = $('<hr>');
+            $( '#menuContainer' ).append( seperator );
+        }
+
         $( '#menuContainer' ).append( element_name );
         
 /*        var newItemConfig;
@@ -247,7 +278,11 @@ $(document).ready(function() {
 
             for (var i = 0; i < myLayout._getAllContentItems().length; i++) {
                 // console.log(myLayout._getAllContentItems()[i].componentName);
-                if (myLayout._getAllContentItems()[i].componentName == component_name) {
+                // console.log(myLayout._getAllContentItems()[i]);
+                // console.log(myLayout._getAllContentItems()[i].config.title);
+                // console.log("------------------------------------------------");
+                // if (myLayout._getAllContentItems()[i].componentName == component_name) {
+                if (myLayout._getAllContentItems()[i].config.title == component_name) {
                     var contentItem = myLayout._getAllContentItems()[i];
                     // contentItem.tab.header.parent.setActiveContentItem(contentItem);
                     contentItem.parent.setActiveContentItem(contentItem);
@@ -263,7 +298,9 @@ $(document).ready(function() {
     addMenuItem( 'Robot Status');
     addMenuItem( 'Debug Output Div');
     addMenuItem( 'Camera Feedback');
-    addMenuItem( 'Blockly');
+    addMenuItem( 'BLOCKLY');
+    addMenuItem( 'Blockly Workspace');
+    addMenuItem( 'Blockly Code');
 
     $(window).resize(function(){
         myLayout.updateSize();

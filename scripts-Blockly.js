@@ -1,43 +1,60 @@
 // $(document).ready(function() {
-//     var demoWorkspace = Blockly.inject('blocklyDiv',
+//     var workspace = Blockly.inject('blocklyDiv',
 //         {media: './blockly/media/',
 //          toolbox: document.getElementById('toolbox')});
 // });
 
 $(document).ready(function() {
+    // Inject Blockly workspace
     var blocklyArea = document.getElementById('blocklyArea');
     var blocklyDiv = document.getElementById('blocklyDiv');
-    var demoWorkspace = Blockly.inject(blocklyDiv,
-        {media: '../../media/',
-         toolbox: document.getElementById('toolbox')});
+    var workspace = Blockly.inject(blocklyDiv,
+        {
+            toolbox: document.getElementById('toolbox'),
+            zoom:
+                {
+                    controls: true,
+                    wheel: false,
+                    startScale: 1.0,
+                    maxScale: 3,
+                    minScale: 0.3,
+                    scaleSpeed: 1.2
+                },
+            trashcan: true,  
+            maxTrashcanContents: 32, // Default 32
+            css:true,
+            horizontalLayout: false, // Defaul: false
+            move:
+                {
+                    scrollbars: true,
+                    drag: true,
+                    wheel: false
+                },
+        });
+
+    // Blockly.Xml.domToWorkspace(document.getElementById('startBlocks'), workspace);
     
+    // For resizable workspace
     function onresize_cb(){
-        // Compute the absolute coordinates and dimensions of blocklyArea.
-        // console.log("resized..");
-        var element = blocklyArea;
-        var x = 0;
-        var y = 0;
-        do {
-        x += element.offsetLeft;
-        y += element.offsetTop;
-        element = element.offsetParent;
-        } while (element);
-
-        // Position blocklyDiv over blocklyArea.
-        blocklyDiv.style.left = x + 'px';
-        blocklyDiv.style.top = y + 'px';
-        blocklyDiv.style.width = blocklyArea.offsetWidth + 'px';
-        blocklyDiv.style.height = blocklyArea.offsetHeight + 'px';
-        Blockly.svgResize(demoWorkspace);
+        blocklyDiv.style.width = parent_div.offsetWidth-5 + 'px';
+        blocklyDiv.style.height = parent_div.offsetHeight-5 + 'px';
+        Blockly.svgResize(workspace);
     }
-
-    var table_blockly = document.getElementById('table_Blockly');
+    var table_blockly = document.getElementById('table_BlocklyWorkspace');
     var parent_div = table_blockly.parentNode;
-    console.log(parent_div);
-
+    // console.log(parent_div);
     new ResizeObserver(onresize_cb).observe(parent_div);
-
     onresize_cb();
-    Blockly.svgResize(demoWorkspace);
+    Blockly.svgResize(workspace);
+
+    // Realtime Code Generation
+    function myUpdateFunction(event) {
+        var code_js = Blockly.JavaScript.workspaceToCode(workspace);
+        document.getElementById('textareaBlocklyJS').value = code_js;
+
+        var code_py = Blockly.Python.workspaceToCode(workspace);
+        document.getElementById('textareaBlocklyPy').value = code_py;
+    }
+    workspace.addChangeListener(myUpdateFunction);
 });
 

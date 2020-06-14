@@ -81,7 +81,9 @@ table#table_RobotStatus {
   height: 100%;
 }*/
 
-
+table#table_BlocklyCode{
+  line-height: 30%;
+}
 
 table#table_CameraFeedback tr{
   text-align: center; 
@@ -171,6 +173,23 @@ input{
   box-sizing: border-box;
 }
 
+hr { 
+  display: block;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  margin-left: auto;
+  margin-right: auto;
+  border-style: inset;
+  border-width: 1px;
+} 
+
+textarea{
+  width: 100%;
+  height: 100%;
+  /*font-family: "Lucida Console", Courier, monospace;*/
+  font-family: monospace;
+}
+
 *{
   margin: 0;
   padding: 0;
@@ -245,4 +264,8 @@ input{
   /*height: 480px; */
   /*width: 600px;*/
   /*position: absolute;*/
+}
+
+#toolbox{
+  display: none;
 }
