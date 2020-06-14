@@ -1,6 +1,9 @@
+# TEACH PENDANT AND SAWYER SIMULATOR OVERVIEW #
+![Image](media/2020-06-14_AddBlocklyCodeGenerator.png)
+
 # SAWYER SIMULATOR SETUP STEPS TO TEST #
 
-#### Latest Update: Wed 10 June 2020 ####
+#### Latest Update: Sun 14 June 2020 ####
 ##### Author: Burak Aksoy #####
 
 ## STEPS FOR A FRESHLY INSTALLED UBUNTU 18.04 or UBUNTU 20.04 ##
