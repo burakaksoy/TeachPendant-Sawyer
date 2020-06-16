@@ -632,6 +632,7 @@ def euler_angles_from_rotation_matrix(R):
 async def client_drive():
     # rr+ws : WebSocket connection without encryption
     url ='rr+ws://localhost:58653?service=sawyer'    
+    # url ='rr+ws://192.168.50.118:58653?service=sawyer'    
     print_div('Program started, please wait..<br>')
 
     try:
