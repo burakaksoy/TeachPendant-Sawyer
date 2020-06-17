@@ -1,6 +1,8 @@
 # TEACH PENDANT AND SAWYER SIMULATOR OVERVIEW #
 ![Image](media/2020-06-14_AddBlocklyCodeGenerator.png)
 
+**Video:** [Remote Control Sawyer Sim from a Windows Client Tablet](https://drive.google.com/file/d/1KFKODHFAj3hlqJ-viZdkoh6zxaIW1SyD/view?usp=sharing)
+
 # SAWYER SIMULATOR SETUP STEPS TO TEST #
 
 #### Latest Update: Sun 14 June 2020 ####
