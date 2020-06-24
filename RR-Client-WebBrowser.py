@@ -40,8 +40,21 @@ def jog_joints(q_i, sign):
             except:
                 window.alert("Specified joints might be out of range")
 
+
 def jog_joints2(q_i, degree_diff, is_relative):
+    # print_div("Playing Back Poses..")
+    loop.call_soon(async_jog_joints2(q_i, degree_diff, is_relative))
+
+async def async_jog_joints2(q_i, degree_diff, is_relative):
     global d, d_q, num_joints, joint_lower_limits, joint_upper_limits, joint_vel_limits
+
+    # Update joint angles
+    d_q = await update_joint_info() # Joint angles in radian ndarray
+    
+    # UPdate the end effector pose info
+    pose = await update_end_info()
+    
+    await update_state_flags()
 
     if (num_joints < q_i):
         window.alert("Currently Controlled Robot only have " + str(num_joints) + " joints..")
@@ -58,9 +71,10 @@ def jog_joints2(q_i, degree_diff, is_relative):
             window.alert("Specified joints might be out of range")
         else:
             try:
-                d.async_jog_joint(joint_diff, joint_vel_limits, is_relative, True,None)
+                await d.async_jog_joint(joint_diff, joint_vel_limits, is_relative, True,None)
+                await RRN.AsyncSleep(2,None)
             except:
-                window.alert("Specified joints might be out of range")
+                window.alert("Specified joints might be out of range2")
     
 
 def j1_pos_func(self):
