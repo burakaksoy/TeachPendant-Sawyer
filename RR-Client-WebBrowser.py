@@ -25,17 +25,42 @@ import general_robotics_toolbox as rox
 def jog_joints(q_i, sign):
     degree_diff = 5
     global d, d_q, num_joints, joint_lower_limits, joint_upper_limits, joint_vel_limits
-    
-    joint_diff = np.zeros((num_joints,))
-    joint_diff[q_i-1] = sign*np.deg2rad(degree_diff)
-    
-    if not ((d_q + joint_diff) <= joint_upper_limits).all() or not ((d_q + joint_diff) >= joint_lower_limits).all():
-        window.alert("Specified joints might be out of range")
+
+    if (num_joints < q_i):
+        window.alert("Currently Controlled Robot only have " + str(num_joints) + " joints..")
     else:
-        try:
-            d.async_jog_joint(joint_diff, joint_vel_limits, True, True,None)
-        except:
+        joint_diff = np.zeros((num_joints,))
+        joint_diff[q_i-1] = sign*np.deg2rad(degree_diff)
+        
+        if not ((d_q + joint_diff) <= joint_upper_limits).all() or not ((d_q + joint_diff) >= joint_lower_limits).all():
             window.alert("Specified joints might be out of range")
+        else:
+            try:
+                d.async_jog_joint(joint_diff, joint_vel_limits, True, True,None)
+            except:
+                window.alert("Specified joints might be out of range")
+
+def jog_joints2(q_i, degree_diff, is_relative):
+    global d, d_q, num_joints, joint_lower_limits, joint_upper_limits, joint_vel_limits
+
+    if (num_joints < q_i):
+        window.alert("Currently Controlled Robot only have " + str(num_joints) + " joints..")
+    else:
+        
+        if (is_relative):
+            joint_diff = np.zeros((num_joints,))
+            joint_diff[q_i-1] = np.deg2rad(degree_diff)
+        else:
+            joint_diff = d_q
+            joint_diff[q_i-1] = np.deg2rad(degree_diff)
+        
+        if not ((d_q + joint_diff) <= joint_upper_limits).all() or not ((d_q + joint_diff) >= joint_lower_limits).all():
+            window.alert("Specified joints might be out of range")
+        else:
+            try:
+                d.async_jog_joint(joint_diff, joint_vel_limits, is_relative, True,None)
+            except:
+                window.alert("Specified joints might be out of range")
     
 
 def j1_pos_func(self):
@@ -533,9 +558,10 @@ def update_ik_info(R_d, p_d):
     # R_d, p_d: Desired orientation and position
     global robot
     global d_q # Get Current Joint angles in radian ndarray 
+    global num_joints
     
     q_cur = d_q # initial guess on the current joint angles
-    q_cur = q_cur.reshape((7,1)) 
+    q_cur = q_cur.reshape((num_joints,1)) 
     
     epsilon = 0.001 # Damping Constant
     Kq = epsilon * np.eye(len(q_cur)) # small value to make sure positive definite used in Damped Least Square
@@ -589,7 +615,7 @@ def update_ik_info(R_d, p_d):
         delta = alpha * (np.linalg.inv(Kq + J0T.T @ J0T ) @ J0T.T @ np.hstack((s,EP)).T )
         # print_div( "<br> delta " + str(delta) ) # DEBUG
         
-        q_cur = q_cur - delta.reshape((7,1))
+        q_cur = q_cur - delta.reshape((num_joints,1))
         
         # Convergence Check
         converged = (np.hstack((s,EP)) < 0.0001).all()
@@ -632,7 +658,11 @@ def euler_angles_from_rotation_matrix(R):
 async def client_drive():
     # rr+ws : WebSocket connection without encryption
     url ='rr+ws://localhost:58653?service=sawyer'    
-    # url ='rr+ws://192.168.50.118:58653?service=sawyer'    
+    # url ='rr+ws://192.168.50.118:58653?service=sawyer'   
+
+    # url ='rr+ws://localhost:58655?service=robot' #ABB
+    # url ='rr+ws://192.168.50.118:58655?service=robot' #ABB
+
     print_div('Program started, please wait..<br>')
 
     try:
