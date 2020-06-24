@@ -1,0 +1,155 @@
+<xml xmlns="https://developers.google.com/blockly/xml"><block type="factory_base" id="nz(yeEw:}9w0[ka8C4Y*" deletable="false" movable="false" x="10" y="10">
+    <mutation connections="BOTH"></mutation>
+    <field name="NAME">robot_jog_joint_not_relative</field>
+    <field name="INLINE">INT</field>
+    <field name="CONNECTIONS">BOTH</field>
+    <statement name="INPUTS">
+      <block type="input_dummy" id="5Z|!}MVicL#;;!v[HcM*">
+        <field name="ALIGN">LEFT</field>
+        <statement name="FIELDS">
+          <block type="field_static" id="c6~IJK,yC|Bpn{nos0d9">
+            <field name="TEXT">Jog Joint</field>
+            <next>
+              <block type="field_dropdown" id="wJ7W.GmN[w#7A}[TlaXo">
+                <mutation options="[&quot;text&quot;,&quot;text&quot;,&quot;text&quot;,&quot;text&quot;,&quot;text&quot;,&quot;text&quot;,&quot;text&quot;]"></mutation>
+                <field name="FIELDNAME">JOINT_SELECTED</field>
+                <field name="USER0">1</field>
+                <field name="CPU0">1</field>
+                <field name="USER1">2</field>
+                <field name="CPU1">2</field>
+                <field name="USER2">3</field>
+                <field name="CPU2">3</field>
+                <field name="USER3">4</field>
+                <field name="CPU3">4</field>
+                <field name="USER4">5</field>
+                <field name="CPU4">5</field>
+                <field name="USER5">6</field>
+                <field name="CPU5">6</field>
+                <field name="USER6">7</field>
+                <field name="CPU6">7</field>
+                <next>
+                  <block type="field_static" id=";Nd=XPDUZYZ^z#:OB6L2">
+                    <field name="TEXT">to degree</field>
+                  </block>
+                </next>
+              </block>
+            </next>
+          </block>
+        </statement>
+        <next>
+          <block type="input_value" id="OcRC(=YL^G{4rGT4PqXy">
+            <field name="INPUTNAME">DEGREE</field>
+            <field name="ALIGN">LEFT</field>
+            <value name="TYPE">
+              <shadow type="type_null" id="`:@`B,79}-X)FP5Yc:O{"></shadow>
+              <block type="type_number" id="Qf0Cw%me;xPg,$i-VyP("></block>
+            </value>
+          </block>
+        </next>
+      </block>
+    </statement>
+    <value name="TOOLTIP">
+      <block type="text" id="O`etkWik+Hk[bRLe@pJ2" deletable="false" movable="false">
+        <field name="TEXT"></field>
+      </block>
+    </value>
+    <value name="HELPURL">
+      <block type="text" id="3F)e[,XT2bhrau;no-}T" deletable="false" movable="false">
+        <field name="TEXT"></field>
+      </block>
+    </value>
+    <value name="TOPTYPE">
+      <shadow type="type_null" id="^#7F9CS*M(S.-f:3-?Ws"></shadow>
+    </value>
+    <value name="BOTTOMTYPE">
+      <shadow type="type_null" id="t9!t)M.eL1zgWc0_;SV2"></shadow>
+    </value>
+    <value name="COLOUR">
+      <block type="colour_hue" id="(]VIxK?JQF[Y13i{xcNr">
+        <mutation colour="#a55b5b"></mutation>
+        <field name="HUE">0</field>
+      </block>
+    </value>
+  </block><block type="factory_base" id="jr-vqX}h;]Xql.SAl;sV" deletable="false" movable="false" x="10" y="10">
+    <mutation connections="BOTH"></mutation>
+    <field name="NAME">robot_jog_joint_relative</field>
+    <field name="INLINE">INT</field>
+    <field name="CONNECTIONS">BOTH</field>
+    <statement name="INPUTS">
+      <block type="input_dummy" id="Kf^a`r`VhL4H:2(kY9N~">
+        <field name="ALIGN">LEFT</field>
+        <statement name="FIELDS">
+          <block type="field_static" id="+},gT}rWrlT#s6!tsXxy">
+            <field name="TEXT">Jog Joint</field>
+            <next>
+              <block type="field_dropdown" id="5[K/+2T~#_iOWJhIUNpe">
+                <mutation options="[&quot;text&quot;,&quot;text&quot;,&quot;text&quot;,&quot;text&quot;,&quot;text&quot;,&quot;text&quot;,&quot;text&quot;]"></mutation>
+                <field name="FIELDNAME">JOINT_SELECTED</field>
+                <field name="USER0">1</field>
+                <field name="CPU0">1</field>
+                <field name="USER1">2</field>
+                <field name="CPU1">2</field>
+                <field name="USER2">3</field>
+                <field name="CPU2">3</field>
+                <field name="USER3">4</field>
+                <field name="CPU3">4</field>
+                <field name="USER4">5</field>
+                <field name="CPU4">4</field>
+                <field name="USER5">6</field>
+                <field name="CPU5">6</field>
+                <field name="USER6">7</field>
+                <field name="CPU6">7</field>
+                <next>
+                  <block type="field_static" id="dD.hkS?)JvC^y4YsH#Wy">
+                    <field name="TEXT">by degree</field>
+                  </block>
+                </next>
+              </block>
+            </next>
+          </block>
+        </statement>
+        <next>
+          <block type="input_value" id="xpXeYKmHTn0g1eIpV_9i">
+            <field name="INPUTNAME">DEGREE</field>
+            <field name="ALIGN">LEFT</field>
+            <value name="TYPE">
+              <shadow type="type_null" id="1L:ppRL={$|Ei$!8na)s"></shadow>
+              <block type="type_number" id="BwYE!LzDTaYAN$e%L}SW"></block>
+            </value>
+            <next>
+              <block type="input_dummy" id="3Ys,y3%@qE9NY|f4DxH=">
+                <field name="ALIGN">LEFT</field>
+                <statement name="FIELDS">
+                  <block type="field_static" id="k1o;yR:hD1IjuBK{+f#}">
+                    <field name="TEXT">relatively.</field>
+                  </block>
+                </statement>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </statement>
+    <value name="TOOLTIP">
+      <block type="text" id="=kn`yeTA^y^|gQOG5x@f" deletable="false" movable="false">
+        <field name="TEXT"></field>
+      </block>
+    </value>
+    <value name="HELPURL">
+      <block type="text" id="F[o]U]u*%QnE]SE~(C]A" deletable="false" movable="false">
+        <field name="TEXT"></field>
+      </block>
+    </value>
+    <value name="TOPTYPE">
+      <shadow type="type_null" id="m?#wgB3C=;h2+~v~!tc|"></shadow>
+    </value>
+    <value name="BOTTOMTYPE">
+      <shadow type="type_null" id="*sOAmBhuX(=d`5Ur+6th"></shadow>
+    </value>
+    <value name="COLOUR">
+      <block type="colour_hue" id="1V-Fnh/WBJlXuyo=M$$F">
+        <mutation colour="#a55b5b"></mutation>
+        <field name="HUE">0</field>
+      </block>
+    </value>
+  </block></xml>
