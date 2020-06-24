@@ -1,0 +1,42 @@
+<xml xmlns="https://developers.google.com/blockly/xml"><block type="factory_base" id="d;g*IwMx;r,ZIdJ,W7DY" deletable="false" movable="false" x="10" y="10">
+    <mutation connections="BOTH"></mutation>
+    <field name="NAME">print_div</field>
+    <field name="INLINE">AUTO</field>
+    <field name="CONNECTIONS">BOTH</field>
+    <statement name="INPUTS">
+      <block type="input_value" id="OF-wBI:_sKTC)n#L^?;,">
+        <field name="INPUTNAME">TEXT</field>
+        <field name="ALIGN">LEFT</field>
+        <statement name="FIELDS">
+          <block type="field_static" id="C.F|i{11TWiS1v*v^pob">
+            <field name="TEXT">print_div</field>
+          </block>
+        </statement>
+        <value name="TYPE">
+          <shadow type="type_null" id="jRUG*Th|O5h.LrDF[1Qn"></shadow>
+        </value>
+      </block>
+    </statement>
+    <value name="TOOLTIP">
+      <block type="text" id="Z+}:$9t]}!.m]Wv1rsa[" deletable="false" movable="false">
+        <field name="TEXT">Prints Input to Debug Output Div</field>
+      </block>
+    </value>
+    <value name="HELPURL">
+      <block type="text" id="0B2+vQ6vU$uOW8+b9qRt" deletable="false" movable="false">
+        <field name="TEXT"></field>
+      </block>
+    </value>
+    <value name="TOPTYPE">
+      <shadow type="type_null" id="@Pf(6mgaGKIIIA2H/CrM"></shadow>
+    </value>
+    <value name="BOTTOMTYPE">
+      <shadow type="type_null" id="/w39NV{bsj-%e${w}$JW"></shadow>
+    </value>
+    <value name="COLOUR">
+      <block type="colour_hue" id="~^icNL`QNAJ-rJxVem)(">
+        <mutation colour="#5ba58c"></mutation>
+        <field name="HUE">160</field>
+      </block>
+    </value>
+  </block></xml>
