@@ -198,7 +198,7 @@
                 <tr>
                     <td COLSPAN="3"> 
                           <select id="saved_poses_list" name="saved_poses_list" size="5" multiple style="width: 100%; font-size: 16px;">
-                            <option value="0,0,0,0,0,0,0">0,0,0,0,0,0,0</option>
+                            <!-- <option value="0,0,0,0,0,0,0">0,0,0,0,0,0,0</option> -->
                           </select>
                     </td>    
                 </tr>
@@ -322,6 +322,12 @@
                 <tr> 
                     <td>
                         <textarea readonly id="textareaBlocklyPy" placeholder="Blockly generated Python code will be seen here.."> </textarea>
+                    </td>
+                </tr>
+
+                <tr> 
+                    <td>
+                        <button id="executeBlockly_btn" type="button">Execute Blockly Code</button>
                     </td>
                 </tr>
             </table>
