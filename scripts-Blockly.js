@@ -49,12 +49,35 @@ $(document).ready(function() {
 
     // Realtime Code Generation
     function myUpdateFunction(event) {
-        var code_js = Blockly.JavaScript.workspaceToCode(workspace);
-        document.getElementById('textareaBlocklyJS').value = code_js;
+        // var code_js = Blockly.JavaScript.workspaceToCode(workspace);
+        // document.getElementById('textareaBlocklyJS').value = code_js;
 
         var code_py = Blockly.Python.workspaceToCode(workspace);
         document.getElementById('textareaBlocklyPy').value = code_py;
     }
     workspace.addChangeListener(myUpdateFunction);
+
+
+    var executeBlockly_btn = $('#executeBlockly_btn');
+    executeBlockly_btn.click(function(){
+        // console.log("Blockly Execute button is clicked!");
+        document.getElementById('textareaBlocklyPy').value += "\nBlockly Execute button is clicked!\n";
+
+        async function run_blockly(code_text){
+            // await languagePluginLoader;
+            // await pyodide.loadPackage(["numpy"]);
+
+            // const response_webcam = await fetch("./RR-web_browser-Webcam/client_webcam.py", {cache: "no-store"});
+            // const client_webcam_py = await response_webcam.text();
+            // pyodide.runPython(client_webcam_py);
+            pyodide.runPython(code_text);
+        }
+
+        // code_text = "from js import print_div\nprint_div('HELLO WORLD')";
+        // code_text = "print_div('HELLO WORLD')\njog_joints(1,+1)";
+        var code_text = Blockly.Python.workspaceToCode(workspace);
+        
+        run_blockly(code_text);
+    });
 });
 
