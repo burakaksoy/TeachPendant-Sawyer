@@ -23,8 +23,26 @@ import general_robotics_toolbox as rox
 
 
 def jog_joints(q_i, sign):
+    global is_jogging
+    
+    if (not is_jogging): 
+        is_jogging = True
+        loop.call_soon(async_jog_joints(q_i, sign))
+    else:
+        print_div("Jogging has not finished yet..")
+
+
+async def async_jog_joints(q_i, sign):
     degree_diff = 5
     global d, d_q, num_joints, joint_lower_limits, joint_upper_limits, joint_vel_limits
+
+    # Update joint angles
+    d_q = await update_joint_info() # Joint angles in radian ndarray
+    
+    # UPdate the end effector pose info
+    pose = await update_end_info()
+    
+    await update_state_flags()
 
     if (num_joints < q_i):
         window.alert("Currently Controlled Robot only have " + str(num_joints) + " joints..")
@@ -32,18 +50,27 @@ def jog_joints(q_i, sign):
         joint_diff = np.zeros((num_joints,))
         joint_diff[q_i-1] = sign*np.deg2rad(degree_diff)
         
-        if not ((d_q + joint_diff) <= joint_upper_limits).all() or not ((d_q + joint_diff) >= joint_lower_limits).all():
+        if not ((d_q + joint_diff) < joint_upper_limits).all() or not ((d_q + joint_diff) > joint_lower_limits).all():
             window.alert("Specified joints might be out of range")
         else:
             try:
-                d.async_jog_joint(joint_diff, joint_vel_limits, True, True,None)
+                await d.async_jog_joint(joint_diff, joint_vel_limits, True, True,None)
             except:
-                window.alert("Specified joints might be out of range")
+                window.alert("Specified joints might be out of range222")
+
+    global is_jogging
+    is_jogging = False
 
 
 def jog_joints2(q_i, degree_diff, is_relative):
-    # print_div("Playing Back Poses..")
-    loop.call_soon(async_jog_joints2(q_i, degree_diff, is_relative))
+    global is_jogging
+    
+    if (not is_jogging): 
+        is_jogging = True
+        loop.call_soon(async_jog_joints2(q_i, degree_diff, is_relative))
+    else:
+        print_div("Jogging has not finished yet..")
+
 
 async def async_jog_joints2(q_i, degree_diff, is_relative):
     global d, d_q, num_joints, joint_lower_limits, joint_upper_limits, joint_vel_limits
@@ -67,14 +94,20 @@ async def async_jog_joints2(q_i, degree_diff, is_relative):
             joint_diff = d_q
             joint_diff[q_i-1] = np.deg2rad(degree_diff)
         
-        if not ((d_q + joint_diff) <= joint_upper_limits).all() or not ((d_q + joint_diff) >= joint_lower_limits).all():
+        if not ((d_q + joint_diff) < joint_upper_limits).all() or not ((d_q + joint_diff) > joint_lower_limits).all():
             window.alert("Specified joints might be out of range")
         else:
             try:
                 await d.async_jog_joint(joint_diff, joint_vel_limits, is_relative, True,None)
-                await RRN.AsyncSleep(2,None)
+                # await RRN.AsyncSleep(2,None)
             except:
                 window.alert("Specified joints might be out of range2")
+                # import traceback
+                # print_div(traceback.format_exc())
+                # raise
+
+    global is_jogging
+    is_jogging = False
     
 
 def j1_pos_func(self):
@@ -134,17 +167,28 @@ def j7_neg_func(self):
     print_div('j7- button pressed')
     jog_joints(7,-1)
 
+# TODO: Implement this properly
 def stop_func(self):
     print_div('STOP button pressed')    
     global d, num_joints, joint_vel_limits
     
     d.async_jog_joint(np.zeros((num_joints,)), joint_vel_limits, False, True,None)
           
+
 def move_to_angles_func(self):
     print_div('Move to angles button pressed')
+    global is_jogging
     
+    if (not is_jogging): 
+        is_jogging = True
+        loop.call_soon(async_move_to_angles_func())
+    else:
+        print_div("Jogging has not finished yet..")
+    
+async def async_move_to_angles_func():
     global d, num_joints, joint_lower_limits, joint_upper_limits, joint_vel_limits
-    
+    global is_jogging
+
     joint_angles = np.zeros((num_joints,))
     element_id = "j1_angle_in"
     
@@ -156,24 +200,39 @@ def move_to_angles_func(self):
             joint_angles[j-1] = float(angle)* np.deg2rad(1)
         except: # else:
             window.alert("Please specify angle of each joint!")
+            is_jogging = False
             return
     
-    if not (joint_angles <= joint_upper_limits).all() or not (joint_angles >= joint_lower_limits).all():
+    if not (joint_angles < joint_upper_limits).all() or not (joint_angles > joint_lower_limits).all():
         window.alert("Specified joints are out of range")
+        is_jogging = False
         return
     else:
         try:
-            d.async_jog_joint(joint_angles, joint_vel_limits, False, True,None)
+            await d.async_jog_joint(joint_angles, joint_vel_limits, False, True,None)
         except:
             window.alert("Specified joints might be out of range")
-            return
-            
+
+    is_jogging = False
+
+
+
 def jog_cartesian(P_axis, R_axis):
+    global is_jogging
+
+    if (not is_jogging): 
+        is_jogging = True
+        loop.call_soon(async_jog_cartesian(P_axis, R_axis))
+    else:
+        print_div("Jogging has not finished yet..")
+
+async def async_jog_cartesian(P_axis, R_axis):
     move_distance = 0.05 # meters
     rotate_angle = np.deg2rad(15) # radians
     
     global d, num_joints, joint_lower_limits, joint_upper_limits, joint_vel_limits
     global pose # Get the Current Pose of the robot
+    global is_jogging
     
     Rd = pose.R
     pd = pose.p
@@ -190,15 +249,16 @@ def jog_cartesian(P_axis, R_axis):
         joint_angles, converged = update_ik_info(Rd,pd)
         if not converged:
             window.alert("Inverse Kinematics Algo. Could not Converge")
-            return
-        elif not (joint_angles <= joint_upper_limits).all() or not (joint_angles >= joint_lower_limits).all():
+            raise
+        elif not (joint_angles < joint_upper_limits).all() or not (joint_angles > joint_lower_limits).all():
             window.alert("Specified joints are out of range")
-            return
+            raise
         else:
-            d.async_jog_joint(joint_angles, joint_vel_limits, False, True, None)
+            await d.async_jog_joint(joint_angles, joint_vel_limits, False, True, None)
     except:
         window.alert("Specified joints might be out of range")
-        return
+
+    is_jogging = False
         
 
 def X_pos_func(self):
@@ -269,29 +329,44 @@ def save_cur_pose_func(self):
 def go_sel_pose_func(self):
     print_div("Moving to selected pose..")
 
+    global is_jogging
+
+    if (not is_jogging): 
+        is_jogging = True
+        loop.call_soon(async_go_sel_pose_func())
+    else:
+        print_div("Jogging has not finished yet..")
+
+
+async def async_go_sel_pose_func():
     global d, num_joints, joint_lower_limits, joint_upper_limits, joint_vel_limits
+    global is_jogging
 
     # Read the selected pose from the browser
     element_id = "saved_poses_list"
     poses_list = document.getElementById(element_id)
     index = poses_list.selectedIndex
 
-    if index == -1:
-        window.alert("Please select a pose from Saved Poses.")
-        return
-    else:
-        sel_pose = poses_list.options[index].value # angles as str
-        joint_angles = np.fromstring(sel_pose, dtype=float, sep=',')*np.deg2rad(1) # in rad
-
-        if not (joint_angles <= joint_upper_limits).all() or not (joint_angles >= joint_lower_limits).all():
-            window.alert("Specified joints are out of range")
-            return
+    try:
+        if index == -1:
+            window.alert("Please select a pose from Saved Poses.")
+            raise
         else:
-            try:
-                d.async_jog_joint(joint_angles, joint_vel_limits, False, True,None)
-            except:
-                window.alert("Specified joints might be out of range")
-                return 
+            sel_pose = poses_list.options[index].value # angles as str
+            joint_angles = np.fromstring(sel_pose, dtype=float, sep=',')*np.deg2rad(1) # in rad
+
+            if not (joint_angles < joint_upper_limits).all() or not (joint_angles > joint_lower_limits).all():
+                window.alert("Specified joints are out of range")
+                raise
+            else:
+                try:
+                    await d.async_jog_joint(joint_angles, joint_vel_limits, False, True,None)
+                except:
+                    window.alert("Specified joints might be out of range")
+                    raise
+    except:
+        is_jogging = False
+    is_jogging = False
 
 def playback_poses_func(self):
     print_div("Playing Back Poses..")
@@ -325,7 +400,7 @@ async def async_playback_poses_func():
             sel_pose = poses_list.options[index].value # angles as str
             joint_angles = np.fromstring(sel_pose, dtype=float, sep=',')*np.deg2rad(1) # in rad
 
-            if not (joint_angles <= joint_upper_limits).all() or not (joint_angles >= joint_lower_limits).all():
+            if not (joint_angles < joint_upper_limits).all() or not (joint_angles > joint_lower_limits).all():
                 window.alert("Specified joints are out of range")
                 return
             else:
@@ -671,7 +746,7 @@ def euler_angles_from_rotation_matrix(R):
 
 async def client_drive():
     # rr+ws : WebSocket connection without encryption
-    # url ='rr+ws://localhost:58653?service=sawyer'    
+    url ='rr+ws://localhost:58653?service=sawyer'    
     # url ='rr+ws://192.168.50.118:58653?service=sawyer'   
 
     # url ='rr+ws://localhost:58655?service=robot' #ABB
@@ -798,54 +873,59 @@ async def client_drive():
         button_save_cur_pose = document.getElementById("save_pose_btn")
         button_go_sel_pose = document.getElementById("go_sel_pose_btn")
         button_playback_poses = document.getElementById("playback_poses_btn")
+
+
+        button_stop.addEventListener("click", stop_func)
+        button_j1_pos.addEventListener("mousedown", j1_pos_func)
+        button_j1_neg.addEventListener("click", j1_neg_func)
         
+        button_j2_pos.addEventListener("click", j2_pos_func)
+        button_j2_neg.addEventListener("click", j2_neg_func)
+                   
+        button_j3_pos.addEventListener("click", j3_pos_func)
+        button_j3_neg.addEventListener("click", j3_neg_func)
+                 
+        button_j4_pos.addEventListener("click", j4_pos_func)
+        button_j4_neg.addEventListener("click", j4_neg_func)
+           
+        button_j5_pos.addEventListener("click", j5_pos_func)
+        button_j5_neg.addEventListener("click", j5_neg_func)
+                   
+        button_j6_pos.addEventListener("click", j6_pos_func)
+        button_j6_neg.addEventListener("click", j6_neg_func)
+                    
+        button_j7_pos.addEventListener("click", j7_pos_func) 
+        button_j7_neg.addEventListener("click", j7_neg_func)
+        
+        button_angles_submit.addEventListener("click", move_to_angles_func)
+        
+        button_X_pos.addEventListener("click", X_pos_func)
+        button_X_neg.addEventListener("click", X_neg_func)
+        
+        button_Y_pos.addEventListener("click", Y_pos_func)
+        button_Y_neg.addEventListener("click", Y_neg_func)
+        
+        button_Z_pos.addEventListener("click", Z_pos_func)
+        button_Z_neg.addEventListener("click", Z_neg_func)
+        
+        button_theta_X_pos.addEventListener("click", tX_pos_func)
+        button_theta_X_neg.addEventListener("click", tX_neg_func)
+        
+        button_theta_Y_pos.addEventListener("click", tY_pos_func)
+        button_theta_Y_neg.addEventListener("click", tY_neg_func)
+        
+        button_theta_Z_pos.addEventListener("click", tZ_pos_func)
+        button_theta_Z_neg.addEventListener("click", tZ_neg_func)
+        
+        button_save_cur_pose.addEventListener("click", save_cur_pose_func)
+        button_go_sel_pose.addEventListener("click", go_sel_pose_func)
+        button_playback_poses.addEventListener("click", playback_poses_func)
+
+        global is_jogging
+        is_jogging = False        
 
         while True:
-            button_stop.addEventListener("click", stop_func)
-            button_j1_pos.addEventListener("mousedown", j1_pos_func)
-            button_j1_neg.addEventListener("click", j1_neg_func)
             
-            button_j2_pos.addEventListener("click", j2_pos_func)
-            button_j2_neg.addEventListener("click", j2_neg_func)
-                       
-            button_j3_pos.addEventListener("click", j3_pos_func)
-            button_j3_neg.addEventListener("click", j3_neg_func)
-                     
-            button_j4_pos.addEventListener("click", j4_pos_func)
-            button_j4_neg.addEventListener("click", j4_neg_func)
-               
-            button_j5_pos.addEventListener("click", j5_pos_func)
-            button_j5_neg.addEventListener("click", j5_neg_func)
-                       
-            button_j6_pos.addEventListener("click", j6_pos_func)
-            button_j6_neg.addEventListener("click", j6_neg_func)
-                        
-            button_j7_pos.addEventListener("click", j7_pos_func) 
-            button_j7_neg.addEventListener("click", j7_neg_func)
-            
-            button_angles_submit.addEventListener("click", move_to_angles_func)
-            
-            button_X_pos.addEventListener("click", X_pos_func)
-            button_X_neg.addEventListener("click", X_neg_func)
-            
-            button_Y_pos.addEventListener("click", Y_pos_func)
-            button_Y_neg.addEventListener("click", Y_neg_func)
-            
-            button_Z_pos.addEventListener("click", Z_pos_func)
-            button_Z_neg.addEventListener("click", Z_neg_func)
-            
-            button_theta_X_pos.addEventListener("click", tX_pos_func)
-            button_theta_X_neg.addEventListener("click", tX_neg_func)
-            
-            button_theta_Y_pos.addEventListener("click", tY_pos_func)
-            button_theta_Y_neg.addEventListener("click", tY_neg_func)
-            
-            button_theta_Z_pos.addEventListener("click", tZ_pos_func)
-            button_theta_Z_neg.addEventListener("click", tZ_neg_func)
-            
-            button_save_cur_pose.addEventListener("click", save_cur_pose_func)
-            button_go_sel_pose.addEventListener("click", go_sel_pose_func)
-            button_playback_poses.addEventListener("click", playback_poses_func)
             
             # Update joint angles
             d_q = await update_joint_info() # Joint angles in radian ndarray
