@@ -29,7 +29,7 @@ def jog_joints(q_i, sign):
         is_jogging = True
         loop.call_soon(async_jog_joints(q_i, sign))
     else:
-        print_div("Jogging has not finished yet..")
+        print_div("Jogging has not finished yet..<br>")
 
 
 async def async_jog_joints(q_i, sign):
@@ -69,7 +69,7 @@ def jog_joints2(q_i, degree_diff, is_relative):
         is_jogging = True
         loop.call_soon(async_jog_joints2(q_i, degree_diff, is_relative))
     else:
-        print_div("Jogging has not finished yet..")
+        print_div("Jogging has not finished yet..<br>")
 
 
 async def async_jog_joints2(q_i, degree_diff, is_relative):
@@ -111,79 +111,79 @@ async def async_jog_joints2(q_i, degree_diff, is_relative):
     
 
 def j1_pos_func(self):
-    print_div('j1+ button pressed')
+    print_div('j1+ button pressed<br>')
     jog_joints(1,+1)
     
 def j1_neg_func(self):
-    print_div('j1- button pressed')
+    print_div('j1- button pressed<br>')
     jog_joints(1,-1)
     
 def j2_pos_func(self):
-    print_div('j2+ button pressed')
+    print_div('j2+ button pressed<br>')
     jog_joints(2,+1)
     #joint_vel = np.array([0.,1.,0.,0.,0.,0.,0.])
     
 def j2_neg_func(self):
-    print_div('j2- button pressed')
+    print_div('j2- button pressed<br>')
     jog_joints(2,-1)
         
 def j3_pos_func(self):
-    print_div('j3+ button pressed')
+    print_div('j3+ button pressed<br>')
     jog_joints(3,+1)
     
 def j3_neg_func(self):
-    print_div('j3- button pressed')
+    print_div('j3- button pressed<br>')
     jog_joints(3,-1)
     
 def j4_pos_func(self):
-    print_div('j4+ button pressed')
+    print_div('j4+ button pressed<br>')
     jog_joints(4,+1)
     
 def j4_neg_func(self):
-    print_div('j4- button pressed')
+    print_div('j4- button pressed<br>')
     jog_joints(4,-1)
     
 def j5_pos_func(self):
-    print_div('j5+ button pressed')
+    print_div('j5+ button pressed<br>')
     jog_joints(5,+1)
     
 def j5_neg_func(self):
-    print_div('j5- button pressed')
+    print_div('j5- button pressed<br>')
     jog_joints(5,-1)
     
 def j6_pos_func(self):
-    print_div('j6+ button pressed')
+    print_div('j6+ button pressed<br>')
     jog_joints(6,+1)
     
 def j6_neg_func(self):
-    print_div('j6- button pressed')
+    print_div('j6- button pressed<br>')
     jog_joints(6,-1)
 
 def j7_pos_func(self):
-    print_div('j7+ button pressed')
+    print_div('j7+ button pressed<br>')
     jog_joints(7,+1)
     
 def j7_neg_func(self):
-    print_div('j7- button pressed')
+    print_div('j7- button pressed<br>')
     jog_joints(7,-1)
 
 # TODO: Implement this properly
 def stop_func(self):
-    print_div('STOP button pressed')    
+    print_div('STOP button pressed<br>')    
     global d, num_joints, joint_vel_limits
     
     d.async_jog_joint(np.zeros((num_joints,)), joint_vel_limits, False, True,None)
           
 
 def move_to_angles_func(self):
-    print_div('Move to angles button pressed')
+    print_div('Move to angles button pressed<br>')
     global is_jogging
     
     if (not is_jogging): 
         is_jogging = True
         loop.call_soon(async_move_to_angles_func())
     else:
-        print_div("Jogging has not finished yet..")
+        print_div("Jogging has not finished yet..<br>")
     
 async def async_move_to_angles_func():
     global d, num_joints, joint_lower_limits, joint_upper_limits, joint_vel_limits
@@ -224,7 +224,7 @@ def jog_cartesian(P_axis, R_axis):
         is_jogging = True
         loop.call_soon(async_jog_cartesian(P_axis, R_axis))
     else:
-        print_div("Jogging has not finished yet..")
+        print_div("Jogging has not finished yet..<br>")
 
 async def async_jog_cartesian(P_axis, R_axis):
     move_distance = 0.05 # meters
@@ -262,47 +262,47 @@ async def async_jog_cartesian(P_axis, R_axis):
         
 
 def X_pos_func(self):
-    print_div('X+ button pressed')
+    print_div('X+ button pressed<br>')
     jog_cartesian(np.array(([+1.,0.,0.])), None)
     
 def X_neg_func(self):
-    print_div('X- button pressed')
+    print_div('X- button pressed<br>')
     jog_cartesian(np.array(([-1.,0.,0.])), None)
     
 def Y_pos_func(self):
-    print_div('Y+ button pressed')
+    print_div('Y+ button pressed<br>')
     jog_cartesian(np.array(([0.,+1.,0.])), None)
     
 def Y_neg_func(self):
-    print_div('Y- button pressed')
+    print_div('Y- button pressed<br>')
     jog_cartesian(np.array(([0.,-1.,0.])), None)
     
 def Z_pos_func(self):
-    print_div('Z+ button pressed')
+    print_div('Z+ button pressed<br>')
     jog_cartesian(np.array(([0.,0.,+1.])), None)
     
 def Z_neg_func(self):
-    print_div('Z- button pressed')
+    print_div('Z- button pressed<br>')
     jog_cartesian(np.array(([0.,0.,-1.])), None)
 
 def tX_pos_func(self):
-    print_div('&theta;X+ button pressed')
+    print_div('&theta;X+ button pressed<br>')
     jog_cartesian(None, np.array(([+1.,0.,0.])))
 
 def tX_neg_func(self):
-    print_div('&theta;X- button pressed')
+    print_div('&theta;X- button pressed<br>')
     jog_cartesian(None, np.array(([-1.,0.,0.])))
     
 def tY_pos_func(self):
-    print_div('&theta;Y+ button pressed')
+    print_div('&theta;Y+ button pressed<br>')
     jog_cartesian(None, np.array(([0.,+1.,0.])))
     
 def tY_neg_func(self):
-    print_div('&theta;Y- button pressed')
+    print_div('&theta;Y- button pressed<br>')
     jog_cartesian(None, np.array(([0.,-1.,0.])))
     
 def tZ_pos_func(self):
-    print_div('&theta;Z+ button pressed')
+    print_div('&theta;Z+ button pressed<br>')
     jog_cartesian(None, np.array(([0.,0.,+1.])))
     
 def tZ_neg_func(self):
@@ -310,7 +310,7 @@ def tZ_neg_func(self):
 
 
 def save_cur_pose_func(self):
-    print_div('Saving to "Saved Poses" list..')
+    print_div('Saving to "Saved Poses" list..<br>')
     
     global d_q # Get the current joint angles in rad ndarray
     # Convert them into degrees for text view
@@ -327,7 +327,7 @@ def save_cur_pose_func(self):
     poses_list.add(option)
 
 def go_sel_pose_func(self):
-    print_div("Moving to selected pose..")
+    print_div("Moving to selected pose..<br>")
 
     global is_jogging
 
@@ -335,7 +335,7 @@ def go_sel_pose_func(self):
         is_jogging = True
         loop.call_soon(async_go_sel_pose_func())
     else:
-        print_div("Jogging has not finished yet..")
+        print_div("Jogging has not finished yet..<br>")
 
 
 async def async_go_sel_pose_func():
@@ -465,7 +465,7 @@ async def async_playback_poses_func():
                     break
 
             i += 1
-            print_div("Loop:" + str(i) + "is done..")
+            print_div("Loop:" + str(i) + "is done..<br>")
     except:
         # import traceback
         # print_div(traceback.format_exc())
@@ -743,7 +743,6 @@ def euler_angles_from_rotation_matrix(R):
 #########################################################
 #########################################################
 
-
 async def client_drive():
     # rr+ws : WebSocket connection without encryption
     url ='rr+ws://localhost:58653?service=sawyer'    
@@ -926,7 +925,6 @@ async def client_drive():
 
         while True:
             
-            
             # Update joint angles
             d_q = await update_joint_info() # Joint angles in radian ndarray
             
@@ -934,7 +932,8 @@ async def client_drive():
             pose = await update_end_info()
             
             await update_state_flags()
-         
+            
+
             
     except:
         import traceback
