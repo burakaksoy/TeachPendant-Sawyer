@@ -1,0 +1,5 @@
+sleep 1s; 
+gnome-terminal --tab --title="Gazebo Sawyer Sim" --command "bash -c \"roslaunch sawyer_gazebo sawyer_world.launch;exec bash\""; 
+gnome-terminal --tab --title="RR Webcam service" --command "bash -c \"cd ./RR-web_browser-Webcam; python3 SimpleWebcamService.py; exec bash\""; 
+gnome-terminal --tab --title="RR Sawyer service" --command "bash -c \"source ~/ros_csharp_ws/devel_isolated/setup.bash; cd ~/Sawyer_bin_local/; dotnet SawyerRobotRaconteurDriver.dll --robot-info-file=sawyer_robot_default_config.yml; exec bash\" ";
+
