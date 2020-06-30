@@ -22,49 +22,8 @@ import general_robotics_toolbox as rox
 # from qpsolvers import solve_qp
 
 
-def jog_joints(q_i, sign):
-    global is_jogging
-    
-    if (not is_jogging): 
-        is_jogging = True
-        loop.call_soon(async_jog_joints(q_i, sign))
-    else:
-        print_div("Jogging has not finished yet..<br>")
-
-
-async def async_jog_joints(q_i, sign):
-    degree_diff = 5
-    global d, d_q, num_joints, joint_lower_limits, joint_upper_limits, joint_vel_limits
-
-    # Update joint angles
-    d_q = await update_joint_info() # Joint angles in radian ndarray
-    
-    # UPdate the end effector pose info
-    pose = await update_end_info()
-    
-    await update_state_flags()
-
-    if (num_joints < q_i):
-        window.alert("Currently Controlled Robot only have " + str(num_joints) + " joints..")
-    else:
-        joint_diff = np.zeros((num_joints,))
-        joint_diff[q_i-1] = sign*np.deg2rad(degree_diff)
-        
-        if not ((d_q + joint_diff) < joint_upper_limits).all() or not ((d_q + joint_diff) > joint_lower_limits).all():
-            window.alert("Specified joints might be out of range")
-        else:
-            try:
-                await d.async_jog_joint(joint_diff, joint_vel_limits, True, True,None)
-            except:
-                window.alert("Specified joints might be out of range222")
-
-    global is_jogging
-    is_jogging = False
-
-
 def jog_joints2(q_i, degree_diff, is_relative):
     global is_jogging
-    
     if (not is_jogging): 
         is_jogging = True
         loop.call_soon(async_jog_joints2(q_i, degree_diff, is_relative))
@@ -108,11 +67,57 @@ async def async_jog_joints2(q_i, degree_diff, is_relative):
 
     global is_jogging
     is_jogging = False
-    
+
+
+# ---------------------------BEGIN: JOINT SPACE JOGGING --------------------------- #
+def jog_joints(q_i, sign):
+    global is_mousedown
+    is_mousedown = True
+
+    global is_jogging
+    if (not is_jogging): 
+        is_jogging = True
+        loop.call_soon(async_jog_joints(q_i, sign))
+        # RRN.PostToThreadPool(lambda: async_jog_joints(q_i, sign))
+    else:
+        print_div("Jogging has not finished yet..<br>")
+
+
+async def async_jog_joints(q_i, sign):
+    degree_diff = 1
+    global d, d_q, num_joints, joint_lower_limits, joint_upper_limits, joint_vel_limits
+
+    global is_mousedown
+    while (is_mousedown): 
+        # Update joint angles
+        d_q = await update_joint_info() # Joint angles in radian ndarray
+        
+        # UPdate the end effector pose info
+        pose = await update_end_info()
+
+        await update_state_flags()
+
+        if (num_joints < q_i):
+            window.alert("Currently Controlled Robot only have " + str(num_joints) + " joints..")
+        else:
+            joint_diff = np.zeros((num_joints,))
+            joint_diff[q_i-1] = sign*np.deg2rad(degree_diff)
+            
+            if not ((d_q + joint_diff) < joint_upper_limits).all() or not ((d_q + joint_diff) > joint_lower_limits).all():
+                window.alert("Specified joints might be out of range")
+            else:
+                try:
+                    await d.async_jog_joint(joint_diff, joint_vel_limits, True, True,None)
+                except:
+                    window.alert("Specified joints might be out of range222")
+
+    global is_jogging
+    is_jogging = False    
 
 def j1_pos_func(self):
     print_div('j1+ button pressed<br>')
     jog_joints(1,+1)
+    # RRN.PostToThreadPool(lambda: jog_joints(1,+1))
     
 def j1_neg_func(self):
     print_div('j1- button pressed<br>')
@@ -173,6 +178,9 @@ def stop_func(self):
     global d, num_joints, joint_vel_limits
     
     d.async_jog_joint(np.zeros((num_joints,)), joint_vel_limits, False, True,None)
+
+    global is_jogging
+    is_jogging = False
           
 
 def move_to_angles_func(self):
@@ -214,12 +222,14 @@ async def async_move_to_angles_func():
             window.alert("Specified joints might be out of range")
 
     is_jogging = False
+# ---------------------------END: JOINT SPACE JOGGING --------------------------- #
 
-
-
+# ---------------------------BEGIN: CARTESIAN SPACE JOGGING --------------------------- #
 def jog_cartesian(P_axis, R_axis):
-    global is_jogging
+    global is_mousedown
+    is_mousedown = True
 
+    global is_jogging
     if (not is_jogging): 
         is_jogging = True
         loop.call_soon(async_jog_cartesian(P_axis, R_axis))
@@ -227,37 +237,45 @@ def jog_cartesian(P_axis, R_axis):
         print_div("Jogging has not finished yet..<br>")
 
 async def async_jog_cartesian(P_axis, R_axis):
-    move_distance = 0.05 # meters
-    rotate_angle = np.deg2rad(15) # radians
+    move_distance = 0.01 # meters
+    rotate_angle = np.deg2rad(5) # radians
     
     global d, num_joints, joint_lower_limits, joint_upper_limits, joint_vel_limits
     global pose # Get the Current Pose of the robot
-    global is_jogging
-    
-    Rd = pose.R
-    pd = pose.p
         
-    if P_axis is not None:
-        pd = pd + Rd.dot(move_distance * P_axis)
-    if R_axis is not None:
-        # R = rox.rot(np.array(([1.],[0.],[0.])), 0.261799)
-        R = rox.rot(R_axis, rotate_angle)
-        Rd = Rd.dot(R) # Rotate
-    
-    try:
-        # Update desired inverse kineamtics info
-        joint_angles, converged = update_ik_info(Rd,pd)
-        if not converged:
-            window.alert("Inverse Kinematics Algo. Could not Converge")
-            raise
-        elif not (joint_angles < joint_upper_limits).all() or not (joint_angles > joint_lower_limits).all():
-            window.alert("Specified joints are out of range")
-            raise
-        else:
-            await d.async_jog_joint(joint_angles, joint_vel_limits, False, True, None)
-    except:
-        window.alert("Specified joints might be out of range")
+    global is_mousedown
+    while (is_mousedown): 
+        # Update joint angles
+        d_q = await update_joint_info() # Joint angles in radian ndarray
+        # UPdate the end effector pose info
+        pose = await update_end_info()
+        await update_state_flags()
 
+        Rd = pose.R
+        pd = pose.p
+            
+        if P_axis is not None:
+            pd = pd + Rd.dot(move_distance * P_axis)
+        if R_axis is not None:
+            # R = rox.rot(np.array(([1.],[0.],[0.])), 0.261799)
+            R = rox.rot(R_axis, rotate_angle)
+            Rd = Rd.dot(R) # Rotate
+        
+        try:
+            # Update desired inverse kineamtics info
+            joint_angles, converged = update_ik_info(Rd,pd)
+            if not converged:
+                window.alert("Inverse Kinematics Algo. Could not Converge")
+                raise
+            elif not (joint_angles < joint_upper_limits).all() or not (joint_angles > joint_lower_limits).all():
+                window.alert("Specified joints are out of range")
+                raise
+            else:
+                await d.async_jog_joint(joint_angles, joint_vel_limits, False, True, None)
+        except:
+            window.alert("Specified joints might be out of range")
+
+    global is_jogging
     is_jogging = False
         
 
@@ -309,6 +327,130 @@ def tZ_neg_func(self):
     jog_cartesian(None, np.array(([0.,0.,-1.])))
 
 
+def update_ik_info(R_d, p_d):
+    # R_d, p_d: Desired orientation and position
+    global robot
+    global d_q # Get Current Joint angles in radian ndarray 
+    global num_joints
+    
+    q_cur = d_q # initial guess on the current joint angles
+    q_cur = q_cur.reshape((num_joints,1)) 
+    
+    epsilon = 0.001 # Damping Constant
+    Kq = epsilon * np.eye(len(q_cur)) # small value to make sure positive definite used in Damped Least Square
+    # print_div( "<br> Kq " + str(Kq) ) # DEBUG
+    
+    max_steps = 200 # number of steps to for convergence
+    
+    # print_div( "<br> q_cur " + str(q_cur) ) # DEBUG
+    
+    itr = 0 # Iterations
+    converged = False
+    while itr < max_steps and not converged:
+    
+        pose = rox.fwdkin(robot,q_cur)
+        R_cur = pose.R
+        p_cur = pose.p
+        
+        #calculate current Jacobian
+        J0T = rox.robotjacobian(robot,q_cur)
+        
+        # Transform Jacobian to End effector frame from the base frame
+        Tr = np.zeros((6,6))
+        Tr[:3,:3] = R_cur.T 
+        Tr[3:,3:] = R_cur.T
+        J0T = Tr @ J0T
+        # print_div( "<br> J0T " + str(J0T) ) # DEBUG
+        
+                      
+        # Error in position and orientation
+        # ER = np.matmul(R_cur, np.transpose(R_d))
+        ER = np.matmul(np.transpose(R_d),R_cur)
+        #print_div( "<br> ER " + str(ER) ) # DEBUG
+        EP = R_cur.T @ (p_cur - p_d)                         
+        #print_div( "<br> EP " + str(EP) ) # DEBUG
+        
+        #decompose ER to (k,theta) pair
+        k, theta = rox.R2rot(ER)                  
+        # print_div( "<br> k " + str(k) ) # DEBUG
+        # print_div( "<br> theta " + str(theta) ) # DEBUG
+        
+        ## set up s for different norm for ER
+        # s=2*np.dot(k,np.sin(theta)) #eR1
+        # s = np.dot(k,np.sin(theta/2))         #eR2
+        s = np.sin(theta/2) * np.array(k)         #eR2
+        # s=2*theta*k              #eR3
+        # s=np.dot(J_phi,phi)              #eR4
+        # print_div( "<br> s " + str(s) ) # DEBUG         
+                 
+        alpha = 1 # Step size        
+        # Damped Least square for iterative incerse kinematics   
+        delta = alpha * (np.linalg.inv(Kq + J0T.T @ J0T ) @ J0T.T @ np.hstack((s,EP)).T )
+        # print_div( "<br> delta " + str(delta) ) # DEBUG
+        
+        q_cur = q_cur - delta.reshape((num_joints,1))
+        
+        # Convergence Check
+        converged = (np.hstack((s,EP)) < 0.0001).all()
+        # print_div( "<br> converged? " + str(converged) ) # DEBUG
+        
+        itr += 1 # Increase the iteration
+    
+    joints_text=""
+    for i in q_cur:
+        joints_text+= "(%.3f, %.3f) " % (np.rad2deg(i), i)   
+    print_div_ik_info(str(rox.Transform(R_d,p_d)) +"<br>"+ joints_text +"<br>"+ str(converged) + ", itr = " + str(itr))
+    return q_cur, converged
+#########################################################
+# ZYX Euler angles calculation from rotation matrix
+def isclose(x, y, rtol=1.e-5, atol=1.e-8):
+    return abs(x-y) <= atol + rtol * abs(y)
+
+def euler_angles_from_rotation_matrix(R):
+    '''
+    From a paper by Gregory G. Slabaugh (undated),
+    "Computing Euler angles from a rotation matrix
+    '''
+    phi = 0.0
+    if isclose(R[2,0],-1.0):
+        theta = math.pi/2.0
+        psi = math.atan2(R[0,1],R[0,2])
+    elif isclose(R[2,0],1.0):
+        theta = -math.pi/2.0
+        psi = math.atan2(-R[0,1],-R[0,2])
+    else:
+        theta = -math.asin(R[2,0])
+        cos_theta = math.cos(theta)
+        psi = math.atan2(R[2,1]/cos_theta, R[2,2]/cos_theta)
+        phi = math.atan2(R[1,0]/cos_theta, R[0,0]/cos_theta)
+    return psi, theta, phi #  x y z for Rz * Ry * Rx
+#########################################################
+#########################################################
+
+async def update_end_info():
+    global robot
+    global d_q
+    
+    pose = rox.fwdkin(robot, d_q)
+       
+    print_div_end_info(str(pose))
+    # print_div_end_info( np.array_str(pose.R, precision=4, suppress_small=True).replace('\n', '\n' + ' '*4))
+    
+    # Calculate euler ZYX angles from pose and write them into:
+    x,y,z = euler_angles_from_rotation_matrix(pose.R)
+    str_rx = "%.2f" % (np.rad2deg(x))
+    str_ry = "%.2f" % (np.rad2deg(y))
+    str_rz = "%.2f" % (np.rad2deg(z))
+    str_px = "%.3f" % (pose.p[0])
+    str_py = "%.3f" % (pose.p[1])
+    str_pz = "%.3f" % (pose.p[2])
+    xyz_orient_str = "[" + str_rx + ", " + str_ry + ", " + str_rz + "]"
+    xyz_positi_str = "[" + str_px + ", " + str_py + ", " + str_pz + "]"
+    print_div_cur_pose(xyz_orient_str,xyz_positi_str)
+    return pose
+# ---------------------------END: CARTESIAN SPACE JOGGING --------------------------- #
+
+# ---------------------------BEGIN: SAVE PLAYBACK POSES --------------------------- #
 def save_cur_pose_func(self):
     print_div('Saving to "Saved Poses" list..<br>')
     
@@ -510,6 +652,8 @@ async def async_playback_poses_func():
     #     return
 
 ###############################################################
+# ---------------------------END: SAVE PLAYBACK POSES --------------------------- #
+
 async def update_state_flags():
     # For reading robot state flags
     #print_div_flag_info("State Flags Updating..")
@@ -621,127 +765,13 @@ async def update_kin_info():
     print_div_kin_info(H_text + "<br>" + P_text)  
     return H_shaped, P_shaped  
 
-async def update_end_info():
-    global robot
-    global d_q
-    
-    pose = rox.fwdkin(robot, d_q)
-       
-    print_div_end_info(str(pose))
-    # print_div_end_info( np.array_str(pose.R, precision=4, suppress_small=True).replace('\n', '\n' + ' '*4))
-    
-    # Calculate euler ZYX angles from pose and write them into:
-    x,y,z = euler_angles_from_rotation_matrix(pose.R)
-    str_rx = "%.2f" % (np.rad2deg(x))
-    str_ry = "%.2f" % (np.rad2deg(y))
-    str_rz = "%.2f" % (np.rad2deg(z))
-    str_px = "%.3f" % (pose.p[0])
-    str_py = "%.3f" % (pose.p[1])
-    str_pz = "%.3f" % (pose.p[2])
-    xyz_orient_str = "[" + str_rx + ", " + str_ry + ", " + str_rz + "]"
-    xyz_positi_str = "[" + str_px + ", " + str_py + ", " + str_pz + "]"
-    print_div_cur_pose(xyz_orient_str,xyz_positi_str)
-    return pose
-    
-def update_ik_info(R_d, p_d):
-    # R_d, p_d: Desired orientation and position
-    global robot
-    global d_q # Get Current Joint angles in radian ndarray 
-    global num_joints
-    
-    q_cur = d_q # initial guess on the current joint angles
-    q_cur = q_cur.reshape((num_joints,1)) 
-    
-    epsilon = 0.001 # Damping Constant
-    Kq = epsilon * np.eye(len(q_cur)) # small value to make sure positive definite used in Damped Least Square
-    # print_div( "<br> Kq " + str(Kq) ) # DEBUG
-    
-    max_steps = 200 # number of steps to for convergence
-    
-    # print_div( "<br> q_cur " + str(q_cur) ) # DEBUG
-    
-    itr = 0 # Iterations
-    converged = False
-    while itr < max_steps and not converged:
-    
-        pose = rox.fwdkin(robot,q_cur)
-        R_cur = pose.R
-        p_cur = pose.p
-        
-        #calculate current Jacobian
-        J0T = rox.robotjacobian(robot,q_cur)
-        
-        # Transform Jacobian to End effector frame from the base frame
-        Tr = np.zeros((6,6))
-        Tr[:3,:3] = R_cur.T 
-        Tr[3:,3:] = R_cur.T
-        J0T = Tr @ J0T
-        # print_div( "<br> J0T " + str(J0T) ) # DEBUG
-        
-                      
-        # Error in position and orientation
-        # ER = np.matmul(R_cur, np.transpose(R_d))
-        ER = np.matmul(np.transpose(R_d),R_cur)
-        #print_div( "<br> ER " + str(ER) ) # DEBUG
-        EP = R_cur.T @ (p_cur - p_d)                         
-        #print_div( "<br> EP " + str(EP) ) # DEBUG
-        
-        #decompose ER to (k,theta) pair
-        k, theta = rox.R2rot(ER)                  
-        # print_div( "<br> k " + str(k) ) # DEBUG
-        # print_div( "<br> theta " + str(theta) ) # DEBUG
-        
-        ## set up s for different norm for ER
-        # s=2*np.dot(k,np.sin(theta)) #eR1
-        # s = np.dot(k,np.sin(theta/2))         #eR2
-        s = np.sin(theta/2) * np.array(k)         #eR2
-        # s=2*theta*k              #eR3
-        # s=np.dot(J_phi,phi)              #eR4
-        # print_div( "<br> s " + str(s) ) # DEBUG         
-                 
-        alpha = 1 # Step size        
-        # Damped Least square for iterative incerse kinematics   
-        delta = alpha * (np.linalg.inv(Kq + J0T.T @ J0T ) @ J0T.T @ np.hstack((s,EP)).T )
-        # print_div( "<br> delta " + str(delta) ) # DEBUG
-        
-        q_cur = q_cur - delta.reshape((num_joints,1))
-        
-        # Convergence Check
-        converged = (np.hstack((s,EP)) < 0.0001).all()
-        # print_div( "<br> converged? " + str(converged) ) # DEBUG
-        
-        itr += 1 # Increase the iteration
-    
-    joints_text=""
-    for i in q_cur:
-        joints_text+= "(%.3f, %.3f) " % (np.rad2deg(i), i)   
-    print_div_ik_info(str(rox.Transform(R_d,p_d)) +"<br>"+ joints_text +"<br>"+ str(converged) + ", itr = " + str(itr))
-    return q_cur, converged
-#########################################################
-# ZYX Euler angles calculation from rotation matrix
-def isclose(x, y, rtol=1.e-5, atol=1.e-8):
-    return abs(x-y) <= atol + rtol * abs(y)
 
-def euler_angles_from_rotation_matrix(R):
-    '''
-    From a paper by Gregory G. Slabaugh (undated),
-    "Computing Euler angles from a rotation matrix
-    '''
-    phi = 0.0
-    if isclose(R[2,0],-1.0):
-        theta = math.pi/2.0
-        psi = math.atan2(R[0,1],R[0,2])
-    elif isclose(R[2,0],1.0):
-        theta = -math.pi/2.0
-        psi = math.atan2(-R[0,1],-R[0,2])
-    else:
-        theta = -math.asin(R[2,0])
-        cos_theta = math.cos(theta)
-        psi = math.atan2(R[2,1]/cos_theta, R[2,2]/cos_theta)
-        phi = math.atan2(R[1,0]/cos_theta, R[0,0]/cos_theta)
-    return psi, theta, phi #  x y z for Rz * Ry * Rx
-#########################################################
-#########################################################
+def mouseup_func(self):
+    global is_mousedown
+    is_mousedown = False
+    print_div("Mouse is up<br>")
+
+
 
 async def client_drive():
     # rr+ws : WebSocket connection without encryption
@@ -876,52 +906,57 @@ async def client_drive():
 
         button_stop.addEventListener("click", stop_func)
         button_j1_pos.addEventListener("mousedown", j1_pos_func)
-        button_j1_neg.addEventListener("click", j1_neg_func)
+        button_j1_neg.addEventListener("mousedown", j1_neg_func)
         
-        button_j2_pos.addEventListener("click", j2_pos_func)
-        button_j2_neg.addEventListener("click", j2_neg_func)
+        button_j2_pos.addEventListener("mousedown", j2_pos_func)
+        button_j2_neg.addEventListener("mousedown", j2_neg_func)
                    
-        button_j3_pos.addEventListener("click", j3_pos_func)
-        button_j3_neg.addEventListener("click", j3_neg_func)
+        button_j3_pos.addEventListener("mousedown", j3_pos_func)
+        button_j3_neg.addEventListener("mousedown", j3_neg_func)
                  
-        button_j4_pos.addEventListener("click", j4_pos_func)
-        button_j4_neg.addEventListener("click", j4_neg_func)
+        button_j4_pos.addEventListener("mousedown", j4_pos_func)
+        button_j4_neg.addEventListener("mousedown", j4_neg_func)
            
-        button_j5_pos.addEventListener("click", j5_pos_func)
-        button_j5_neg.addEventListener("click", j5_neg_func)
+        button_j5_pos.addEventListener("mousedown", j5_pos_func)
+        button_j5_neg.addEventListener("mousedown", j5_neg_func)
                    
-        button_j6_pos.addEventListener("click", j6_pos_func)
-        button_j6_neg.addEventListener("click", j6_neg_func)
+        button_j6_pos.addEventListener("mousedown", j6_pos_func)
+        button_j6_neg.addEventListener("mousedown", j6_neg_func)
                     
-        button_j7_pos.addEventListener("click", j7_pos_func) 
-        button_j7_neg.addEventListener("click", j7_neg_func)
+        button_j7_pos.addEventListener("mousedown", j7_pos_func) 
+        button_j7_neg.addEventListener("mousedown", j7_neg_func)
         
         button_angles_submit.addEventListener("click", move_to_angles_func)
         
-        button_X_pos.addEventListener("click", X_pos_func)
-        button_X_neg.addEventListener("click", X_neg_func)
+        button_X_pos.addEventListener("mousedown", X_pos_func)
+        button_X_neg.addEventListener("mousedown", X_neg_func)
         
-        button_Y_pos.addEventListener("click", Y_pos_func)
-        button_Y_neg.addEventListener("click", Y_neg_func)
+        button_Y_pos.addEventListener("mousedown", Y_pos_func)
+        button_Y_neg.addEventListener("mousedown", Y_neg_func)
         
-        button_Z_pos.addEventListener("click", Z_pos_func)
-        button_Z_neg.addEventListener("click", Z_neg_func)
+        button_Z_pos.addEventListener("mousedown", Z_pos_func)
+        button_Z_neg.addEventListener("mousedown", Z_neg_func)
         
-        button_theta_X_pos.addEventListener("click", tX_pos_func)
-        button_theta_X_neg.addEventListener("click", tX_neg_func)
+        button_theta_X_pos.addEventListener("mousedown", tX_pos_func)
+        button_theta_X_neg.addEventListener("mousedown", tX_neg_func)
         
-        button_theta_Y_pos.addEventListener("click", tY_pos_func)
-        button_theta_Y_neg.addEventListener("click", tY_neg_func)
+        button_theta_Y_pos.addEventListener("mousedown", tY_pos_func)
+        button_theta_Y_neg.addEventListener("mousedown", tY_neg_func)
         
-        button_theta_Z_pos.addEventListener("click", tZ_pos_func)
-        button_theta_Z_neg.addEventListener("click", tZ_neg_func)
+        button_theta_Z_pos.addEventListener("mousedown", tZ_pos_func)
+        button_theta_Z_neg.addEventListener("mousedown", tZ_neg_func)
         
         button_save_cur_pose.addEventListener("click", save_cur_pose_func)
         button_go_sel_pose.addEventListener("click", go_sel_pose_func)
         button_playback_poses.addEventListener("click", playback_poses_func)
 
         global is_jogging
-        is_jogging = False        
+        is_jogging = False
+
+        global is_mousedown
+        is_mousedown = False        
+
+        document.addEventListener("mouseup", mouseup_func)
 
         while True:
             
