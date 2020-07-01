@@ -21,7 +21,7 @@ sys.path.append("./my_source.zip")
 import general_robotics_toolbox as rox
 # from qpsolvers import solve_qp
 
-
+# ---------------------------BEGIN: BLOCKLY FUNCTIONS  --------------------------- #
 def jog_joints2(q_i, degree_diff, is_relative):
     global is_jogging
     if (not is_jogging): 
@@ -68,6 +68,148 @@ async def async_jog_joints2(q_i, degree_diff, is_relative):
     global is_jogging
     is_jogging = False
 
+# ---------------------------END: BLOCKLY FUNCTIONS --------------------------- #
+
+# ---------------------------BEGIN: GAMEPAD FUNCTIONS  --------------------------- #
+def jog_joints_gamepad(joint_speed_constants):
+    joint_speed_constants = np.array(joint_speed_constants,dtype="f")
+    # print_div(str(joint_speed_constants)+"<br>")
+
+    global is_jogging
+    if (not is_jogging): 
+        is_jogging = True
+        loop.call_soon(async_jog_joints_gamepad(joint_speed_constants))
+    # else:
+    #     print_div("Jogging has not finished yet..<br>")
+
+async def async_jog_joints_gamepad(joint_speed_constants):
+    degree_diff = 1
+    global d, d_q, num_joints, joint_lower_limits, joint_upper_limits, joint_vel_limits
+
+    global is_gamepadaxisactive
+    global is_gamepadbuttondown
+    if (is_gamepadaxisactive or is_gamepadbuttondown): 
+        # Update joint angles
+        d_q = await update_joint_info() # Joint angles in radian ndarray
+        
+        # UPdate the end effector pose info
+        pose = await update_end_info()
+
+        await update_state_flags()
+
+
+        # Trim joint speed constants accordingto number of joints
+        joint_speed_constants = joint_speed_constants[:num_joints]
+        # print_div("joint_speed_constants: "+str(joint_speed_constants)+"<br>")
+
+        signs = np.divide(np.abs(joint_speed_constants),joint_speed_constants)
+        np.nan_to_num(signs, copy=False)
+        # print_div("signs: "+str(signs)+"<br>")
+
+        joint_diff = np.ones((num_joints,))
+        joint_diff = np.multiply(signs,np.deg2rad(degree_diff))
+        # print_div("joint_diff: "+str(joint_diff)+"<br>")
+
+
+        if not ((d_q + joint_diff) < joint_upper_limits).all() or not ((d_q + joint_diff) > joint_lower_limits).all():
+            window.alert("Specified joints might be out of range")
+        else:
+            try:
+                await d.async_jog_joint(joint_diff.astype(np.double), joint_vel_limits, True, False,None)
+            except:
+                window.alert("Specified joints might be out of range(gamepad))")
+                import traceback
+                print_div(traceback.format_exc())
+
+    global is_jogging
+    is_jogging = False
+
+def home_func_gamepad():
+    # print_div('Homing...<br>')    
+    global d, num_joints, joint_vel_limits
+    
+    d.async_jog_joint(np.zeros((num_joints,)), joint_vel_limits, False, True,None)
+
+    global is_jogging
+    is_jogging = False  
+# ........................................
+def jog_cartesian_gamepad(P_axis, R_axis):
+    if P_axis != [0.0,0.0,0.0]:
+        P_axis = np.array(P_axis,dtype="f")
+        P_axis_norm = np.linalg.norm(P_axis)
+        P_axis = P_axis / P_axis_norm
+        np.nan_to_num(P_axis, copy=False)
+    else:
+        P_axis = None
+
+    if R_axis != [0.0,0.0,0.0]:
+        R_axis = np.array(R_axis,dtype="f")
+        R_axis_norm = np.linalg.norm(R_axis)
+        R_axis = R_axis / R_axis_norm
+        np.nan_to_num(R_axis, copy=False)
+    else:
+        R_axis = None
+
+    # print_div(str(P_axis)+", "+ str(R_axis) + "<br>")
+
+    global is_jogging
+    if (not is_jogging): 
+        is_jogging = True
+        loop.call_soon(async_jog_cartesian_gamepad(P_axis, R_axis))
+    # else:
+    #     print_div("Jogging has not finished yet..<br>")
+
+async def async_jog_cartesian_gamepad(P_axis, R_axis):
+    move_distance = 0.02 # meters
+    rotate_angle = np.deg2rad(15) # radians
+    
+    global d, num_joints, joint_lower_limits, joint_upper_limits, joint_vel_limits
+    global pose # Get the Current Pose of the robot
+        
+    global is_gamepadaxisactive
+    global is_gamepadbuttondown
+    # print_div("here 0<br>")
+    if (is_gamepadaxisactive or is_gamepadbuttondown): 
+        # Update joint angles
+        d_q = await update_joint_info() # Joint angles in radian ndarray
+        # UPdate the end effector pose info
+        pose = await update_end_info()
+        await update_state_flags()
+
+        Rd = pose.R
+        pd = pose.p
+
+        # print_div("here 1<br>")
+            
+        if P_axis is not None:
+            pd = pd + Rd.dot(move_distance * P_axis)
+            # print_div("here 2<br>")
+
+        if R_axis is not None:
+            # R = rox.rot(np.array(([1.],[0.],[0.])), 0.261799)
+            R = rox.rot(R_axis, rotate_angle)
+            Rd = Rd.dot(R) # Rotate
+            # print_div("here 3<br>")
+        
+        try:
+            # Update desired inverse kineamtics info
+            joint_angles, converged = update_ik_info(Rd,pd)
+            if not converged:
+                window.alert("Inverse Kinematics Algo. Could not Converge")
+                raise
+            elif not (joint_angles < joint_upper_limits).all() or not (joint_angles > joint_lower_limits).all():
+                window.alert("Specified joints are out of range")
+                raise
+            else:
+                await d.async_jog_joint(joint_angles, joint_vel_limits, False, True, None)
+        except:
+            window.alert("Specified joints might be out of range")
+
+    global is_jogging
+    is_jogging = False
+
+
+# ---------------------------END: GAMEPAD FUNCTIONS  --------------------------- #
 
 # ---------------------------BEGIN: JOINT SPACE JOGGING --------------------------- #
 def jog_joints(q_i, sign):
@@ -769,7 +911,28 @@ async def update_kin_info():
 def mouseup_func(self):
     global is_mousedown
     is_mousedown = False
-    print_div("Mouse is up<br>")
+    # print_div("Mouse is up<br>")
+
+
+def gamepadbuttonup():
+    global is_gamepadbuttondown
+    is_gamepadbuttondown = False
+    # print_div("Gamepadbutton is up<br>")
+
+def gamepadbuttondown():
+    global is_gamepadbuttondown
+    is_gamepadbuttondown = True
+    # print_div("Gamepadbutton is down<br>")
+
+def gamepadaxisinactive():
+    global is_gamepadaxisactive
+    is_gamepadaxisactive = False
+    # print_div("Gamepadaxis is inactive<br>")
+
+def gamepadaxisactive():
+    global is_gamepadaxisactive
+    is_gamepadaxisactive = True
+    # print_div("Gamepadaxis is active<br>")
 
 
 
@@ -957,6 +1120,13 @@ async def client_drive():
         is_mousedown = False        
 
         document.addEventListener("mouseup", mouseup_func)
+
+        global is_gamepadbuttondown
+        is_gamepadbuttondown = False
+
+        global is_gamepadaxisactive
+        is_gamepadaxisactive = False
+        
 
         while True:
             

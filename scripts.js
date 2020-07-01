@@ -1,7 +1,12 @@
 function print_div(message)
 {
-    //$("#print_div").append("<br/>" + message +"\n")
-    $("#print_div").append( message +" ")
+    //$("#print_div").append("<br/>" + message +"\n");
+    $("#print_div").append( message +" ");
+
+    // Scroll to the bottom in Golden Laytout as more data added.
+    var $textarea = $("#print_div").parent();
+    $textarea.scrollTop($textarea[0].scrollHeight);
+
 }         
 function print_div_j_info(message)
 {   
