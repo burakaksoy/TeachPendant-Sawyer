@@ -222,14 +222,13 @@ def jog_joints(q_i, sign):
         loop.call_soon(async_jog_joints(q_i, sign))
     else:
         print_div("Jogging has not finished yet..<br>")
-        
+
 async def async_jog_joints(q_i, sign):
     global plugin_jogJointSpace
 
     global is_mousedown
     while (is_mousedown): 
         # Call Jog Joint Space Service funtion to handle this jogging
-        print_div("CALLING<br>")
         await plugin_jogJointSpace.async_jog_joints(q_i, sign, None)
 
     global is_jogging
@@ -296,9 +295,13 @@ def j7_neg_func(self):
 # TODO: Implement this properly
 def stop_func(self):
     print_div('STOP button pressed<br>')    
-    global d, num_joints, joint_vel_limits
+    global num_joints, joint_vel_limits
+    #global d
     
-    d.async_jog_joint(np.zeros((num_joints,)), joint_vel_limits, False, True,None)
+    #d.async_jog_joint(np.zeros((num_joints,)), joint_vel_limits, False, True,None)
+    global plugin_jogJointSpace
+    plugin_jogJointSpace.async_jog_joints_with_limits(np.zeros((num_joints,)),np.zeros((num_joints,)),np.zeros((num_joints,)),joint_vel_limits,False,True,None)
+
 
     global is_jogging
     is_jogging = False
@@ -315,7 +318,8 @@ def move_to_angles_func(self):
         print_div("Jogging has not finished yet..<br>")
     
 async def async_move_to_angles_func():
-    global d, num_joints, joint_lower_limits, joint_upper_limits, joint_vel_limits
+    global plugin_jogJointSpace
+    global num_joints, joint_vel_limits
     global is_jogging
 
     joint_angles = np.zeros((num_joints,))
@@ -331,16 +335,8 @@ async def async_move_to_angles_func():
             window.alert("Please specify angle of each joint!")
             is_jogging = False
             return
-    
-    if not (joint_angles < joint_upper_limits).all() or not (joint_angles > joint_lower_limits).all():
-        window.alert("Specified joints are out of range")
-        is_jogging = False
-        return
-    else:
-        try:
-            await d.async_jog_joint(joint_angles, joint_vel_limits, False, True,None)
-        except:
-            window.alert("Specified joints might be out of range")
+
+    await plugin_jogJointSpace.async_jog_joints_with_limits(joint_angles,joint_angles,joint_angles,joint_vel_limits,False,True,None)
 
     is_jogging = False
 # ---------------------------END: JOINT SPACE JOGGING --------------------------- #
@@ -992,8 +988,8 @@ async def client_drive():
         
         global robot # Robotics Toolbox Robot Object (NOT THE RR ROBOT OBJECT, IT IS d)
         # Now we are ready to create the robot from toolbox
-        robot = rox.Robot(H,P,joint_types-1,joint_lower_limits,joint_upper_limits,joint_vel_limits,joint_acc_limits)
-        # robot = rox.Robot(H,P,joint_types-1)
+        # robot = rox.Robot(H,P,joint_types-1,joint_lower_limits,joint_upper_limits,joint_vel_limits,joint_acc_limits)
+        robot = rox.Robot(H,P,joint_types-1)
         
         global pose # Current pose object from Robotics Toolbox of the end effector
         # UPdate the end effector pose info
