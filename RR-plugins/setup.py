@@ -12,13 +12,6 @@ setup(
     include_package_data=True,
     zip_safe=False,
     install_requires=[
-        'RobotRaconteur',
-        'numpy',
-        'PyYAML',
-        'yamale',
-        'sanic',
-        'RestrictedPython',
-        'appdirs'
     ],
     tests_require=['pytest','pytest-asyncio'],
     extras_require={

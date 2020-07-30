@@ -120,7 +120,7 @@ def main():
     with RR.ServerNodeSetup("experimental.plugin-jogJointSpace-RR-v0.9-service", 8888) as node_setup:
 
         # register service type
-        RRN.RegisterServiceTypeFromFile("robdef/experimental.pluginJogJointSpace")
+        RRN.RegisterServiceTypeFromFile("./experimental.pluginJogJointSpace")
 
         # create object
         JogJointSpace_inst = JogJointSpace_impl()
