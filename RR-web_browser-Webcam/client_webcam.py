@@ -1,4 +1,4 @@
-
+# Client for vision 
 from js import print_div
 from js import document
 from js import ImageData
@@ -15,7 +15,7 @@ def new_frame(pipe_ep):
         #Convert the packet to an image and set the global variable
         
         if (canvas == None):
-            canvas = document.getElementById("image")
+            canvas = document.getElementById("camera_image")
             ctx = canvas.getContext("2d")
         
         imageBytes=np.zeros(4*image.width*image.height, dtype=np.uint8)        #dtype essential here, IndexSizeError
@@ -41,7 +41,7 @@ async def client_webcam():
         p = await c.FrameStream.AsyncConnect(-1,None)
         
         global canvas, ctx
-        canvas = document.getElementById("image")
+        canvas = document.getElementById("camera_image")
         ctx = canvas.getContext("2d")
         print_div("Running!")
 

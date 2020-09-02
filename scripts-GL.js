@@ -115,8 +115,8 @@ var config =
                         {                                    
                             isClosable: false,
                             type:'component',
-                            componentName: 'Camera Feedback',
-                            componentState: {comp_name: 'camera_feedback'}
+                            componentName: 'Vision',
+                            componentState: {comp_name: 'vision'}
                         },
                         {
                             reorderEnabled: false,
@@ -205,11 +205,11 @@ function initializeLayout(){
         container.getElement().append(clon);
     });
 
-    myLayout.registerComponent( 'Camera Feedback', function( container, state ){
+    myLayout.registerComponent( 'Vision', function( container, state ){
         // var div_print = $('#print_div');
         // container.getElement().append(div_print);
 
-        var temp = document.getElementById('template_CameraFeedback');
+        var temp = document.getElementById('template_Vision');
         var clon = temp.content.cloneNode(true);
         container.getElement().append(clon);
     });
@@ -297,7 +297,7 @@ $(document).ready(function() {
     addMenuItem( 'Save Playback Poses');
     addMenuItem( 'Robot Status');
     addMenuItem( 'Debug Output Div');
-    addMenuItem( 'Camera Feedback');
+    addMenuItem( 'Vision');
     addMenuItem( 'BLOCKLY');
     addMenuItem( 'Blockly Workspace');
     addMenuItem( 'Blockly Code');
