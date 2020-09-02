@@ -113,7 +113,7 @@ var config =
                             componentState: {message: 'Debug Output will be shown here..'}
                         },
                         {   
-                            reorderEnabled: true,                                 
+                            reorderEnabled: false,                                 
                             isClosable: false,
                             title: 'VISION',
                             type:'row',

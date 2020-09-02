@@ -300,6 +300,17 @@
             <table id="table_CameraFeedback" border="1"  > <!-- CELLPADDING="4" CELLSPACING="3"> -->
                 <tr> 
                     <td>
+                        <form>
+                            <label for="chosen_cam">Camera:</label>
+                            <select name="available_cams" id="available_cams">
+                                <option value="cam0">Cam0</option>
+                                <option value="cam1">Cam1</option>
+                            </select>
+                        </form>
+                    </td>          
+                </tr>
+                <tr> 
+                    <td>
                         <canvas id="camera_image" width="320" height="240"></canvas>
                     </td>          
                 </tr>
@@ -310,9 +321,40 @@
         <template id="template_TrainVision"> 
             <table id="table_TrainVision" border="1"  > <!-- CELLPADDING="4" CELLSPACING="3"> -->
                 <tr> 
-                    <td>
-                        <p>table_TrainVision</p>
+                    <td colspan = "3" align="left">
+                        <form>
+                            <label for="trained_visuals">Trained Visuals:</label>
+                            <select name="trained_visuals" id="trained_visuals">
+                                <option value="vis0">Visual_00</option>
+                                <option value="vis1">Visual_01</option>
+                            </select>
+                        </form>
                     </td>          
+                </tr>
+                <tr> 
+                    <td rowspan="4">
+                        <canvas id="selected_trained_visual" width="320" height="240"></canvas>
+                    </td>   
+                    <td> Name: </td> 
+                    <td>
+                        <div align="left" id="print_div_selected_trained_visual_name"></div>
+                    </td>        
+                </tr>
+
+                <tr> 
+                    <td> Camera: </td> 
+                    <td>
+                        <div align="left" id="print_div_selected_trained_visual_by_camera"></div>
+                    </td>          
+                </tr>
+                <tr> 
+                    <td COLSPAN="2"> <button id="delete_selected_trained_visual_btn" type="button" style="width: 100%;">Delete</button> </td>         
+                </tr>
+                <tr> 
+                    <td COLSPAN="2"> <button id="edit_name_selected_trained_visual_btn" type="button" style="width: 100%;">Edit Name</button> </td>         
+                </tr>
+                <tr> 
+                    <td COLSPAN="3"> <button id="train_new_visual_btn" type="button" style="width: 100%;">Train New Visual</button> </td>         
                 </tr>
             </table>
         </template>
@@ -321,9 +363,25 @@
         <template id="template_CameraCalibration"> 
             <table id="table_CameraCalibration" border="1"  > <!-- CELLPADDING="4" CELLSPACING="3"> -->
                 <tr> 
+                    <td>Selected Camera: </td>   
                     <td>
-                        <p>table_CameraCalibration</p>
-                    </td>          
+                        <div align="left" id="print_div_selected_camera"></div>
+                    </td>       
+                </tr>
+                <tr> 
+                    <td>Internal Parameters: </td>   
+                    <td>
+                        <div align="left" id="print_div_selected_camera_internal_params"></div>
+                    </td>       
+                </tr>
+                <tr> 
+                    <td>External Parameters: </td>   
+                    <td>
+                        <div align="left" id="print_div_selected_camera_external_params"></div>
+                    </td>       
+                </tr>
+                <tr> 
+                    <td COLSPAN="2"> <button id="camera_calibration_btn" type="button" style="width: 100%;">Calibrate</button> </td>         
                 </tr>
             </table>
         </template>
