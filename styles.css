@@ -97,7 +97,7 @@ table#table_BlocklyCode{
   object-fit:cover;
 }
 
-table#table_Vision tr{
+table#table_CameraFeedback tr{
   text-align: center; 
   margin:auto;  
   display:block;  
