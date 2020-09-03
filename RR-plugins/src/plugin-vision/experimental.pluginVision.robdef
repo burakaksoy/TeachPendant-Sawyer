@@ -1,0 +1,8 @@
+#Service to provide interface to RR-webBrowser-plugin-vision
+service experimental.pluginVision
+
+stdver 0.9
+
+object Vision
+
+end object

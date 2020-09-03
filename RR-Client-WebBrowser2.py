@@ -962,11 +962,25 @@ async def client_drive():
         # await RRN.AsyncSleep(0.1,None)
 
         # PLUGIN SERVICE CONNECTIONS BEGIN________________________________
+
+        ## JogJointSpace plugin
+        print_div('JogJointSpace plugin is connecting..<br>')
+
         url_plugin_jogJointSpace = 'rr+ws://localhost:8888?service=JogJointSpace'
         global plugin_jogJointSpace
         plugin_jogJointSpace = await RRN.AsyncConnectService(url_plugin_jogJointSpace,None,None,None,None)
         await plugin_jogJointSpace.async_connect2robot(url,None)
 
+        print_div('JogJointSpace plugin is connected..<br>')
+        
+        ## Vision plugin
+        print_div('Vision plugin is connecting..<br>')
+
+        url_plugin_vision = 'rr+ws://localhost:8889?service=Vision'
+        global plugin_vision
+        plugin_vision = await RRN.AsyncConnectService(url_plugin_vision,None,None,None,None)
+
+        print_div('Vision plugin is connected!<br>')
 
         # PLUGIN SERVICE CONNECTIONS END__________________________________
          
