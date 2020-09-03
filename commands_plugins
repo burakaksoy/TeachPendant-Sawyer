@@ -1,0 +1,2 @@
+sleep 1s; 
+gnome-terminal --tab --title="RR plugin_jogJointSpace service" --command "bash -c \"cd ./RR-plugins/src/plugin-jogJointSpace; python3 plugin-jogJointSpace-RR-v0.9-service.py; exec bash\""; 
