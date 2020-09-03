@@ -112,11 +112,38 @@ var config =
                             componentName: 'Debug Output Div',
                             componentState: {message: 'Debug Output will be shown here..'}
                         },
-                        {                                    
+                        {   
+                            reorderEnabled: false,                                 
                             isClosable: false,
-                            type:'component',
-                            componentName: 'Camera Feedback',
-                            componentState: {comp_name: 'camera_feedback'}
+                            title: 'VISION',
+                            type:'row',
+                            content:
+                            [
+                                {
+                                    width: 20,
+                                    reorderEnabled: false,
+                                    isClosable: false,
+                                    type:'component',
+                                    componentName: 'Camera Feedback',
+                                    componentState: {comp_name: 'camera_feedback'}
+                                },
+                                {
+                                    width: 45,
+                                    // reorderEnabled: false,
+                                    isClosable: false,
+                                    type:'component',
+                                    componentName: 'Train Vision',
+                                    componentState: {comp_name: 'train_vision'}
+                                },
+                                {
+                                    width: 35,
+                                    // reorderEnabled: false,
+                                    isClosable: false,
+                                    type:'component',
+                                    componentName: 'Camera Calibration',
+                                    componentState: {comp_name: 'camera_calibration'}
+                                }
+                            ]
                         },
                         {
                             reorderEnabled: false,
@@ -206,10 +233,19 @@ function initializeLayout(){
     });
 
     myLayout.registerComponent( 'Camera Feedback', function( container, state ){
-        // var div_print = $('#print_div');
-        // container.getElement().append(div_print);
-
         var temp = document.getElementById('template_CameraFeedback');
+        var clon = temp.content.cloneNode(true);
+        container.getElement().append(clon);
+    });
+
+    myLayout.registerComponent( 'Train Vision', function( container, state ){
+        var temp = document.getElementById('template_TrainVision');
+        var clon = temp.content.cloneNode(true);
+        container.getElement().append(clon);
+    });
+
+    myLayout.registerComponent( 'Camera Calibration', function( container, state ){
+        var temp = document.getElementById('template_CameraCalibration');
         var clon = temp.content.cloneNode(true);
         container.getElement().append(clon);
     });
@@ -238,7 +274,7 @@ $(document).ready(function() {
     var addMenuItem = function(component_name) {
         var element_name = $( '<li>' + component_name + '</li>' );
         
-        if (component_name == 'BLOCKLY'){
+        if (component_name == 'BLOCKLY' || component_name == 'VISION' ){
             var seperator = $('<hr>');
             $( '#menuContainer' ).append( seperator );
         }
@@ -297,7 +333,10 @@ $(document).ready(function() {
     addMenuItem( 'Save Playback Poses');
     addMenuItem( 'Robot Status');
     addMenuItem( 'Debug Output Div');
+    addMenuItem( 'VISION');
     addMenuItem( 'Camera Feedback');
+    addMenuItem( 'Train Vision');
+    addMenuItem( 'Camera Calibration');
     addMenuItem( 'BLOCKLY');
     addMenuItem( 'Blockly Workspace');
     addMenuItem( 'Blockly Code');
