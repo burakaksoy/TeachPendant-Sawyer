@@ -938,12 +938,14 @@ def gamepadaxisactive():
 
 async def client_drive():
     # rr+ws : WebSocket connection without encryption
-    url ='rr+ws://localhost:58653?service=sawyer'    
+    # url ='rr+ws://localhost:58653?service=sawyer'    
     # url ='rr+ws://192.168.50.118:58653?service=sawyer'   
 
     # url ='rr+ws://localhost:58655?service=robot' #ABB
     # url ='rr+ws://192.168.50.118:58655?service=robot' #ABB
 
+    url = 'rr+ws://localhost:23333?service=robot' # Dr.Wasons's Robot
+    
     print_div('Program started, please wait..<br>')
 
     try:
