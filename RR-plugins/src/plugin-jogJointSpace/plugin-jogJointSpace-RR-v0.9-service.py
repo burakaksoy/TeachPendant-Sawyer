@@ -56,26 +56,29 @@ class JogJointSpace_impl(object):
         if self.robot is None:
             self.url_robot = url_robot
             self.robot = RRN.ConnectService(self.url_robot) # connect to robot with the given url
-
-            self.robot.reset_errors()
-            self.robot.enable()
             
+            # self.robot.reset_errors()
+            # self.robot.enable()
+
             # Define Robot modes
             self.robot_const = RRN.GetConstants("com.robotraconteur.robotics.robot", self.robot)
             self.halt_mode = self.robot_const["RobotCommandMode"]["halt"]
             self.jog_mode = self.robot_const["RobotCommandMode"]["jog"]
-
+            
             # self.position_mode = self.robot_const["RobotCommandMode"]["velocity_command"]
             # self.trajectory_mode = self.robot_const["RobotCommandMode"]["trajectory"]
 
             self.assign_robot_details()
-
-
+            
             # log that the robot is successfully connected  
             print("Robot is connected to JogJointSpace service!")
         else:
             # Give an error that says the robot is already connected
-            print("Robot is already connected to JogJointSpace service!")
+            print("Robot is already connected to JogJointSpace service! Trying to connect again..")
+            self.robot = None
+            self.connect2robot(url_robot)
+
+
 
     def assign_robot_details(self):
         if self.robot is not None:

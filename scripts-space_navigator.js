@@ -153,8 +153,11 @@ function gamepadMode(mode, controller){
         case "cartesian_jog":
             // print_div("cartesian_jog mode")
             
-            var P_axis = [axes[0],-axes[1],-axes[2]]; 
-            var R_axis = [-axes[4],-axes[3],-axes[5]];
+            // var P_axis = [axes[0],-axes[1],-axes[2]]; 
+            // var R_axis = [-axes[4],-axes[3],-axes[5]];
+
+            var P_axis = [axes[1],axes[0],-axes[2]]; 
+            var R_axis = [axes[4],axes[3],-axes[5]];
 
             // if (is_gamepadbuttondown){
             //    console.log("jog_cartesian_gamepad([" + P_axis + "]," + "[" + R_axis + "]  )"); 
