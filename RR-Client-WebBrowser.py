@@ -161,7 +161,7 @@ def jog_cartesian_gamepad(P_axis, R_axis):
 
 async def async_jog_cartesian_gamepad(P_axis, R_axis):
     move_distance = 0.01 # meters
-    rotate_angle = np.deg2rad(2) # radians
+    rotate_angle = np.deg2rad(5) # radians
     
     global d, num_joints, joint_lower_limits, joint_upper_limits, joint_vel_limits
     global pose # Get the Current Pose of the robot
@@ -938,13 +938,14 @@ def gamepadaxisactive():
 
 async def client_drive():
     # rr+ws : WebSocket connection without encryption
-    # url ='rr+ws://localhost:58653?service=sawyer'    
+    url ='rr+ws://localhost:58653?service=sawyer'    
     # url ='rr+ws://192.168.50.118:58653?service=sawyer'   
+    # url ='rr+ws://128.113.224.23:58654?service=sawyer' # sawyer in lab
 
     # url ='rr+ws://localhost:58655?service=robot' #ABB
     # url ='rr+ws://192.168.50.118:58655?service=robot' #ABB
 
-    url = 'rr+ws://localhost:23333?service=robot' # Dr.Wasons's Robot
+    # url = 'rr+ws://localhost:23333?service=robot' # Dr.Wasons's Robot
     
     print_div('Program started, please wait..<br>')
 

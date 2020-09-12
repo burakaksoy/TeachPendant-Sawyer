@@ -5,7 +5,7 @@ async function run_gamepad(code_text){
 
 // ----- Later added codes 
 function applyDeadzone(controller){
-    // Default axis values for xbox 360 gamepad controller.
+    // Default axis values for gamepad controller.
     var default_axis_values = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
     // Current axis values
     var current_axis_values = controller.axes;
@@ -83,7 +83,7 @@ function buttonUpDownListener(controller) {
 
 
 function is_any_axis_active(controller){
-    // Default axis values for xbox 360 gamepad controller.
+    // Default axis values for gamepad controller.
     var default_axis_values = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
     
     // Current axis values
