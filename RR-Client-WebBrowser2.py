@@ -966,8 +966,8 @@ async def client_drive():
         ## JogJointSpace plugin
         print_div('JogJointSpace plugin is connecting..<br>')
 
-        # url_plugin_jogJointSpace = 'rr+ws://localhost:8888?service=JogJointSpace'
-        url_plugin_jogJointSpace = 'rr+ws://192.168.50.152:8888?service=JogJointSpace'
+        # url_plugin_jogJointSpace = 'rr+ws://localhost:8890?service=JogJointSpace'
+        url_plugin_jogJointSpace = 'rr+ws://192.168.50.152:8890?service=JogJointSpace'
         global plugin_jogJointSpace
         plugin_jogJointSpace = await RRN.AsyncConnectService(url_plugin_jogJointSpace,None,None,None,None)
         await plugin_jogJointSpace.async_connect2robot(url,None)
