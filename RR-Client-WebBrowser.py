@@ -43,7 +43,7 @@ async def async_jog_joints2(q_i, degree_diff, is_relative):
     await update_state_flags()
 
     if (num_joints < q_i):
-        window.alert("Currently Controlled Robot only have " + str(num_joints) + " joints..")
+        print_div("Currently Controlled Robot only have " + str(num_joints) + " joints..<br>")
     else:
         
         if (is_relative):
@@ -54,13 +54,13 @@ async def async_jog_joints2(q_i, degree_diff, is_relative):
             joint_diff[q_i-1] = np.deg2rad(degree_diff)
         
         if not ((d_q + joint_diff) < joint_upper_limits).all() or not ((d_q + joint_diff) > joint_lower_limits).all():
-            window.alert("Specified joints might be out of range")
+            print_div("Specified joints might be out of range<br>")
         else:
             try:
                 await d.async_jog_joint(joint_diff, joint_vel_limits, is_relative, True,None)
                 # await RRN.AsyncSleep(2,None)
             except:
-                window.alert("Specified joints might be out of range2")
+                print_div("Specified joints might be out of range2<br>")
                 # import traceback
                 # print_div(traceback.format_exc())
                 # raise
@@ -112,12 +112,12 @@ async def async_jog_joints_gamepad(joint_speed_constants):
 
 
         if not ((d_q + joint_diff) < joint_upper_limits).all() or not ((d_q + joint_diff) > joint_lower_limits).all():
-            window.alert("Specified joints might be out of range")
+            print_div("Specified joints might be out of range<br>")
         else:
             try:
                 await d.async_jog_joint(joint_diff.astype(np.double), joint_vel_limits, True, False,None)
             except:
-                window.alert("Specified joints might be out of range(gamepad))")
+                print_div("Specified joints might be out of range(gamepad))<br>")
                 import traceback
                 print_div(traceback.format_exc())
 
@@ -195,15 +195,15 @@ async def async_jog_cartesian_gamepad(P_axis, R_axis):
             # Update desired inverse kineamtics info
             joint_angles, converged = update_ik_info(Rd,pd)
             if not converged:
-                window.alert("Inverse Kinematics Algo. Could not Converge")
+                print_div("Inverse Kinematics Algo. Could not Converge<br>")
                 raise
             elif not (joint_angles < joint_upper_limits).all() or not (joint_angles > joint_lower_limits).all():
-                window.alert("Specified joints are out of range")
+                print_div("Specified joints are out of range<br>")
                 raise
             else:
                 await d.async_jog_joint(joint_angles, joint_vel_limits, False, True, None)
         except:
-            window.alert("Specified joints might be out of range")
+            print_div("Specified joints might be out of range<br>")
 
     global is_jogging
     is_jogging = False
@@ -240,18 +240,18 @@ async def async_jog_joints(q_i, sign):
         await update_state_flags()
 
         if (num_joints < q_i):
-            window.alert("Currently Controlled Robot only have " + str(num_joints) + " joints..")
+            print_div("Currently Controlled Robot only have " + str(num_joints) + " joints..<br>")
         else:
             joint_diff = np.zeros((num_joints,))
             joint_diff[q_i-1] = sign*np.deg2rad(degree_diff)
             
             if not ((d_q + joint_diff) < joint_upper_limits).all() or not ((d_q + joint_diff) > joint_lower_limits).all():
-                window.alert("Specified joints might be out of range")
+                print_div("Specified joints might be out of range<br>")
             else:
                 try:
                     await d.async_jog_joint(joint_diff, joint_vel_limits, True, True,None)
                 except:
-                    window.alert("Specified joints might be out of range222")
+                    print_div("Specified joints might be out of range222<br>")
 
     global is_jogging
     is_jogging = False    
@@ -349,19 +349,19 @@ async def async_move_to_angles_func():
         try: # if not angle == None or not angle == "":
             joint_angles[j-1] = float(angle)* np.deg2rad(1)
         except: # else:
-            window.alert("Please specify angle of each joint!")
+            print_div("Please specify angle of each joint!<br>")
             is_jogging = False
             return
     
     if not (joint_angles < joint_upper_limits).all() or not (joint_angles > joint_lower_limits).all():
-        window.alert("Specified joints are out of range")
+        print_div("Specified joints are out of range<br>")
         is_jogging = False
         return
     else:
         try:
             await d.async_jog_joint(joint_angles, joint_vel_limits, False, True,None)
         except:
-            window.alert("Specified joints might be out of range")
+            print_div("Specified joints might be out of range<br>")
 
     is_jogging = False
 # ---------------------------END: JOINT SPACE JOGGING --------------------------- #
@@ -407,15 +407,15 @@ async def async_jog_cartesian(P_axis, R_axis):
             # Update desired inverse kineamtics info
             joint_angles, converged = update_ik_info(Rd,pd)
             if not converged:
-                window.alert("Inverse Kinematics Algo. Could not Converge")
+                print_div("Inverse Kinematics Algo. Could not Converge<br>")
                 raise
             elif not (joint_angles < joint_upper_limits).all() or not (joint_angles > joint_lower_limits).all():
-                window.alert("Specified joints are out of range")
+                print_div("Specified joints are out of range<br>")
                 raise
             else:
                 await d.async_jog_joint(joint_angles, joint_vel_limits*0.5, False, True, None)
         except:
-            window.alert("Specified joints might be out of range")
+            print_div("Specified joints might be out of range<br>")
 
     global is_jogging
     is_jogging = False
@@ -633,20 +633,20 @@ async def async_go_sel_pose_func():
 
     try:
         if index == -1:
-            window.alert("Please select a pose from Saved Poses.")
+            print_div("Please select a pose from Saved Poses.<br>")
             raise
         else:
             sel_pose = poses_list.options[index].value # angles as str
             joint_angles = np.fromstring(sel_pose, dtype=float, sep=',')*np.deg2rad(1) # in rad
 
             if not (joint_angles < joint_upper_limits).all() or not (joint_angles > joint_lower_limits).all():
-                window.alert("Specified joints are out of range")
+                print_div("Specified joints are out of range<br>")
                 raise
             else:
                 try:
                     await d.async_jog_joint(joint_angles, joint_vel_limits, False, True,None)
                 except:
-                    window.alert("Specified joints might be out of range")
+                    print_div("Specified joints might be out of range<br>")
                     raise
     except:
         is_jogging = False
@@ -685,7 +685,7 @@ async def async_playback_poses_func():
             joint_angles = np.fromstring(sel_pose, dtype=float, sep=',')*np.deg2rad(1) # in rad
 
             if not (joint_angles < joint_upper_limits).all() or not (joint_angles > joint_lower_limits).all():
-                window.alert("Specified joints are out of range")
+                print_div("Specified joints are out of range<br>")
                 return
             else:
                 # Go to initial waypoint
@@ -711,7 +711,7 @@ async def async_playback_poses_func():
         waypoints.append(wp)
 
     else:
-        window.alert("You need at least 4 different points. Add some poses to Saved Poses and try again")
+        print_div("You need at least 4 different points. Add some poses to Saved Poses and try again<br>")
         # # Put robot to jogging mode back
         # await d.async_set_command_mode(halt_mode,None,5)
         # await RRN.AsyncSleep(0.01,None)
@@ -753,7 +753,7 @@ async def async_playback_poses_func():
     except:
         # import traceback
         # print_div(traceback.format_exc())
-        window.alert("Robot accelaration or velocity limits might be out of range. Increase the loop time or slow down the speed ratio")
+        print_div("Robot accelaration or velocity limits might be out of range. Increase the loop time or slow down the speed ratio<br>")
         # return
         # raise
 
@@ -773,13 +773,13 @@ async def async_playback_poses_func():
     #             joint_angles = np.fromstring(sel_pose, dtype=float, sep=',')*np.deg2rad(1) # in rad
 
     #             if not (joint_angles <= joint_upper_limits).all() or not (joint_angles >= joint_lower_limits).all():
-    #                 window.alert("Specified joints are out of range")
+    #                 print_div("Specified joints are out of range<br>")
     #                 return
     #             else:
     #                 try:
     #                     await d.async_jog_joint(joint_angles, joint_vel_limits*joint_vel_ratio, False, True, None)
     #                 except:
-    #                     window.alert("Specified joints might be out of range")
+    #                     print_div("Specified joints might be out of range<br>")
     #                     return
 
     #             index += 1
@@ -790,7 +790,7 @@ async def async_playback_poses_func():
     #         i += 1
 
     # else:
-    #     window.alert("Add some poses to Saved Poses and try again")
+    #     print_div("Add some poses to Saved Poses and try again<br>")
     #     return
 
 ###############################################################
