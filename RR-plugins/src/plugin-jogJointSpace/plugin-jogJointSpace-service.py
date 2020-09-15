@@ -120,7 +120,7 @@ class JogJointSpace_impl(object):
 
 def main():
     # RR.ServerNodeSetup("NodeName", TCP listen port, optional set of flags as parameters)
-    with RR.ServerNodeSetup("experimental.plugin-jogJointSpace-RR-v0.9-service", 8888) as node_setup:
+    with RR.ServerNodeSetup("experimental.plugin-jogJointSpace-service", 8888) as node_setup:
 
         # register service type
         RRN.RegisterServiceTypeFromFile("./experimental.pluginJogJointSpace")

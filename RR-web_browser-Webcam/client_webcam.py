@@ -29,10 +29,10 @@ def new_frame(pipe_ep):
        
 async def client_webcam():
     # rr+ws : WebSocket connection without encryption
-    url ='rr+ws://localhost:2355?service=Webcam'
+    # url ='rr+ws://localhost:2355?service=Webcam'
     # url ='rr+ws://192.168.1.128:2355?service=Webcam'
     # url ='rr+ws://192.168.43.241:2355?service=Webcam'
-    # url ='rr+ws://192.168.50.118:2355?service=Webcam'
+    url ='rr+ws://192.168.50.152:2355?service=Webcam'
     
     try:
         c_host = await RRN.AsyncConnectService(url,None,None,None,None)

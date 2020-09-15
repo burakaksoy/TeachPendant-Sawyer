@@ -910,8 +910,8 @@ def gamepadaxisactive():
 
 async def client_drive():
     # rr+ws : WebSocket connection without encryption
-    url ='rr+ws://localhost:58653?service=sawyer'    
-    # url ='rr+ws://192.168.50.118:58653?service=sawyer'   
+    # url ='rr+ws://localhost:58653?service=sawyer'    
+    url ='rr+ws://192.168.50.152:58653?service=sawyer'   
     # url ='rr+ws://128.113.224.23:58654?service=sawyer' # sawyer in lab
 
     # url ='rr+ws://localhost:58655?service=robot' #ABB
@@ -966,7 +966,8 @@ async def client_drive():
         ## JogJointSpace plugin
         print_div('JogJointSpace plugin is connecting..<br>')
 
-        url_plugin_jogJointSpace = 'rr+ws://localhost:8888?service=JogJointSpace'
+        # url_plugin_jogJointSpace = 'rr+ws://localhost:8888?service=JogJointSpace'
+        url_plugin_jogJointSpace = 'rr+ws://192.168.50.152:8888?service=JogJointSpace'
         global plugin_jogJointSpace
         plugin_jogJointSpace = await RRN.AsyncConnectService(url_plugin_jogJointSpace,None,None,None,None)
         await plugin_jogJointSpace.async_connect2robot(url,None)
@@ -976,7 +977,8 @@ async def client_drive():
         ## Vision plugin
         print_div('Vision plugin is connecting..<br>')
 
-        url_plugin_vision = 'rr+ws://localhost:8889?service=Vision'
+        # url_plugin_vision = 'rr+ws://localhost:8889?service=Vision'
+        url_plugin_vision = 'rr+ws://192.168.50.152:8889?service=Vision'
         global plugin_vision
         plugin_vision = await RRN.AsyncConnectService(url_plugin_vision,None,None,None,None)
 

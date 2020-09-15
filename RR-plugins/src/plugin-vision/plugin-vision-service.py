@@ -11,7 +11,7 @@ class Vision_impl(object):
 
 def main():
     # RR.ServerNodeSetup("NodeName", TCP listen port, optional set of flags as parameters)
-    with RR.ServerNodeSetup("experimental.plugin-vision-RR-v0.9-service", 8889) as node_setup:
+    with RR.ServerNodeSetup("experimental.plugin-vision-service", 8889) as node_setup:
 
         # register service type
         RRN.RegisterServiceTypeFromFile("./experimental.pluginVision")

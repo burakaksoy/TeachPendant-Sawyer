@@ -939,8 +939,8 @@ def gamepadaxisactive():
 async def client_drive():
     # rr+ws : WebSocket connection without encryption
     # url ='rr+ws://localhost:58653?service=sawyer'    
-    # url ='rr+ws://192.168.50.118:58653?service=sawyer'   
-    url ='rr+ws://128.113.224.23:58654?service=sawyer' # sawyer in lab
+    url ='rr+ws://192.168.50.152:58653?service=sawyer'   
+    # url ='rr+ws://128.113.224.23:58654?service=sawyer' # sawyer in lab
 
     # url ='rr+ws://localhost:58655?service=robot' #ABB
     # url ='rr+ws://192.168.50.118:58655?service=robot' #ABB
