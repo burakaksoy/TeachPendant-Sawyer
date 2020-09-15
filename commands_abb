@@ -1,0 +1,3 @@
+sleep 1s; 
+gnome-terminal --tab --title="RR Webcam service" --command "bash -c \"cd ./RR-web_browser-Webcam; python3 SimpleWebcamService.py; exec bash\""; 
+gnome-terminal --tab --title="Plugins" --command "bash -c \"source ./commands_plugins; exec bash\" ";

@@ -160,8 +160,8 @@ def jog_cartesian_gamepad(P_axis, R_axis):
     #     print_div("Jogging has not finished yet..<br>")
 
 async def async_jog_cartesian_gamepad(P_axis, R_axis):
-    move_distance = 0.02 # meters
-    rotate_angle = np.deg2rad(15) # radians
+    move_distance = 0.01 # meters
+    rotate_angle = np.deg2rad(5) # radians
     
     global d, num_joints, joint_lower_limits, joint_upper_limits, joint_vel_limits
     global pose # Get the Current Pose of the robot
@@ -413,7 +413,7 @@ async def async_jog_cartesian(P_axis, R_axis):
                 window.alert("Specified joints are out of range")
                 raise
             else:
-                await d.async_jog_joint(joint_angles, joint_vel_limits, False, True, None)
+                await d.async_jog_joint(joint_angles, joint_vel_limits*0.5, False, True, None)
         except:
             window.alert("Specified joints might be out of range")
 
@@ -938,19 +938,22 @@ def gamepadaxisactive():
 
 async def client_drive():
     # rr+ws : WebSocket connection without encryption
-    url ='rr+ws://localhost:58653?service=sawyer'    
+    # url ='rr+ws://localhost:58653?service=sawyer'    
     # url ='rr+ws://192.168.50.118:58653?service=sawyer'   
+    url ='rr+ws://128.113.224.23:58654?service=sawyer' # sawyer in lab
 
     # url ='rr+ws://localhost:58655?service=robot' #ABB
     # url ='rr+ws://192.168.50.118:58655?service=robot' #ABB
 
+    # url = 'rr+ws://localhost:23333?service=robot' # Dr.Wasons's Robot
+    
     print_div('Program started, please wait..<br>')
 
     try:
         #Connect to the service
         global d # d is the robot object from RR
         d = await RRN.AsyncConnectService(url,None,None,None,None)
-        d.async_reset_errors(None)
+        # d.async_reset_errors(None)
         d.async_enable(None)
         
         # Define Robot modes

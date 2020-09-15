@@ -160,8 +160,8 @@ def jog_cartesian_gamepad(P_axis, R_axis):
     #     print_div("Jogging has not finished yet..<br>")
 
 async def async_jog_cartesian_gamepad(P_axis, R_axis):
-    move_distance = 0.02 # meters
-    rotate_angle = np.deg2rad(15) # radians
+    move_distance = 0.01 # meters
+    rotate_angle = np.deg2rad(5) # radians
     
     global d, num_joints, joint_lower_limits, joint_upper_limits, joint_vel_limits
     global pose # Get the Current Pose of the robot
@@ -183,13 +183,10 @@ async def async_jog_cartesian_gamepad(P_axis, R_axis):
             
         if P_axis is not None:
             pd = pd + Rd.dot(move_distance * P_axis)
-            # print_div("here 2<br>")
-
         if R_axis is not None:
             # R = rox.rot(np.array(([1.],[0.],[0.])), 0.261799)
             R = rox.rot(R_axis, rotate_angle)
             Rd = Rd.dot(R) # Rotate
-            # print_div("here 3<br>")
         
         try:
             # Update desired inverse kineamtics info
@@ -915,9 +912,12 @@ async def client_drive():
     # rr+ws : WebSocket connection without encryption
     url ='rr+ws://localhost:58653?service=sawyer'    
     # url ='rr+ws://192.168.50.118:58653?service=sawyer'   
+    # url ='rr+ws://128.113.224.23:58654?service=sawyer' # sawyer in lab
 
     # url ='rr+ws://localhost:58655?service=robot' #ABB
     # url ='rr+ws://192.168.50.118:58655?service=robot' #ABB
+
+    # url = 'rr+ws://localhost:23333?service=robot' # Dr.Wasons's Robot
 
     print_div('Program started, please wait..<br>')
 
@@ -962,11 +962,25 @@ async def client_drive():
         # await RRN.AsyncSleep(0.1,None)
 
         # PLUGIN SERVICE CONNECTIONS BEGIN________________________________
+
+        ## JogJointSpace plugin
+        print_div('JogJointSpace plugin is connecting..<br>')
+
         url_plugin_jogJointSpace = 'rr+ws://localhost:8888?service=JogJointSpace'
         global plugin_jogJointSpace
         plugin_jogJointSpace = await RRN.AsyncConnectService(url_plugin_jogJointSpace,None,None,None,None)
         await plugin_jogJointSpace.async_connect2robot(url,None)
 
+        print_div('JogJointSpace plugin is connected..<br>')
+        
+        ## Vision plugin
+        print_div('Vision plugin is connecting..<br>')
+
+        url_plugin_vision = 'rr+ws://localhost:8889?service=Vision'
+        global plugin_vision
+        plugin_vision = await RRN.AsyncConnectService(url_plugin_vision,None,None,None,None)
+
+        print_div('Vision plugin is connected!<br>')
 
         # PLUGIN SERVICE CONNECTIONS END__________________________________
          
