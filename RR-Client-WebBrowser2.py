@@ -958,7 +958,8 @@ async def client_drive():
         JointTrajectoryWaypoint = RRN.GetStructureType("com.robotraconteur.robotics.trajectory.JointTrajectoryWaypoint",d)
         JointTrajectory = RRN.GetStructureType("com.robotraconteur.robotics.trajectory.JointTrajectory",d)
 
-
+        service_info_array = await RRN.AsyncGetLocalNodeServices(None)
+        print_div(str(service_info_array))
 
         # Put robot to jogging mode
         # await d.async_set_command_mode(halt_mode,None,5)
