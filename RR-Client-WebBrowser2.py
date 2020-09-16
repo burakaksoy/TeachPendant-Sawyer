@@ -351,12 +351,13 @@ def jog_cartesian(P_axis, R_axis):
         print_div("Jogging has not finished yet..<br>")
 
 async def async_jog_cartesian(P_axis, R_axis):
-    move_distance = 0.01 # meters
-    rotate_angle = np.deg2rad(5) # radians
-    
+    # move_distance = 0.01 # meters
+    # rotate_angle = np.deg2rad(5) # radians
+    # 
     # global d, num_joints, joint_lower_limits, joint_upper_limits, joint_vel_limits
     # global pose # Get the Current Pose of the robot
-        
+    global plugin_jogCartesianSpace
+
     global is_mousedown
     while (is_mousedown):
         # Call Jog Joint Space Service funtion to handle this jogging
