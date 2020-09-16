@@ -126,16 +126,18 @@ class JogCartesianSpace_impl(object):
 
             # Create roboics toolbox robot object as well
             self.create_robot_rox()
-            
+
         else:
             # Give an error message to show that the robot is not connected
             print("Assign robot details failed. Robot is not connected to JogCartesianSpace service yet!")
 
     def create_robot_rox(self):
         chains = self.robot_info.chains # Get RobotKinChainInfo
+        print("1.1")
         self.H = chains[0].H # Axes of the joints, 3xN 
+        print("1.2")
         self.P = chains[0].P # P vectors between joint centers (Product of Exponenetials Convention)
-
+        print("1.3")
         self.H_shaped = np.zeros((3, self.num_joints))
         itr = 0
         for i in H:
