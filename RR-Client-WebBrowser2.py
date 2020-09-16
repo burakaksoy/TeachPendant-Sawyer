@@ -962,7 +962,8 @@ async def client_drive():
 
 
         c_services = RRN.AsyncConnectService('rr+tcp://' + ip + ':port?service=RobotRaconteurServiceIndex',None,None,None,None)
-        services = c_services.AsyncGetLocalNodeServices(None)
+        # services = c_services.AsyncGetLocalNodeServices(None)
+        services = c_services.GetLocalNodeServices()
 
         print_div(str(services))
 
