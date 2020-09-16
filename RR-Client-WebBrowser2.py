@@ -354,40 +354,44 @@ async def async_jog_cartesian(P_axis, R_axis):
     move_distance = 0.01 # meters
     rotate_angle = np.deg2rad(5) # radians
     
-    global d, num_joints, joint_lower_limits, joint_upper_limits, joint_vel_limits
-    global pose # Get the Current Pose of the robot
+    # global d, num_joints, joint_lower_limits, joint_upper_limits, joint_vel_limits
+    # global pose # Get the Current Pose of the robot
         
     global is_mousedown
-    while (is_mousedown): 
-        # Update joint angles
-        d_q = await update_joint_info() # Joint angles in radian ndarray
-        # UPdate the end effector pose info
-        pose = await update_end_info()
-        await update_state_flags()
+    while (is_mousedown):
+        # Call Jog Joint Space Service funtion to handle this jogging
+        await plugin_jogCartesianSpace.async_jog_cartesian(P_axis, R_axis, None)
 
-        Rd = pose.R
-        pd = pose.p
+
+        # # Update joint angles
+        # d_q = await update_joint_info() # Joint angles in radian ndarray
+        # # UPdate the end effector pose info
+        # pose = await update_end_info()
+        # await update_state_flags()
+
+        # Rd = pose.R
+        # pd = pose.p
             
-        if P_axis is not None:
-            pd = pd + Rd.dot(move_distance * P_axis)
-        if R_axis is not None:
-            # R = rox.rot(np.array(([1.],[0.],[0.])), 0.261799)
-            R = rox.rot(R_axis, rotate_angle)
-            Rd = Rd.dot(R) # Rotate
+        # if P_axis is not None:
+        #     pd = pd + Rd.dot(move_distance * P_axis)
+        # if R_axis is not None:
+        #     # R = rox.rot(np.array(([1.],[0.],[0.])), 0.261799)
+        #     R = rox.rot(R_axis, rotate_angle)
+        #     Rd = Rd.dot(R) # Rotate
         
-        try:
-            # Update desired inverse kineamtics info
-            joint_angles, converged = update_ik_info(Rd,pd)
-            if not converged:
-                print_div("Inverse Kinematics Algo. Could not Converge<br>")
-                raise
-            elif not (joint_angles < joint_upper_limits).all() or not (joint_angles > joint_lower_limits).all():
-                print_div("Specified joints are out of range<br>")
-                raise
-            else:
-                await d.async_jog_joint(joint_angles, joint_vel_limits, False, True, None)
-        except:
-            print_div("Specified joints might be out of range<br>")
+        # try:
+        #     # Update desired inverse kineamtics info
+        #     joint_angles, converged = update_ik_info(Rd,pd)
+        #     if not converged:
+        #         print_div("Inverse Kinematics Algo. Could not Converge<br>")
+        #         raise
+        #     elif not (joint_angles < joint_upper_limits).all() or not (joint_angles > joint_lower_limits).all():
+        #         print_div("Specified joints are out of range<br>")
+        #         raise
+        #     else:
+        #         await d.async_jog_joint(joint_angles, joint_vel_limits, False, True, None)
+        # except:
+        #     print_div("Specified joints might be out of range<br>")
 
     global is_jogging
     is_jogging = False
@@ -981,7 +985,7 @@ async def client_drive():
         url_plugin_jogCartesianSpace = 'rr+ws://192.168.50.152:8891?service=JogCartesianSpace'
         global plugin_jogCartesianSpace
         plugin_jogCartesianSpace = await RRN.AsyncConnectService(url_plugin_jogCartesianSpace,None,None,None,None)
-        # await plugin_jogCartesianSpace.async_connect2robot(url,None)
+        await plugin_jogCartesianSpace.async_connect2robot(url,None)
 
         print_div('JogJointSpace plugin is connected..<br>')
         
