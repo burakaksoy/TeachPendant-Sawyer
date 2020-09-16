@@ -140,13 +140,13 @@ class JogCartesianSpace_impl(object):
         print("1.3")
         self.H_shaped = np.zeros((3, self.num_joints))
         itr = 0
-        for i in H:
+        for i in self.H:
             self.H_shaped[:,itr] = (i[0],i[1],i[2])
             itr += 1
 
         self.P_shaped = np.zeros((3, self.num_joints+1))  
         itr = 0  
-        for i in P:
+        for i in self.P:
             self.P_shaped[:,itr] = (i[0],i[1],i[2])
             itr += 1
 
