@@ -916,10 +916,10 @@ async def client_drive():
 
         c_services = await RRN.AsyncConnectService('rr+tcp://' + ip + ':port?service=RobotRaconteurServiceIndex',None,None,None,None)
         services = await c_services.async_GetLocalNodeServices(None)
-        print_div("Available services:<br>")
+        print_div('Available services:<br>')
         for s in services.items():
             print_div(str(s) +"<br>")
-            
+
 
         # Put robot to jogging mode
         # await d.async_set_command_mode(halt_mode,None,5)
