@@ -65,7 +65,7 @@ class JogCartesianSpace_impl(object):
                 else:
                     wait = True
                     relative = False
-                    self.robot.jog_joint(joint_angles, joint_vel_limits, relative, wait)
+                    self.robot.jog_joint(joint_angles, self.joint_vel_limits, relative, wait)
                     print("5")
             except:
                 print("Specified joints might be out of range")
