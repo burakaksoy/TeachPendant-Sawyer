@@ -351,11 +351,6 @@ def jog_cartesian(P_axis, R_axis):
         print_div("Jogging has not finished yet..<br>")
 
 async def async_jog_cartesian(P_axis, R_axis):
-    # move_distance = 0.01 # meters
-    # rotate_angle = np.deg2rad(5) # radians
-    # 
-    # global d, num_joints, joint_lower_limits, joint_upper_limits, joint_vel_limits
-    # global pose # Get the Current Pose of the robot
     global plugin_jogCartesianSpace
 
     global is_mousedown
@@ -363,98 +358,56 @@ async def async_jog_cartesian(P_axis, R_axis):
         # Call Jog Joint Space Service funtion to handle this jogging
         await plugin_jogCartesianSpace.async_jog_cartesian(P_axis, R_axis, None)
 
-
-        # # Update joint angles
-        # d_q = await update_joint_info() # Joint angles in radian ndarray
-        # # UPdate the end effector pose info
-        # pose = await update_end_info()
-        # await update_state_flags()
-
-        # Rd = pose.R
-        # pd = pose.p
-            
-        # if P_axis is not None:
-        #     pd = pd + Rd.dot(move_distance * P_axis)
-        # if R_axis is not None:
-        #     # R = rox.rot(np.array(([1.],[0.],[0.])), 0.261799)
-        #     R = rox.rot(R_axis, rotate_angle)
-        #     Rd = Rd.dot(R) # Rotate
-        
-        # try:
-        #     # Update desired inverse kineamtics info
-        #     joint_angles, converged = update_ik_info(Rd,pd)
-        #     if not converged:
-        #         print_div("Inverse Kinematics Algo. Could not Converge<br>")
-        #         raise
-        #     elif not (joint_angles < joint_upper_limits).all() or not (joint_angles > joint_lower_limits).all():
-        #         print_div("Specified joints are out of range<br>")
-        #         raise
-        #     else:
-        #         await d.async_jog_joint(joint_angles, joint_vel_limits, False, True, None)
-        # except:
-        #     print_div("Specified joints might be out of range<br>")
-
     global is_jogging
     is_jogging = False
         
 
 def X_pos_func(self):
     print_div('X+ button pressed<br>')
-    # jog_cartesian(np.array(([+1.,0.,0.])), None)
     jog_cartesian(np.array(([+1.,0.,0.])), np.array(([0.,0.,0.])))
     
 def X_neg_func(self):
     print_div('X- button pressed<br>')
-    # jog_cartesian(np.array(([-1.,0.,0.])), None)
     jog_cartesian(np.array(([-1.,0.,0.])), np.array(([0.,0.,0.])))
     
 def Y_pos_func(self):
     print_div('Y+ button pressed<br>')
-    # jog_cartesian(np.array(([0.,+1.,0.])), None)
     jog_cartesian(np.array(([0.,+1.,0.])), np.array(([0.,0.,0.])))
     
 def Y_neg_func(self):
     print_div('Y- button pressed<br>')
-    # jog_cartesian(np.array(([0.,-1.,0.])), None)
     jog_cartesian(np.array(([0.,-1.,0.])), np.array(([0.,0.,0.])))
     
 def Z_pos_func(self):
     print_div('Z+ button pressed<br>')
-    # jog_cartesian(np.array(([0.,0.,+1.])), None)
     jog_cartesian(np.array(([0.,0.,+1.])), np.array(([0.,0.,0.])))
     
 def Z_neg_func(self):
     print_div('Z- button pressed<br>')
-    # jog_cartesian(np.array(([0.,0.,-1.])), None)
     jog_cartesian(np.array(([0.,0.,-1.])), np.array(([0.,0.,0.])))
 
 def tX_pos_func(self):
     print_div('&theta;X+ button pressed<br>')
-    # jog_cartesian(None, np.array(([+1.,0.,0.])))
     jog_cartesian(np.array(([0.,0.,0.])), np.array(([+1.,0.,0.])))
 
 def tX_neg_func(self):
     print_div('&theta;X- button pressed<br>')
-    # jog_cartesian(None, np.array(([-1.,0.,0.])))
     jog_cartesian(np.array(([0.,0.,0.])), np.array(([-1.,0.,0.])))
     
 def tY_pos_func(self):
     print_div('&theta;Y+ button pressed<br>')
-    # jog_cartesian(None, np.array(([0.,+1.,0.])))
     jog_cartesian(np.array(([0.,0.,0.])), np.array(([0.,+1.,0.])))
     
 def tY_neg_func(self):
     print_div('&theta;Y- button pressed<br>')
-    # jog_cartesian(None, np.array(([0.,-1.,0.])))
     jog_cartesian(np.array(([0.,0.,0.])), np.array(([0.,-1.,0.])))
     
 def tZ_pos_func(self):
     print_div('&theta;Z+ button pressed<br>')
-    # jog_cartesian(None, np.array(([0.,0.,+1.])))
     jog_cartesian(np.array(([0.,0.,0.])), np.array(([0.,0.,+1.])))
     
 def tZ_neg_func(self):
-    # jog_cartesian(None, np.array(([0.,0.,-1.])))
+    print_div('&theta;Z- button pressed<br>')
     jog_cartesian(np.array(([0.,0.,0.])), np.array(([0.,0.,-1.])))
 
 
@@ -961,12 +914,9 @@ async def client_drive():
         JointTrajectory = RRN.GetStructureType("com.robotraconteur.robotics.trajectory.JointTrajectory",d)
 
 
-        c_services = RRN.AsyncConnectService('rr+tcp://' + ip + ':port?service=RobotRaconteurServiceIndex',None,None,None,None)
+        c_services = await RRN.AsyncConnectService('rr+tcp://' + ip + ':port?service=RobotRaconteurServiceIndex',None,None,None,None)
         services = await c_services.async_GetLocalNodeServices(None)
-        # services = await c_services.async_GetLocalNodeServices(None)
-
-
-        print_div(str(services))
+        print_div("Available services:<br>" + str(services))
 
         # Put robot to jogging mode
         # await d.async_set_command_mode(halt_mode,None,5)
