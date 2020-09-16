@@ -35,13 +35,17 @@ class JogCartesianSpace_impl(object):
             pose = self.get_current_pose()
             print("2")
             Rd = pose.R
+            print("Rd1: " + str(Rd))
             pd = pose.p
+            print("Pd1: " +str(pd))
                 
             # if P_axis is not None:
             zero_vec = np.array(([0.,0.,0.]))
+            print(str(not np.array_equal(P_axis, zero_vec)))
             if not np.array_equal(P_axis, zero_vec):
                 pd = pd + Rd.dot(move_distance * P_axis)
                 print("2.1")
+            print(str(not np.array_equal(R_axis, zero_vec)))
             if not np.array_equal(R_axis, zero_vec):
                 # R = rox.rot(np.array(([1.],[0.],[0.])), 0.261799)
                 R = rox.rot(R_axis, rotate_angle)
