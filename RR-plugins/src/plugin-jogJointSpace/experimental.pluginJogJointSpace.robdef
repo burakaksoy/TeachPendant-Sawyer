@@ -1,7 +1,7 @@
 #Service to provide interface to RR-webBrowser-plugin-jogJointSpace
 service experimental.pluginJogJointSpace
 
-stdver 0.9
+stdver 0.10
 
 object JogJointSpace
     function void connect2robot(string url_robot)
