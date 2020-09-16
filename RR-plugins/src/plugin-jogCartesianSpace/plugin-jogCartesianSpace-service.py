@@ -32,7 +32,7 @@ class JogCartesianSpace_impl(object):
 
             ## Jog the robot in cartesian space
             # Update the end effector pose info
-            pose = self.get_current_joint_pose()
+            pose = self.get_current_pose()
             print("2")
             Rd = pose.R
             pd = pose.p
