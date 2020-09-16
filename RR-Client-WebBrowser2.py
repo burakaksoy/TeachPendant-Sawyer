@@ -400,50 +400,62 @@ async def async_jog_cartesian(P_axis, R_axis):
 
 def X_pos_func(self):
     print_div('X+ button pressed<br>')
-    jog_cartesian(np.array(([+1.,0.,0.])), None)
+    # jog_cartesian(np.array(([+1.,0.,0.])), None)
+    jog_cartesian(np.array(([+1.,0.,0.])), np.array(([0.,0.,0.])))
     
 def X_neg_func(self):
     print_div('X- button pressed<br>')
-    jog_cartesian(np.array(([-1.,0.,0.])), None)
+    # jog_cartesian(np.array(([-1.,0.,0.])), None)
+    jog_cartesian(np.array(([-1.,0.,0.])), np.array(([0.,0.,0.])))
     
 def Y_pos_func(self):
     print_div('Y+ button pressed<br>')
-    jog_cartesian(np.array(([0.,+1.,0.])), None)
+    # jog_cartesian(np.array(([0.,+1.,0.])), None)
+    jog_cartesian(np.array(([0.,+1.,0.])), np.array(([0.,0.,0.])))
     
 def Y_neg_func(self):
     print_div('Y- button pressed<br>')
-    jog_cartesian(np.array(([0.,-1.,0.])), None)
+    # jog_cartesian(np.array(([0.,-1.,0.])), None)
+    jog_cartesian(np.array(([0.,-1.,0.])), np.array(([0.,0.,0.])))
     
 def Z_pos_func(self):
     print_div('Z+ button pressed<br>')
-    jog_cartesian(np.array(([0.,0.,+1.])), None)
+    # jog_cartesian(np.array(([0.,0.,+1.])), None)
+    jog_cartesian(np.array(([0.,0.,+1.])), np.array(([0.,0.,0.])))
     
 def Z_neg_func(self):
     print_div('Z- button pressed<br>')
-    jog_cartesian(np.array(([0.,0.,-1.])), None)
+    # jog_cartesian(np.array(([0.,0.,-1.])), None)
+    jog_cartesian(np.array(([0.,0.,-1.])), np.array(([0.,0.,0.])))
 
 def tX_pos_func(self):
     print_div('&theta;X+ button pressed<br>')
-    jog_cartesian(None, np.array(([+1.,0.,0.])))
+    # jog_cartesian(None, np.array(([+1.,0.,0.])))
+    jog_cartesian(np.array(([0.,0.,0.])), np.array(([+1.,0.,0.])))
 
 def tX_neg_func(self):
     print_div('&theta;X- button pressed<br>')
-    jog_cartesian(None, np.array(([-1.,0.,0.])))
+    # jog_cartesian(None, np.array(([-1.,0.,0.])))
+    jog_cartesian(np.array(([0.,0.,0.])), np.array(([-1.,0.,0.])))
     
 def tY_pos_func(self):
     print_div('&theta;Y+ button pressed<br>')
-    jog_cartesian(None, np.array(([0.,+1.,0.])))
+    # jog_cartesian(None, np.array(([0.,+1.,0.])))
+    jog_cartesian(np.array(([0.,0.,0.])), np.array(([0.,+1.,0.])))
     
 def tY_neg_func(self):
     print_div('&theta;Y- button pressed<br>')
-    jog_cartesian(None, np.array(([0.,-1.,0.])))
+    # jog_cartesian(None, np.array(([0.,-1.,0.])))
+    jog_cartesian(np.array(([0.,0.,0.])), np.array(([0.,-1.,0.])))
     
 def tZ_pos_func(self):
     print_div('&theta;Z+ button pressed<br>')
-    jog_cartesian(None, np.array(([0.,0.,+1.])))
+    # jog_cartesian(None, np.array(([0.,0.,+1.])))
+    jog_cartesian(np.array(([0.,0.,0.])), np.array(([0.,0.,+1.])))
     
 def tZ_neg_func(self):
-    jog_cartesian(None, np.array(([0.,0.,-1.])))
+    # jog_cartesian(None, np.array(([0.,0.,-1.])))
+    jog_cartesian(np.array(([0.,0.,0.])), np.array(([0.,0.,-1.])))
 
 
 def update_ik_info(R_d, p_d):
