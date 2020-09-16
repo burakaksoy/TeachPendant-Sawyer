@@ -28,11 +28,12 @@ class JogCartesianSpace_impl(object):
             # time.sleep(0.1)
             self.robot.command_mode = self.jog_mode
             # time.sleep(0.1)
+            print("1")
 
             ## Jog the robot in cartesian space
             # Update the end effector pose info
-            pose = self.get_current_joint_pose
-
+            pose = self.get_current_joint_pose()
+            print("2")
             Rd = pose.R
             pd = pose.p
                 
@@ -44,10 +45,11 @@ class JogCartesianSpace_impl(object):
                 # R = rox.rot(np.array(([1.],[0.],[0.])), 0.261799)
                 R = rox.rot(R_axis, rotate_angle)
                 Rd = Rd.dot(R) # Rotate
-            
+            print("3")
             try:
                 # Update desired inverse kineamtics info
-                joint_angles, converged = update_ik_info(Rd,pd)
+                joint_angles, converged = self.update_ik_info(Rd,pd)
+                print("4")
                 if not converged:
                     print("Inverse Kinematics Algo. Could not Converge")
                     raise
@@ -58,10 +60,9 @@ class JogCartesianSpace_impl(object):
                     wait = True
                     relative = False
                     self.robot.jog_joint(joint_angles, joint_vel_limits, relative, wait)
+                    print("5")
             except:
                 print("Specified joints might be out of range")
-
-
 
         else:
             # Give an error message to show that the robot is not connected
