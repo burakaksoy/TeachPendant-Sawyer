@@ -1,3 +1,4 @@
 sleep 1s; 
 gnome-terminal --tab --title="RR plugin_jogJointSpace service" --command "bash -c \"cd ./RR-plugins/src/plugin-jogJointSpace; python3 plugin-jogJointSpace-service.py; exec bash\""; 
+gnome-terminal --tab --title="RR plugin_jogCartesianSpace service" --command "bash -c \"cd ./RR-plugins/src/plugin-jogCartesianSpace; python3 plugin-jogCartesianSpace-service.py; exec bash\""; 
 gnome-terminal --tab --title="RR plugin_vision service" --command "bash -c \"cd ./RR-plugins/src/plugin-vision; python3 plugin-vision-service.py; exec bash\"";
