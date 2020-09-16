@@ -916,7 +916,7 @@ async def client_drive():
         print_div('hi1<br>')
         url_servicesArray = 'rr+ws://'+ ip + ':port?service=RobotRaconteurServiceIndex'
         print_div(str(url_servicesArray))
-        c_services = await RRN.AsyncConnectService(url_servicesArray,None,None,None,None)
+        c_services = await RRN.AsyncConnectService(str(url_servicesArray),None,None,None,None)
         print_div('hi2<br>')
         services = await c_services.async_GetLocalNodeServices(None)
         print_div('hi3<br>')
