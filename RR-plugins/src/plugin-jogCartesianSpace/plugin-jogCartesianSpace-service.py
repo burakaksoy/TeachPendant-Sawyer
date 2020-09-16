@@ -41,10 +41,12 @@ class JogCartesianSpace_impl(object):
             zero_vec = np.array(([0.,0.,0.]))
             if not np.array_equal(P_axis, zero_vec):
                 pd = pd + Rd.dot(move_distance * P_axis)
+                print("2.1")
             if not np.array_equal(R_axis, zero_vec):
                 # R = rox.rot(np.array(([1.],[0.],[0.])), 0.261799)
                 R = rox.rot(R_axis, rotate_angle)
                 Rd = Rd.dot(R) # Rotate
+                print("2.2")
             print("3")
             try:
                 # Update desired inverse kineamtics info
