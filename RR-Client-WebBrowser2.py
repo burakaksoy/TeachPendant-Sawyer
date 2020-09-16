@@ -973,6 +973,17 @@ async def client_drive():
         await plugin_jogJointSpace.async_connect2robot(url,None)
 
         print_div('JogJointSpace plugin is connected..<br>')
+
+        ## JogCartesianSpace plugin
+        print_div('JogCartesianSpace plugin is connecting..<br>')
+
+        # url_plugin_jogCartesianSpace = 'rr+ws://localhost:8891?service=JogCartesianSpace'
+        url_plugin_jogCartesianSpace = 'rr+ws://192.168.50.152:8891?service=JogCartesianSpace'
+        global plugin_jogCartesianSpace
+        plugin_jogCartesianSpace = await RRN.AsyncConnectService(url_plugin_jogCartesianSpace,None,None,None,None)
+        # await plugin_jogCartesianSpace.async_connect2robot(url,None)
+
+        print_div('JogJointSpace plugin is connected..<br>')
         
         ## Vision plugin
         print_div('Vision plugin is connecting..<br>')
