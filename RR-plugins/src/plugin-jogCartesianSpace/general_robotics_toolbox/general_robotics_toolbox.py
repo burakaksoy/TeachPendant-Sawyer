@@ -351,7 +351,7 @@ class Robot(object):
         """
         
         
-        for i in xrange(H.shape[1]):
+        for i in range(H.shape[1]):
             assert (np.isclose(np.linalg.norm(H[:,i]), 1))        
         
         for j in joint_type:            
@@ -495,7 +495,7 @@ def fwdkin(robot, theta):
     
     p = robot.P[:,[0]]
     R = np.identity(3)
-    for i in xrange(0,len(robot.joint_type)):
+    for i in range(0,len(robot.joint_type)):
         if (robot.joint_type[i] == 0 or robot.joint_type[i] == 2):
             R = R.dot(rot(robot.H[:,[i]],theta[i]))
         elif (robot.joint_type[i] == 1 or robot.joint_type[i] == 3):
@@ -541,7 +541,7 @@ def robotjacobian(robot, theta):
     P = robot.P
     joint_type = robot.joint_type
     
-    for i in xrange(0, len(joint_type)):
+    for i in range(0, len(joint_type)):
         if (joint_type[i] == 0 or joint_type[i] == 2):
             R = R.dot(rot(H[:,[i]],theta[i]))
         elif (joint_type[i] == 1 or joint_type[i] == 3):
