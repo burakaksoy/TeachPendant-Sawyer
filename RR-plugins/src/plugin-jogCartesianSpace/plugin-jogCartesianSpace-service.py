@@ -123,6 +123,10 @@ class JogCartesianSpace_impl(object):
             self.joint_acc_limits = np.asarray(self.joint_acc_limits)                
 
             self.num_joints = len(self.joint_info)
+
+            # Create roboics toolbox robot object as well
+            self.create_robot_rox()
+            
         else:
             # Give an error message to show that the robot is not connected
             print("Assign robot details failed. Robot is not connected to JogCartesianSpace service yet!")
@@ -155,6 +159,7 @@ class JogCartesianSpace_impl(object):
 
     def get_current_pose(self):
         d_q = self.get_current_joint_positions()
+
         
         pose = rox.fwdkin(self.robot_rox, d_q) # Returns as pose.R and pose.p, loo rox for details
         return pose
