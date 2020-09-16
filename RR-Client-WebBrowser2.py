@@ -914,7 +914,7 @@ async def client_drive():
         JointTrajectory = RRN.GetStructureType("com.robotraconteur.robotics.trajectory.JointTrajectory",d)
 
         print_div('hi1<br>')
-        c_services = await RRN.AsyncConnectService('rr+tcp://' + ip + ':port?service=RobotRaconteurServiceIndex',None,None,None,None)
+        c_services = await RRN.AsyncConnectService('rr+ws://'+ip+':port?service=RobotRaconteurServiceIndex',None,None,None,None)
         print_div('hi2<br>')
         services = await c_services.async_GetLocalNodeServices(None)
         print_div('hi3<br>')
