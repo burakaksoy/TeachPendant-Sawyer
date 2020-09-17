@@ -150,7 +150,7 @@ def jog_cartesian_gamepad(P_axis, R_axis):
     else:
         R_axis = np.array(([0.,0.,0.]))
 
-    print_div(str(P_axis)+", "+ str(R_axis) + "<br>")
+    # print_div(str(P_axis)+", "+ str(R_axis) + "<br>")
 
     global is_jogging
     if (not is_jogging): 
@@ -160,50 +160,12 @@ def jog_cartesian_gamepad(P_axis, R_axis):
     #     print_div("Jogging has not finished yet..<br>")
 
 async def async_jog_cartesian_gamepad(P_axis, R_axis):
-    # move_distance = 0.01 # meters
-    # rotate_angle = np.deg2rad(5) # radians
-    
-    # global d, num_joints, joint_lower_limits, joint_upper_limits, joint_vel_limits
-    # global pose # Get the Current Pose of the robot
-
     global plugin_jogCartesianSpace
         
     global is_gamepadaxisactive
     global is_gamepadbuttondown
     # print_div("here 0<br>")
     if (is_gamepadaxisactive or is_gamepadbuttondown): 
-        # # Update joint angles
-        # d_q = await update_joint_info() # Joint angles in radian ndarray
-        # # UPdate the end effector pose info
-        # pose = await update_end_info()
-        # await update_state_flags()
-
-        # Rd = pose.R
-        # pd = pose.p
-
-        # # print_div("here 1<br>")
-            
-        # if P_axis is not None:
-        #     pd = pd + Rd.dot(move_distance * P_axis)
-        # if R_axis is not None:
-        #     # R = rox.rot(np.array(([1.],[0.],[0.])), 0.261799)
-        #     R = rox.rot(R_axis, rotate_angle)
-        #     Rd = Rd.dot(R) # Rotate
-        
-        # try:
-        #     # Update desired inverse kineamtics info
-        #     joint_angles, converged = update_ik_info(Rd,pd)
-        #     if not converged:
-        #         print_div("Inverse Kinematics Algo. Could not Converge<br>")
-        #         raise
-        #     elif not (joint_angles < joint_upper_limits).all() or not (joint_angles > joint_lower_limits).all():
-        #         print_div("Specified joints are out of range<br>")
-        #         raise
-        #     else:
-        #         await d.async_jog_joint(joint_angles, joint_vel_limits, False, True, None)
-        # except:
-        #     print_div("Specified joints might be out of range<br>")
-
         # Call Jog Cartesian Space Service funtion to handle this jogging
         await plugin_jogCartesianSpace.async_jog_cartesian(P_axis, R_axis, None)
 
@@ -415,81 +377,6 @@ def tZ_neg_func(self):
     print_div('&theta;Z- button pressed<br>')
     jog_cartesian(np.array(([0.,0.,0.])), np.array(([0.,0.,-1.])))
 
-
-def update_ik_info(R_d, p_d):
-    # R_d, p_d: Desired orientation and position
-    global robot
-    global d_q # Get Current Joint angles in radian ndarray 
-    global num_joints
-    
-    q_cur = d_q # initial guess on the current joint angles
-    q_cur = q_cur.reshape((num_joints,1)) 
-    
-    epsilon = 0.001 # Damping Constant
-    Kq = epsilon * np.eye(len(q_cur)) # small value to make sure positive definite used in Damped Least Square
-    # print_div( "<br> Kq " + str(Kq) ) # DEBUG
-    
-    max_steps = 200 # number of steps to for convergence
-    
-    # print_div( "<br> q_cur " + str(q_cur) ) # DEBUG
-    
-    itr = 0 # Iterations
-    converged = False
-    while itr < max_steps and not converged:
-    
-        pose = rox.fwdkin(robot,q_cur)
-        R_cur = pose.R
-        p_cur = pose.p
-        
-        #calculate current Jacobian
-        J0T = rox.robotjacobian(robot,q_cur)
-        
-        # Transform Jacobian to End effector frame from the base frame
-        Tr = np.zeros((6,6))
-        Tr[:3,:3] = R_cur.T 
-        Tr[3:,3:] = R_cur.T
-        J0T = Tr @ J0T
-        # print_div( "<br> J0T " + str(J0T) ) # DEBUG
-        
-                      
-        # Error in position and orientation
-        # ER = np.matmul(R_cur, np.transpose(R_d))
-        ER = np.matmul(np.transpose(R_d),R_cur)
-        #print_div( "<br> ER " + str(ER) ) # DEBUG
-        EP = R_cur.T @ (p_cur - p_d)                         
-        #print_div( "<br> EP " + str(EP) ) # DEBUG
-        
-        #decompose ER to (k,theta) pair
-        k, theta = rox.R2rot(ER)                  
-        # print_div( "<br> k " + str(k) ) # DEBUG
-        # print_div( "<br> theta " + str(theta) ) # DEBUG
-        
-        ## set up s for different norm for ER
-        # s=2*np.dot(k,np.sin(theta)) #eR1
-        # s = np.dot(k,np.sin(theta/2))         #eR2
-        s = np.sin(theta/2) * np.array(k)         #eR2
-        # s=2*theta*k              #eR3
-        # s=np.dot(J_phi,phi)              #eR4
-        # print_div( "<br> s " + str(s) ) # DEBUG         
-                 
-        alpha = 1 # Step size        
-        # Damped Least square for iterative incerse kinematics   
-        delta = alpha * (np.linalg.inv(Kq + J0T.T @ J0T ) @ J0T.T @ np.hstack((s,EP)).T )
-        # print_div( "<br> delta " + str(delta) ) # DEBUG
-        
-        q_cur = q_cur - delta.reshape((num_joints,1))
-        
-        # Convergence Check
-        converged = (np.hstack((s,EP)) < 0.0001).all()
-        # print_div( "<br> converged? " + str(converged) ) # DEBUG
-        
-        itr += 1 # Increase the iteration
-    
-    joints_text=""
-    for i in q_cur:
-        joints_text+= "(%.3f, %.3f) " % (np.rad2deg(i), i)   
-    print_div_ik_info(str(rox.Transform(R_d,p_d)) +"<br>"+ joints_text +"<br>"+ str(converged) + ", itr = " + str(itr))
-    return q_cur, converged
 #########################################################
 # ZYX Euler angles calculation from rotation matrix
 def isclose(x, y, rtol=1.e-5, atol=1.e-8):
