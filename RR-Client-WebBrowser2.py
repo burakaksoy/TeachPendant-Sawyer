@@ -139,16 +139,16 @@ def jog_cartesian_gamepad(P_axis, R_axis):
         P_axis_norm = np.linalg.norm(P_axis)
         P_axis = P_axis / P_axis_norm
         np.nan_to_num(P_axis, copy=False)
-    else:
-        P_axis = None
+    # else:
+    #     P_axis = None
 
     if R_axis != [0.0,0.0,0.0]:
         R_axis = np.array(R_axis,dtype="f")
         R_axis_norm = np.linalg.norm(R_axis)
         R_axis = R_axis / R_axis_norm
         np.nan_to_num(R_axis, copy=False)
-    else:
-        R_axis = None
+    # else:
+    #     R_axis = None
 
     # print_div(str(P_axis)+", "+ str(R_axis) + "<br>")
 
@@ -160,47 +160,52 @@ def jog_cartesian_gamepad(P_axis, R_axis):
     #     print_div("Jogging has not finished yet..<br>")
 
 async def async_jog_cartesian_gamepad(P_axis, R_axis):
-    move_distance = 0.01 # meters
-    rotate_angle = np.deg2rad(5) # radians
+    # move_distance = 0.01 # meters
+    # rotate_angle = np.deg2rad(5) # radians
     
-    global d, num_joints, joint_lower_limits, joint_upper_limits, joint_vel_limits
-    global pose # Get the Current Pose of the robot
+    # global d, num_joints, joint_lower_limits, joint_upper_limits, joint_vel_limits
+    # global pose # Get the Current Pose of the robot
+
+    global plugin_jogCartesianSpace
         
     global is_gamepadaxisactive
     global is_gamepadbuttondown
     # print_div("here 0<br>")
     if (is_gamepadaxisactive or is_gamepadbuttondown): 
-        # Update joint angles
-        d_q = await update_joint_info() # Joint angles in radian ndarray
-        # UPdate the end effector pose info
-        pose = await update_end_info()
-        await update_state_flags()
+        # # Update joint angles
+        # d_q = await update_joint_info() # Joint angles in radian ndarray
+        # # UPdate the end effector pose info
+        # pose = await update_end_info()
+        # await update_state_flags()
 
-        Rd = pose.R
-        pd = pose.p
+        # Rd = pose.R
+        # pd = pose.p
 
-        # print_div("here 1<br>")
+        # # print_div("here 1<br>")
             
-        if P_axis is not None:
-            pd = pd + Rd.dot(move_distance * P_axis)
-        if R_axis is not None:
-            # R = rox.rot(np.array(([1.],[0.],[0.])), 0.261799)
-            R = rox.rot(R_axis, rotate_angle)
-            Rd = Rd.dot(R) # Rotate
+        # if P_axis is not None:
+        #     pd = pd + Rd.dot(move_distance * P_axis)
+        # if R_axis is not None:
+        #     # R = rox.rot(np.array(([1.],[0.],[0.])), 0.261799)
+        #     R = rox.rot(R_axis, rotate_angle)
+        #     Rd = Rd.dot(R) # Rotate
         
-        try:
-            # Update desired inverse kineamtics info
-            joint_angles, converged = update_ik_info(Rd,pd)
-            if not converged:
-                print_div("Inverse Kinematics Algo. Could not Converge<br>")
-                raise
-            elif not (joint_angles < joint_upper_limits).all() or not (joint_angles > joint_lower_limits).all():
-                print_div("Specified joints are out of range<br>")
-                raise
-            else:
-                await d.async_jog_joint(joint_angles, joint_vel_limits, False, True, None)
-        except:
-            print_div("Specified joints might be out of range<br>")
+        # try:
+        #     # Update desired inverse kineamtics info
+        #     joint_angles, converged = update_ik_info(Rd,pd)
+        #     if not converged:
+        #         print_div("Inverse Kinematics Algo. Could not Converge<br>")
+        #         raise
+        #     elif not (joint_angles < joint_upper_limits).all() or not (joint_angles > joint_lower_limits).all():
+        #         print_div("Specified joints are out of range<br>")
+        #         raise
+        #     else:
+        #         await d.async_jog_joint(joint_angles, joint_vel_limits, False, True, None)
+        # except:
+        #     print_div("Specified joints might be out of range<br>")
+
+        # Call Jog Cartesian Space Service funtion to handle this jogging
+        await plugin_jogCartesianSpace.async_jog_cartesian(P_axis, R_axis, None)
 
     global is_jogging
     is_jogging = False
@@ -355,7 +360,7 @@ async def async_jog_cartesian(P_axis, R_axis):
 
     global is_mousedown
     while (is_mousedown):
-        # Call Jog Joint Space Service funtion to handle this jogging
+        # Call Jog Cartesian Space Service funtion to handle this jogging
         await plugin_jogCartesianSpace.async_jog_cartesian(P_axis, R_axis, None)
 
     global is_jogging
@@ -913,22 +918,6 @@ async def client_drive():
         JointTrajectoryWaypoint = RRN.GetStructureType("com.robotraconteur.robotics.trajectory.JointTrajectoryWaypoint",d)
         JointTrajectory = RRN.GetStructureType("com.robotraconteur.robotics.trajectory.JointTrajectory",d)
 
-        # try:
-        #     print_div('hi1<br>')
-        #     url_servicesArray = 'rr+ws://'+ ip + ':68794?service=RobotRaconteurServiceIndex'
-        #     print_div(str(url_servicesArray))
-        #     c_services = await RRN.AsyncConnectService(str(url_servicesArray),None,None,None,None)
-        #     print_div('hi2<br>')
-        #     services = await c_services.async_GetLocalNodeServices(None)
-        #     print_div('hi3<br>')
-        #     print_div('Available services:<br>')
-        #     for s in services.items():
-        #         print_div(str(s) +"<br>")
-        # except:
-        #     import traceback
-        #     print_div(traceback.format_exc())
-        #     raise
-
         # Put robot to jogging mode
         # await d.async_set_command_mode(halt_mode,None,5)
         # await RRN.AsyncSleep(0.1,None)
@@ -946,6 +935,23 @@ async def client_drive():
         # await RRN.AsyncSleep(0.1,None)
         # await d.async_set_command_mode(trajectory_mode,None,5)
         # await RRN.AsyncSleep(0.1,None)
+
+        ## Attempting to find available plugins... DID NOT work. Will be handled later.
+        # try:
+        #     print_div('hi1<br>')
+        #     url_servicesArray = 'rr+ws://'+ ip + ':68794?service=RobotRaconteurServiceIndex'
+        #     print_div(str(url_servicesArray))
+        #     c_services = await RRN.AsyncConnectService(str(url_servicesArray),None,None,None,None)
+        #     print_div('hi2<br>')
+        #     services = await c_services.async_GetLocalNodeServices(None)
+        #     print_div('hi3<br>')
+        #     print_div('Available services:<br>')
+        #     for s in services.items():
+        #         print_div(str(s) +"<br>")
+        # except:
+        #     import traceback
+        #     print_div(traceback.format_exc())
+        #     raise
 
         # PLUGIN SERVICE CONNECTIONS BEGIN________________________________
 
