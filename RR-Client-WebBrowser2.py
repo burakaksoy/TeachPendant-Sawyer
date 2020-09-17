@@ -37,9 +37,6 @@ async def async_jog_joints2(q_i, degree_diff, is_relative):
     # Update joint angles
     d_q = await update_joint_info() # Joint angles in radian ndarray
     
-    # UPdate the end effector pose info
-    pose = await update_end_info()
-    
     await update_state_flags()
 
     if (num_joints < q_i):
@@ -92,12 +89,6 @@ async def async_jog_joints_gamepad(joint_speed_constants):
         # Update joint angles
         d_q = await update_joint_info() # Joint angles in radian ndarray
         
-        # UPdate the end effector pose info
-        pose = await update_end_info()
-
-        await update_state_flags()
-
-
         # Trim joint speed constants accordingto number of joints
         joint_speed_constants = joint_speed_constants[:num_joints]
         # print_div("joint_speed_constants: "+str(joint_speed_constants)+"<br>")
@@ -265,7 +256,6 @@ def stop_func(self):
     #d.async_jog_joint(np.zeros((num_joints,)), joint_vel_limits, False, True,None)
     global plugin_jogJointSpace
     plugin_jogJointSpace.async_jog_joints_with_limits(np.zeros((num_joints,)),np.zeros((num_joints,)),np.zeros((num_joints,)),joint_vel_limits,False,True,None)
-
 
     global is_jogging
     is_jogging = False
@@ -712,7 +702,6 @@ async def update_num_info():
     return len(joint_info), joint_types, joint_lower_limits, joint_upper_limits, joint_vel_limits, joint_acc_limits, joint_names
      
 async def update_kin_info():
-    global d_q # Joint angles in radian ndarray
     global d
     global num_joints    
     robot_info = await d.async_get_robot_info(None)
@@ -823,23 +812,6 @@ async def client_drive():
         # await d.async_set_command_mode(trajectory_mode,None,5)
         # await RRN.AsyncSleep(0.1,None)
 
-        ## Attempting to find available plugins... DID NOT work. Will be handled later.
-        # try:
-        #     print_div('hi1<br>')
-        #     url_servicesArray = 'rr+ws://'+ ip + ':68794?service=RobotRaconteurServiceIndex'
-        #     print_div(str(url_servicesArray))
-        #     c_services = await RRN.AsyncConnectService(str(url_servicesArray),None,None,None,None)
-        #     print_div('hi2<br>')
-        #     services = await c_services.async_GetLocalNodeServices(None)
-        #     print_div('hi3<br>')
-        #     print_div('Available services:<br>')
-        #     for s in services.items():
-        #         print_div(str(s) +"<br>")
-        # except:
-        #     import traceback
-        #     print_div(traceback.format_exc())
-        #     raise
-
         # PLUGIN SERVICE CONNECTIONS BEGIN________________________________
 
         ## JogJointSpace plugin
@@ -886,7 +858,6 @@ async def client_drive():
         # Get the number of Joints, Joint Types, Limits etc in the robot.
         num_joints, joint_types, joint_lower_limits, joint_upper_limits, joint_vel_limits, joint_acc_limits, joint_names  = await update_num_info()
         
-        global H, P
         # Get the kinematics info, P and H in product of exponentials convention
         H, P = await update_kin_info()
         
@@ -897,9 +868,8 @@ async def client_drive():
         # robot = rox.Robot(H,P,joint_types-1,joint_lower_limits,joint_upper_limits,joint_vel_limits,joint_acc_limits)
         robot = rox.Robot(H,P,joint_types-1)
         
-        global pose # Current pose object from Robotics Toolbox of the end effector
         # UPdate the end effector pose info
-        pose = await update_end_info()
+        pose = await update_end_info() # Current pose object from Robotics Toolbox of the end effector
             
         # Element references
         # Joint Space Control Buttons
@@ -1026,8 +996,6 @@ async def client_drive():
             pose = await update_end_info()
             
             await update_state_flags()
-            
-
             
     except:
         import traceback
