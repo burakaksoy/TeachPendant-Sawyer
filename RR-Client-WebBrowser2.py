@@ -913,21 +913,21 @@ async def client_drive():
         JointTrajectoryWaypoint = RRN.GetStructureType("com.robotraconteur.robotics.trajectory.JointTrajectoryWaypoint",d)
         JointTrajectory = RRN.GetStructureType("com.robotraconteur.robotics.trajectory.JointTrajectory",d)
 
-        try:
-            print_div('hi1<br>')
-            url_servicesArray = 'rr+ws://'+ ip + ':68794?service=RobotRaconteurServiceIndex'
-            print_div(str(url_servicesArray))
-            c_services = await RRN.AsyncConnectService(str(url_servicesArray),None,None,None,None)
-            print_div('hi2<br>')
-            services = await c_services.async_GetLocalNodeServices(None)
-            print_div('hi3<br>')
-            print_div('Available services:<br>')
-            for s in services.items():
-                print_div(str(s) +"<br>")
-        except:
-            import traceback
-            print_div(traceback.format_exc())
-            raise
+        # try:
+        #     print_div('hi1<br>')
+        #     url_servicesArray = 'rr+ws://'+ ip + ':68794?service=RobotRaconteurServiceIndex'
+        #     print_div(str(url_servicesArray))
+        #     c_services = await RRN.AsyncConnectService(str(url_servicesArray),None,None,None,None)
+        #     print_div('hi2<br>')
+        #     services = await c_services.async_GetLocalNodeServices(None)
+        #     print_div('hi3<br>')
+        #     print_div('Available services:<br>')
+        #     for s in services.items():
+        #         print_div(str(s) +"<br>")
+        # except:
+        #     import traceback
+        #     print_div(traceback.format_exc())
+        #     raise
 
         # Put robot to jogging mode
         # await d.async_set_command_mode(halt_mode,None,5)
