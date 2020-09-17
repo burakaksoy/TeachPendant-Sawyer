@@ -139,16 +139,16 @@ def jog_cartesian_gamepad(P_axis, R_axis):
         P_axis_norm = np.linalg.norm(P_axis)
         P_axis = P_axis / P_axis_norm
         np.nan_to_num(P_axis, copy=False)
-    # else:
-    #     P_axis = None
+    else:
+        P_axis = np.array(([0.,0.,0.]))
 
     if R_axis != [0.0,0.0,0.0]:
         R_axis = np.array(R_axis,dtype="f")
         R_axis_norm = np.linalg.norm(R_axis)
         R_axis = R_axis / R_axis_norm
         np.nan_to_num(R_axis, copy=False)
-    # else:
-    #     R_axis = None
+    else:
+        R_axis = np.array(([0.,0.,0.]))
 
     # print_div(str(P_axis)+", "+ str(R_axis) + "<br>")
 
