@@ -43,7 +43,7 @@ async def client_webcam():
         global canvas, ctx
         canvas = document.getElementById("camera_image")
         ctx = canvas.getContext("2d")
-        print_div("Running!")
+        print_div("Camera is Running!<br>")
 
         finish_time = 0
         # while True:            

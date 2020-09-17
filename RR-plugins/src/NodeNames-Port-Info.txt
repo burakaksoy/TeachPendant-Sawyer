@@ -1,0 +1,5 @@
+("NodeName", TCP listen port)
+("experimental.plugin-jogJointSpace-service", 8890)
+("experimental.plugin-jogCartesianSpace-service", 8891)
+("experimental.plugin-vision-service", 8889)
+

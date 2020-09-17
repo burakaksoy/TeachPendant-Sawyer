@@ -1,0 +1,11 @@
+#Service to provide interface to RR-webBrowser-plugin-jogCartesianSpace
+service experimental.pluginJogCartesianSpace
+
+stdver 0.10
+
+object JogCartesianSpace
+    function void connect2robot(string url_robot)
+    function void jog_cartesian(double[] P_axis, double[] R_axis)
+
+    # function void jog_joints_with_limits(double[] up_limits, double[] low_limits, double[] joint_position, double[] max_velocity, bool relative,bool wait)
+end 

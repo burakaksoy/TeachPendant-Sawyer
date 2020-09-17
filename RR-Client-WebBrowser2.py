@@ -37,9 +37,6 @@ async def async_jog_joints2(q_i, degree_diff, is_relative):
     # Update joint angles
     d_q = await update_joint_info() # Joint angles in radian ndarray
     
-    # UPdate the end effector pose info
-    pose = await update_end_info()
-    
     await update_state_flags()
 
     if (num_joints < q_i):
@@ -92,12 +89,6 @@ async def async_jog_joints_gamepad(joint_speed_constants):
         # Update joint angles
         d_q = await update_joint_info() # Joint angles in radian ndarray
         
-        # UPdate the end effector pose info
-        pose = await update_end_info()
-
-        await update_state_flags()
-
-
         # Trim joint speed constants accordingto number of joints
         joint_speed_constants = joint_speed_constants[:num_joints]
         # print_div("joint_speed_constants: "+str(joint_speed_constants)+"<br>")
@@ -135,20 +126,20 @@ def home_func_gamepad():
 # ........................................
 def jog_cartesian_gamepad(P_axis, R_axis):
     if P_axis != [0.0,0.0,0.0]:
-        P_axis = np.array(P_axis,dtype="f")
+        P_axis = np.array(P_axis,dtype=np.dtype('d'))
         P_axis_norm = np.linalg.norm(P_axis)
         P_axis = P_axis / P_axis_norm
         np.nan_to_num(P_axis, copy=False)
     else:
-        P_axis = None
+        P_axis = np.array(([0.,0.,0.]))
 
     if R_axis != [0.0,0.0,0.0]:
-        R_axis = np.array(R_axis,dtype="f")
+        R_axis = np.array(R_axis,dtype=np.dtype('d'))
         R_axis_norm = np.linalg.norm(R_axis)
         R_axis = R_axis / R_axis_norm
         np.nan_to_num(R_axis, copy=False)
     else:
-        R_axis = None
+        R_axis = np.array(([0.,0.,0.]))
 
     # print_div(str(P_axis)+", "+ str(R_axis) + "<br>")
 
@@ -160,47 +151,14 @@ def jog_cartesian_gamepad(P_axis, R_axis):
     #     print_div("Jogging has not finished yet..<br>")
 
 async def async_jog_cartesian_gamepad(P_axis, R_axis):
-    move_distance = 0.01 # meters
-    rotate_angle = np.deg2rad(5) # radians
-    
-    global d, num_joints, joint_lower_limits, joint_upper_limits, joint_vel_limits
-    global pose # Get the Current Pose of the robot
+    global plugin_jogCartesianSpace
         
     global is_gamepadaxisactive
     global is_gamepadbuttondown
     # print_div("here 0<br>")
     if (is_gamepadaxisactive or is_gamepadbuttondown): 
-        # Update joint angles
-        d_q = await update_joint_info() # Joint angles in radian ndarray
-        # UPdate the end effector pose info
-        pose = await update_end_info()
-        await update_state_flags()
-
-        Rd = pose.R
-        pd = pose.p
-
-        # print_div("here 1<br>")
-            
-        if P_axis is not None:
-            pd = pd + Rd.dot(move_distance * P_axis)
-        if R_axis is not None:
-            # R = rox.rot(np.array(([1.],[0.],[0.])), 0.261799)
-            R = rox.rot(R_axis, rotate_angle)
-            Rd = Rd.dot(R) # Rotate
-        
-        try:
-            # Update desired inverse kineamtics info
-            joint_angles, converged = update_ik_info(Rd,pd)
-            if not converged:
-                print_div("Inverse Kinematics Algo. Could not Converge<br>")
-                raise
-            elif not (joint_angles < joint_upper_limits).all() or not (joint_angles > joint_lower_limits).all():
-                print_div("Specified joints are out of range<br>")
-                raise
-            else:
-                await d.async_jog_joint(joint_angles, joint_vel_limits, False, True, None)
-        except:
-            print_div("Specified joints might be out of range<br>")
+        # Call Jog Cartesian Space Service funtion to handle this jogging
+        await plugin_jogCartesianSpace.async_jog_cartesian(P_axis, R_axis, None)
 
     global is_jogging
     is_jogging = False
@@ -299,7 +257,6 @@ def stop_func(self):
     global plugin_jogJointSpace
     plugin_jogJointSpace.async_jog_joints_with_limits(np.zeros((num_joints,)),np.zeros((num_joints,)),np.zeros((num_joints,)),joint_vel_limits,False,True,None)
 
-
     global is_jogging
     is_jogging = False
           
@@ -351,43 +308,12 @@ def jog_cartesian(P_axis, R_axis):
         print_div("Jogging has not finished yet..<br>")
 
 async def async_jog_cartesian(P_axis, R_axis):
-    move_distance = 0.01 # meters
-    rotate_angle = np.deg2rad(5) # radians
-    
-    global d, num_joints, joint_lower_limits, joint_upper_limits, joint_vel_limits
-    global pose # Get the Current Pose of the robot
-        
-    global is_mousedown
-    while (is_mousedown): 
-        # Update joint angles
-        d_q = await update_joint_info() # Joint angles in radian ndarray
-        # UPdate the end effector pose info
-        pose = await update_end_info()
-        await update_state_flags()
+    global plugin_jogCartesianSpace
 
-        Rd = pose.R
-        pd = pose.p
-            
-        if P_axis is not None:
-            pd = pd + Rd.dot(move_distance * P_axis)
-        if R_axis is not None:
-            # R = rox.rot(np.array(([1.],[0.],[0.])), 0.261799)
-            R = rox.rot(R_axis, rotate_angle)
-            Rd = Rd.dot(R) # Rotate
-        
-        try:
-            # Update desired inverse kineamtics info
-            joint_angles, converged = update_ik_info(Rd,pd)
-            if not converged:
-                print_div("Inverse Kinematics Algo. Could not Converge<br>")
-                raise
-            elif not (joint_angles < joint_upper_limits).all() or not (joint_angles > joint_lower_limits).all():
-                print_div("Specified joints are out of range<br>")
-                raise
-            else:
-                await d.async_jog_joint(joint_angles, joint_vel_limits, False, True, None)
-        except:
-            print_div("Specified joints might be out of range<br>")
+    global is_mousedown
+    while (is_mousedown):
+        # Call Jog Cartesian Space Service funtion to handle this jogging
+        await plugin_jogCartesianSpace.async_jog_cartesian(P_axis, R_axis, None)
 
     global is_jogging
     is_jogging = False
@@ -395,126 +321,52 @@ async def async_jog_cartesian(P_axis, R_axis):
 
 def X_pos_func(self):
     print_div('X+ button pressed<br>')
-    jog_cartesian(np.array(([+1.,0.,0.])), None)
+    jog_cartesian(np.array(([+1.,0.,0.])), np.array(([0.,0.,0.])))
     
 def X_neg_func(self):
     print_div('X- button pressed<br>')
-    jog_cartesian(np.array(([-1.,0.,0.])), None)
+    jog_cartesian(np.array(([-1.,0.,0.])), np.array(([0.,0.,0.])))
     
 def Y_pos_func(self):
     print_div('Y+ button pressed<br>')
-    jog_cartesian(np.array(([0.,+1.,0.])), None)
+    jog_cartesian(np.array(([0.,+1.,0.])), np.array(([0.,0.,0.])))
     
 def Y_neg_func(self):
     print_div('Y- button pressed<br>')
-    jog_cartesian(np.array(([0.,-1.,0.])), None)
+    jog_cartesian(np.array(([0.,-1.,0.])), np.array(([0.,0.,0.])))
     
 def Z_pos_func(self):
     print_div('Z+ button pressed<br>')
-    jog_cartesian(np.array(([0.,0.,+1.])), None)
+    jog_cartesian(np.array(([0.,0.,+1.])), np.array(([0.,0.,0.])))
     
 def Z_neg_func(self):
     print_div('Z- button pressed<br>')
-    jog_cartesian(np.array(([0.,0.,-1.])), None)
+    jog_cartesian(np.array(([0.,0.,-1.])), np.array(([0.,0.,0.])))
 
 def tX_pos_func(self):
     print_div('&theta;X+ button pressed<br>')
-    jog_cartesian(None, np.array(([+1.,0.,0.])))
+    jog_cartesian(np.array(([0.,0.,0.])), np.array(([+1.,0.,0.])))
 
 def tX_neg_func(self):
     print_div('&theta;X- button pressed<br>')
-    jog_cartesian(None, np.array(([-1.,0.,0.])))
+    jog_cartesian(np.array(([0.,0.,0.])), np.array(([-1.,0.,0.])))
     
 def tY_pos_func(self):
     print_div('&theta;Y+ button pressed<br>')
-    jog_cartesian(None, np.array(([0.,+1.,0.])))
+    jog_cartesian(np.array(([0.,0.,0.])), np.array(([0.,+1.,0.])))
     
 def tY_neg_func(self):
     print_div('&theta;Y- button pressed<br>')
-    jog_cartesian(None, np.array(([0.,-1.,0.])))
+    jog_cartesian(np.array(([0.,0.,0.])), np.array(([0.,-1.,0.])))
     
 def tZ_pos_func(self):
     print_div('&theta;Z+ button pressed<br>')
-    jog_cartesian(None, np.array(([0.,0.,+1.])))
+    jog_cartesian(np.array(([0.,0.,0.])), np.array(([0.,0.,+1.])))
     
 def tZ_neg_func(self):
-    jog_cartesian(None, np.array(([0.,0.,-1.])))
+    print_div('&theta;Z- button pressed<br>')
+    jog_cartesian(np.array(([0.,0.,0.])), np.array(([0.,0.,-1.])))
 
-
-def update_ik_info(R_d, p_d):
-    # R_d, p_d: Desired orientation and position
-    global robot
-    global d_q # Get Current Joint angles in radian ndarray 
-    global num_joints
-    
-    q_cur = d_q # initial guess on the current joint angles
-    q_cur = q_cur.reshape((num_joints,1)) 
-    
-    epsilon = 0.001 # Damping Constant
-    Kq = epsilon * np.eye(len(q_cur)) # small value to make sure positive definite used in Damped Least Square
-    # print_div( "<br> Kq " + str(Kq) ) # DEBUG
-    
-    max_steps = 200 # number of steps to for convergence
-    
-    # print_div( "<br> q_cur " + str(q_cur) ) # DEBUG
-    
-    itr = 0 # Iterations
-    converged = False
-    while itr < max_steps and not converged:
-    
-        pose = rox.fwdkin(robot,q_cur)
-        R_cur = pose.R
-        p_cur = pose.p
-        
-        #calculate current Jacobian
-        J0T = rox.robotjacobian(robot,q_cur)
-        
-        # Transform Jacobian to End effector frame from the base frame
-        Tr = np.zeros((6,6))
-        Tr[:3,:3] = R_cur.T 
-        Tr[3:,3:] = R_cur.T
-        J0T = Tr @ J0T
-        # print_div( "<br> J0T " + str(J0T) ) # DEBUG
-        
-                      
-        # Error in position and orientation
-        # ER = np.matmul(R_cur, np.transpose(R_d))
-        ER = np.matmul(np.transpose(R_d),R_cur)
-        #print_div( "<br> ER " + str(ER) ) # DEBUG
-        EP = R_cur.T @ (p_cur - p_d)                         
-        #print_div( "<br> EP " + str(EP) ) # DEBUG
-        
-        #decompose ER to (k,theta) pair
-        k, theta = rox.R2rot(ER)                  
-        # print_div( "<br> k " + str(k) ) # DEBUG
-        # print_div( "<br> theta " + str(theta) ) # DEBUG
-        
-        ## set up s for different norm for ER
-        # s=2*np.dot(k,np.sin(theta)) #eR1
-        # s = np.dot(k,np.sin(theta/2))         #eR2
-        s = np.sin(theta/2) * np.array(k)         #eR2
-        # s=2*theta*k              #eR3
-        # s=np.dot(J_phi,phi)              #eR4
-        # print_div( "<br> s " + str(s) ) # DEBUG         
-                 
-        alpha = 1 # Step size        
-        # Damped Least square for iterative incerse kinematics   
-        delta = alpha * (np.linalg.inv(Kq + J0T.T @ J0T ) @ J0T.T @ np.hstack((s,EP)).T )
-        # print_div( "<br> delta " + str(delta) ) # DEBUG
-        
-        q_cur = q_cur - delta.reshape((num_joints,1))
-        
-        # Convergence Check
-        converged = (np.hstack((s,EP)) < 0.0001).all()
-        # print_div( "<br> converged? " + str(converged) ) # DEBUG
-        
-        itr += 1 # Increase the iteration
-    
-    joints_text=""
-    for i in q_cur:
-        joints_text+= "(%.3f, %.3f) " % (np.rad2deg(i), i)   
-    print_div_ik_info(str(rox.Transform(R_d,p_d)) +"<br>"+ joints_text +"<br>"+ str(converged) + ", itr = " + str(itr))
-    return q_cur, converged
 #########################################################
 # ZYX Euler angles calculation from rotation matrix
 def isclose(x, y, rtol=1.e-5, atol=1.e-8):
@@ -850,7 +702,6 @@ async def update_num_info():
     return len(joint_info), joint_types, joint_lower_limits, joint_upper_limits, joint_vel_limits, joint_acc_limits, joint_names
      
 async def update_kin_info():
-    global d_q # Joint angles in radian ndarray
     global d
     global num_joints    
     robot_info = await d.async_get_robot_info(None)
@@ -910,8 +761,10 @@ def gamepadaxisactive():
 
 async def client_drive():
     # rr+ws : WebSocket connection without encryption
+    ip = '192.168.50.152'
+
     # url ='rr+ws://localhost:58653?service=sawyer'    
-    url ='rr+ws://192.168.50.152:58653?service=sawyer'   
+    url ='rr+ws://'+ ip +':58653?service=sawyer'   
     # url ='rr+ws://128.113.224.23:58654?service=sawyer' # sawyer in lab
 
     # url ='rr+ws://localhost:58655?service=robot' #ABB
@@ -941,8 +794,6 @@ async def client_drive():
         JointTrajectoryWaypoint = RRN.GetStructureType("com.robotraconteur.robotics.trajectory.JointTrajectoryWaypoint",d)
         JointTrajectory = RRN.GetStructureType("com.robotraconteur.robotics.trajectory.JointTrajectory",d)
 
-
-
         # Put robot to jogging mode
         # await d.async_set_command_mode(halt_mode,None,5)
         # await RRN.AsyncSleep(0.1,None)
@@ -967,10 +818,21 @@ async def client_drive():
         print_div('JogJointSpace plugin is connecting..<br>')
 
         # url_plugin_jogJointSpace = 'rr+ws://localhost:8890?service=JogJointSpace'
-        url_plugin_jogJointSpace = 'rr+ws://192.168.50.152:8890?service=JogJointSpace'
+        url_plugin_jogJointSpace = 'rr+ws://' + ip + ':8890?service=JogJointSpace'
         global plugin_jogJointSpace
         plugin_jogJointSpace = await RRN.AsyncConnectService(url_plugin_jogJointSpace,None,None,None,None)
         await plugin_jogJointSpace.async_connect2robot(url,None)
+
+        print_div('JogJointSpace plugin is connected..<br>')
+
+        ## JogCartesianSpace plugin
+        print_div('JogCartesianSpace plugin is connecting..<br>')
+
+        # url_plugin_jogCartesianSpace = 'rr+ws://localhost:8891?service=JogCartesianSpace'
+        url_plugin_jogCartesianSpace = 'rr+ws://' + ip + ':8891?service=JogCartesianSpace'
+        global plugin_jogCartesianSpace
+        plugin_jogCartesianSpace = await RRN.AsyncConnectService(url_plugin_jogCartesianSpace,None,None,None,None)
+        await plugin_jogCartesianSpace.async_connect2robot(url,None)
 
         print_div('JogJointSpace plugin is connected..<br>')
         
@@ -978,7 +840,7 @@ async def client_drive():
         print_div('Vision plugin is connecting..<br>')
 
         # url_plugin_vision = 'rr+ws://localhost:8889?service=Vision'
-        url_plugin_vision = 'rr+ws://192.168.50.152:8889?service=Vision'
+        url_plugin_vision = 'rr+ws://' + ip + ':8889?service=Vision'
         global plugin_vision
         plugin_vision = await RRN.AsyncConnectService(url_plugin_vision,None,None,None,None)
 
@@ -996,7 +858,6 @@ async def client_drive():
         # Get the number of Joints, Joint Types, Limits etc in the robot.
         num_joints, joint_types, joint_lower_limits, joint_upper_limits, joint_vel_limits, joint_acc_limits, joint_names  = await update_num_info()
         
-        global H, P
         # Get the kinematics info, P and H in product of exponentials convention
         H, P = await update_kin_info()
         
@@ -1007,9 +868,8 @@ async def client_drive():
         # robot = rox.Robot(H,P,joint_types-1,joint_lower_limits,joint_upper_limits,joint_vel_limits,joint_acc_limits)
         robot = rox.Robot(H,P,joint_types-1)
         
-        global pose # Current pose object from Robotics Toolbox of the end effector
         # UPdate the end effector pose info
-        pose = await update_end_info()
+        pose = await update_end_info() # Current pose object from Robotics Toolbox of the end effector
             
         # Element references
         # Joint Space Control Buttons
@@ -1136,8 +996,6 @@ async def client_drive():
             pose = await update_end_info()
             
             await update_state_flags()
-            
-
             
     except:
         import traceback

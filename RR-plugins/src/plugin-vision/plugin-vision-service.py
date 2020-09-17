@@ -23,9 +23,9 @@ def main():
 
         #Wait for the user to shutdown the service
         if (sys.version_info > (3, 0)):
-            input("Server started, press enter to quit...")
+            input("pluginVision Server started, press enter to quit...")
         else:
-            raw_input("Server started, press enter to quit...")
+            raw_input("pluginVision Server started, press enter to quit...")
 
 if __name__ == '__main__':
     main()
