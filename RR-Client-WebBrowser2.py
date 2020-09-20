@@ -761,17 +761,18 @@ def gamepadaxisactive():
 
 async def client_drive():
     # rr+ws : WebSocket connection without encryption
-    ip = '192.168.50.152'
+    ip = '192.168.50.152' # robot service ip
+    # ip = 'localhost'
+    
+    ip_plugins = '192.168.50.152' # plugins ip
+    # ip_plugins = 'localhost' # plugins ip
 
-    # url ='rr+ws://localhost:58653?service=sawyer'    
-    # url ='rr+ws://'+ ip +':58653?service=sawyer'   
+    url ='rr+ws://'+ ip +':58653?service=sawyer'   
     # url ='rr+ws://128.113.224.23:58654?service=sawyer' # sawyer in lab
 
-    # url ='rr+ws://localhost:58655?service=robot' #ABB
-    # url ='rr+ws://192.168.50.118:58655?service=robot' #ABB
+    # url ='rr+ws://'+ ip +':58655?service=robot' #ABB
 
-    # url = 'rr+ws://localhost:23333?service=robot' # Dr.Wasons's Robot
-    url = 'rr+ws://'+ ip +':23333?service=robot' # Dr.Wasons's Robot
+    # url = 'rr+ws://'+ ip +':23333?service=robot' # Dr.Wasons's Robot
 
     print_div('Program started, please wait..<br>')
 
@@ -819,7 +820,7 @@ async def client_drive():
         print_div('JogJointSpace plugin is connecting..<br>')
 
         # url_plugin_jogJointSpace = 'rr+ws://localhost:8890?service=JogJointSpace'
-        url_plugin_jogJointSpace = 'rr+ws://' + ip + ':8890?service=JogJointSpace'
+        url_plugin_jogJointSpace = 'rr+ws://' + ip_plugins + ':8890?service=JogJointSpace'
         global plugin_jogJointSpace
         plugin_jogJointSpace = await RRN.AsyncConnectService(url_plugin_jogJointSpace,None,None,None,None)
         await plugin_jogJointSpace.async_connect2robot(url,None)
@@ -830,7 +831,7 @@ async def client_drive():
         print_div('JogCartesianSpace plugin is connecting..<br>')
 
         # url_plugin_jogCartesianSpace = 'rr+ws://localhost:8891?service=JogCartesianSpace'
-        url_plugin_jogCartesianSpace = 'rr+ws://' + ip + ':8891?service=JogCartesianSpace'
+        url_plugin_jogCartesianSpace = 'rr+ws://' + ip_plugins + ':8891?service=JogCartesianSpace'
         global plugin_jogCartesianSpace
         plugin_jogCartesianSpace = await RRN.AsyncConnectService(url_plugin_jogCartesianSpace,None,None,None,None)
         await plugin_jogCartesianSpace.async_connect2robot(url,None)
@@ -841,7 +842,7 @@ async def client_drive():
         print_div('Vision plugin is connecting..<br>')
 
         # url_plugin_vision = 'rr+ws://localhost:8889?service=Vision'
-        url_plugin_vision = 'rr+ws://' + ip + ':8889?service=Vision'
+        url_plugin_vision = 'rr+ws://' + ip_plugins + ':8889?service=Vision'
         global plugin_vision
         plugin_vision = await RRN.AsyncConnectService(url_plugin_vision,None,None,None,None)
 
