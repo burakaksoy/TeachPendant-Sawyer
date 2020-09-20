@@ -53,16 +53,19 @@ class JogCartesianSpace_impl(object):
 
                 if not converged:
                     print("Inverse Kinematics Algo. Could not Converge")
-                    raise
+                    # raise
                 elif not (joint_angles < self.joint_upper_limits).all() or not (joint_angles > self.joint_lower_limits).all():
                     print("Specified joints are out of range")
-                    raise
+                    # raise
                 else:
                     wait = True
                     relative = False
                     self.robot.jog_joint(joint_angles, self.joint_vel_limits, relative, wait)
             except:
                 print("Specified joints might be out of range")
+                import traceback
+                print(traceback.format_exc())
+                raise
 
         else:
             # Give an error message to show that the robot is not connected
@@ -257,7 +260,7 @@ class JogCartesianSpace_impl(object):
         itr = 0 # Iterations
         converged = False
         while itr < max_steps and not converged:
-        
+            
             pose = rox.fwdkin(self.robot_rox,q_cur)
             R_cur = pose.R
             p_cur = pose.p
@@ -274,14 +277,15 @@ class JogCartesianSpace_impl(object):
             Jp=J0T[3:,:]
             JR=J0T[:3,:]                      #decompose to position and orientation Jacobian
             
-                          
             # Error in position and orientation
             # ER = np.matmul(R_cur, np.transpose(R_d))
             ER = np.matmul(np.transpose(R_d),R_cur)
             #print_div( "<br> ER " + str(ER) ) # DEBUG
+
+            # EP = p_cur - p_d                         
             EP = R_cur.T @ (p_cur - p_d)                         
             #print_div( "<br> EP " + str(EP) ) # DEBUG
-            
+
             #decompose ER to (k,theta) pair
             k, theta = rox.R2rot(ER)                  
             # print_div( "<br> k " + str(k) ) # DEBUG
@@ -294,18 +298,19 @@ class JogCartesianSpace_impl(object):
             # s=2*theta*k              #eR3
             # s=np.dot(J_phi,phi)              #eR4
             # print_div( "<br> s " + str(s) ) # DEBUG         
-                  
 
             Kp = np.eye(3)
             KR = np.eye(3)        #gains for position and orientation error
             
-            vd = Kp @ EP
-            wd = KR @ s
+            vd = - Kp @ EP
+            wd = - KR @ s
+            
+            w=10000             #set the weight between orientation and position
 
             H = Jp.T @ Jp + w*JR.T @ JR + Kq 
             H = (H + H.T)/2
 
-            f= Jp.T @ vd + w* JR.T @ wd               #setup quadprog parameters
+            f= -(Jp.T @ vd + w* JR.T @ wd)               #setup quadprog parameters
             #     quadratic function with +/-qddot (1 rad/s^2) as upper/lower bound 
 
             qdot_star = solve_qp(H, f) 
@@ -316,11 +321,12 @@ class JogCartesianSpace_impl(object):
             delta = alpha * qdot_star 
             # print_div( "<br> delta " + str(delta) ) # DEBUG
             
-            q_cur = q_cur - delta.reshape((self.num_joints,1))
+            q_cur = q_cur + delta.reshape((self.num_joints,1))
             
             # Convergence Check
             converged = (np.hstack((s,EP)) < 0.0001).all()
             # print_div( "<br> converged? " + str(converged) ) # DEBUG
+            print( "converged? " + str(converged) ) # DEBUG
             
             itr += 1 # Increase the iteration
         
