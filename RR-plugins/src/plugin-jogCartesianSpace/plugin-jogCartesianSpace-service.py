@@ -5,6 +5,7 @@ from RobotRaconteur.Client import *     #import RR client library to connect to 
 import numpy as np
 
 import general_robotics_toolbox as rox
+from qpsolvers import solve_qp
 
 class JogCartesianSpace_impl(object):
     def __init__(self):
@@ -47,7 +48,8 @@ class JogCartesianSpace_impl(object):
 
             try:
                 # Update desired inverse kineamtics info
-                joint_angles, converged = self.update_ik_info(Rd,pd)
+                # joint_angles, converged = self.update_ik_info(Rd,pd)
+                joint_angles, converged = self.update_ik_info2(Rd,pd)
 
                 if not converged:
                     print("Inverse Kinematics Algo. Could not Converge")
@@ -221,6 +223,97 @@ class JogCartesianSpace_impl(object):
             alpha = 1 # Step size        
             # Damped Least square for iterative incerse kinematics   
             delta = alpha * (np.linalg.inv(Kq + J0T.T @ J0T ) @ J0T.T @ np.hstack((s,EP)).T )
+            # print_div( "<br> delta " + str(delta) ) # DEBUG
+            
+            q_cur = q_cur - delta.reshape((self.num_joints,1))
+            
+            # Convergence Check
+            converged = (np.hstack((s,EP)) < 0.0001).all()
+            # print_div( "<br> converged? " + str(converged) ) # DEBUG
+            
+            itr += 1 # Increase the iteration
+        
+        # joints_text=""
+        # for i in q_cur:
+        #     joints_text+= "(%.3f, %.3f) " % (np.rad2deg(i), i)   
+        # print_div_ik_info(str(rox.Transform(R_d,p_d)) +"<br>"+ joints_text +"<br>"+ str(converged) + ", itr = " + str(itr))
+        return q_cur, converged
+
+    def update_ik_info2(self, R_d, p_d): # Uses QP solver
+        # R_d, p_d: Desired orientation and position
+        d_q = self.get_current_joint_positions()
+        
+        q_cur = d_q # initial guess on the current joint angles
+        q_cur = q_cur.reshape((self.num_joints,1)) 
+        
+        epsilon = 0.01 # Damping Constant #0.001
+        Kq = epsilon * np.eye(len(q_cur)) # small value to make sure positive definite used in Damped Least Square
+        # print_div( "<br> Kq " + str(Kq) ) # DEBUG
+        
+        max_steps = 200 # number of steps to for convergence
+        
+        # print_div( "<br> q_cur " + str(q_cur) ) # DEBUG
+        
+        itr = 0 # Iterations
+        converged = False
+        while itr < max_steps and not converged:
+        
+            pose = rox.fwdkin(self.robot_rox,q_cur)
+            R_cur = pose.R
+            p_cur = pose.p
+            
+            #calculate current Jacobian
+            J0T = rox.robotjacobian(self.robot_rox,q_cur)
+            
+            # Transform Jacobian to End effector frame from the base frame
+            Tr = np.zeros((6,6))
+            Tr[:3,:3] = R_cur.T 
+            Tr[3:,3:] = R_cur.T
+            J0T = Tr @ J0T
+            
+            Jp=J0T[3:,:]
+            JR=J0T[:3,:]                      #decompose to position and orientation Jacobian
+            
+                          
+            # Error in position and orientation
+            # ER = np.matmul(R_cur, np.transpose(R_d))
+            ER = np.matmul(np.transpose(R_d),R_cur)
+            #print_div( "<br> ER " + str(ER) ) # DEBUG
+            EP = R_cur.T @ (p_cur - p_d)                         
+            #print_div( "<br> EP " + str(EP) ) # DEBUG
+            
+            #decompose ER to (k,theta) pair
+            k, theta = rox.R2rot(ER)                  
+            # print_div( "<br> k " + str(k) ) # DEBUG
+            # print_div( "<br> theta " + str(theta) ) # DEBUG
+            
+            ## set up s for different norm for ER
+            # s=2*np.dot(k,np.sin(theta)) #eR1
+            # s = np.dot(k,np.sin(theta/2))         #eR2
+            s = np.sin(theta/2) * np.array(k)         #eR2
+            # s=2*theta*k              #eR3
+            # s=np.dot(J_phi,phi)              #eR4
+            # print_div( "<br> s " + str(s) ) # DEBUG         
+                  
+
+            Kp = np.eye(3)
+            KR = np.eye(3)        #gains for position and orientation error
+            
+            vd = Kp @ EP
+            wd = KR @ s
+
+            H = Jp.T @ Jp + w*JR.T @ JR + Kq 
+            H = (H + H.T)/2
+
+            f= Jp.T @ vd + w* JR.T @ wd               #setup quadprog parameters
+            #     quadratic function with +/-qddot (1 rad/s^2) as upper/lower bound 
+
+            qdot_star = solve_qp(H, f) 
+
+            # find best step size to take
+            # alpha=fminbound(min_alpha,0,1,args=(q_cur,qdot_star,Sawyer_def,Rd,pd,w,Kp))
+            alpha = 0.8 # Step size    # 1.0    
+            delta = alpha * qdot_star 
             # print_div( "<br> delta " + str(delta) ) # DEBUG
             
             q_cur = q_cur - delta.reshape((self.num_joints,1))
