@@ -30,6 +30,7 @@ class JogCartesianSpace_impl(object):
             return
         else:
             self.num_jog_command += 1
+            print("num: " + str(self.num_jog_command))
 
 
         if self.robot is not None:
@@ -340,7 +341,7 @@ class JogCartesianSpace_impl(object):
             # Convergence Check
             converged = (np.hstack((s,EP)) < 0.0001).all()
             # print_div( "<br> converged? " + str(converged) ) # DEBUG
-            print( "converged? " + str(converged) ) # DEBUG
+            # print( "converged? " + str(converged) ) # DEBUG
             
             itr += 1 # Increase the iteration
         
