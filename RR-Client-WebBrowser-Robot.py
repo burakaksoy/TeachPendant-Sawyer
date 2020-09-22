@@ -152,6 +152,8 @@ def jog_cartesian_gamepad(P_axis, R_axis):
 
 async def async_jog_cartesian_gamepad(P_axis, R_axis):
     global plugin_jogCartesianSpace
+    await plugin_jogCartesianSpace.async_prepare_jog(None)
+    await plugin_jogCartesianSpace.async_jog_cartesian(P_axis, R_axis, None)
         
     global is_gamepadaxisactive
     global is_gamepadbuttondown
