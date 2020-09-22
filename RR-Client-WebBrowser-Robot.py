@@ -824,8 +824,8 @@ async def client_drive():
         global plugin_jogJointSpace
         plugin_jogJointSpace = await RRN.AsyncConnectService(url_plugin_jogJointSpace,None,None,None,None)
         await plugin_jogJointSpace.async_connect2robot(url,None)
-
         print_div('JogJointSpace plugin is connected..<br>')
+
 
         ## JogCartesianSpace plugin
         print_div('JogCartesianSpace plugin is connecting..<br>')
@@ -835,18 +835,37 @@ async def client_drive():
         global plugin_jogCartesianSpace
         plugin_jogCartesianSpace = await RRN.AsyncConnectService(url_plugin_jogCartesianSpace,None,None,None,None)
         await plugin_jogCartesianSpace.async_connect2robot(url,None)
-
         print_div('JogJointSpace plugin is connected..<br>')
         
-        ## Vision plugin
-        print_div('Vision plugin is connecting..<br>')
 
-        # url_plugin_vision = 'rr+ws://localhost:8889?service=Vision'
-        url_plugin_vision = 'rr+ws://' + ip_plugins + ':8889?service=Vision'
-        global plugin_vision
-        plugin_vision = await RRN.AsyncConnectService(url_plugin_vision,None,None,None,None)
+        ## CameraFeedback plugin
+        print_div('CameraFeedback plugin is connecting..<br>')
 
-        print_div('Vision plugin is connected!<br>')
+        # url_plugin_cameraFeedback = 'rr+ws://localhost:8889?service=CameraFeedback'
+        url_plugin_cameraFeedback = 'rr+ws://' + ip_plugins + ':8889?service=CameraFeedback'
+        global plugin_cameraFeedback
+        plugin_cameraFeedback = await RRN.AsyncConnectService(url_plugin_cameraFeedback,None,None,None,None)
+        print_div('CameraFeedback plugin is connected!<br>')
+
+
+        ## CameraTraining plugin
+        print_div('CameraTraining plugin is connecting..<br>')
+
+        # url_plugin_cameraTraining = 'rr+ws://localhost:8889?service=CameraTraining'
+        url_plugin_cameraTraining = 'rr+ws://' + ip_plugins + ':8892?service=CameraTraining'
+        global plugin_cameraTraining
+        plugin_cameraTraining = await RRN.AsyncConnectService(url_plugin_cameraTraining,None,None,None,None)
+        print_div('CameraTraining plugin is connected!<br>')
+
+
+        ## CameraCalibration plugin
+        print_div('CameraCalibration plugin is connecting..<br>')
+
+        # url_plugin_cameraCalibration = 'rr+ws://localhost:8889?service=CameraCalibration'
+        url_plugin_cameraCalibration = 'rr+ws://' + ip_plugins + ':8893?service=CameraCalibration'
+        global plugin_cameraCalibration
+        plugin_cameraCalibration = await RRN.AsyncConnectService(url_plugin_cameraCalibration,None,None,None,None)
+        print_div('CameraCalibration plugin is connected!<br>')
 
         # PLUGIN SERVICE CONNECTIONS END__________________________________
          

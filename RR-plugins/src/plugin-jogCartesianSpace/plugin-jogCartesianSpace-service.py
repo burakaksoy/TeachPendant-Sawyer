@@ -169,7 +169,7 @@ class JogCartesianSpace_impl(object):
         pose = rox.fwdkin(self.robot_rox, d_q) # Returns as pose.R and pose.p, loo rox for details
         return pose
 
-    def update_ik_info(self, R_d, p_d):
+    def update_ik_info(self, R_d, p_d): # inverse kinematics with least squares minimization
         # R_d, p_d: Desired orientation and position
         d_q = self.get_current_joint_positions()
         
@@ -242,7 +242,7 @@ class JogCartesianSpace_impl(object):
         # print_div_ik_info(str(rox.Transform(R_d,p_d)) +"<br>"+ joints_text +"<br>"+ str(converged) + ", itr = " + str(itr))
         return q_cur, converged
 
-    def update_ik_info2(self, R_d, p_d): # Uses QP solver
+    def update_ik_info2(self, R_d, p_d): # inverse kinematics that uses QP solver
         # R_d, p_d: Desired orientation and position
         d_q = self.get_current_joint_positions()
         

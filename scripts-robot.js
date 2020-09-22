@@ -103,7 +103,7 @@ async function run_test(){
 
     const response_zip = await fetch("./my_source.zip", {cache: "no-store"});
 
-    const response = await fetch("./RR-Client-WebBrowser2.py", {cache: "no-store"});
+    const response = await fetch("./RR-Client-WebBrowser-Robot.py", {cache: "no-store"});
     // const response = await fetch("./RR-Client-WebBrowser.py", {cache: "no-store"});
     const client_zip = await response_zip.arrayBuffer();
     let FS = pyodide._module.FS; 

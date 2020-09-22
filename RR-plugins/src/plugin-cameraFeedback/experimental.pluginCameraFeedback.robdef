@@ -1,0 +1,8 @@
+#Service to provide interface to RR-webBrowser-plugin-cameraFeedback
+service experimental.pluginCameraFeedback
+
+stdver 0.10
+
+object CameraFeedback
+
+end

@@ -1,8 +1,0 @@
-#Service to provide interface to RR-webBrowser-plugin-vision
-service experimental.pluginVision
-
-stdver 0.10
-
-object Vision
-
-end
