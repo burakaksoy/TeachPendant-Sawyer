@@ -7,8 +7,12 @@ import numpy as np
 
 class ClientVision(object):
     """Client Class to access client data in a more convenient way"""
-    async def __init__(self, url):
+    def __init__(self, url):
         self.url = url
+        self.loop_client = RR.WebLoop()
+        self.loop_client.call_soon(async_client_main())
+
+    async def async_client_main(self):
         self.c_host = await RRN.AsyncConnectService(self.url,None,None,None,None)
         self.c = await self.c_host.async_get_Webcams(0,None)
 
@@ -22,7 +26,6 @@ class ClientVision(object):
 
         self.c.async_StartStreaming(None)           
         await RRN.AsyncSleep(0.01,None)
-
 
     def new_frame(self,pipe_ep):
         #Loop to get the newest frame
@@ -77,7 +80,7 @@ async def client_vision():
     url ='rr+ws://192.168.50.152:2355?service=Webcam'
     
     try:
-        cli_vision = await ClientVision(url) # 
+        cli_vision = ClientVision(url) # 
 
         # c_host = await RRN.AsyncConnectService(url,None,None,None,None)
         # c = await c_host.async_get_Webcams(0,None)
