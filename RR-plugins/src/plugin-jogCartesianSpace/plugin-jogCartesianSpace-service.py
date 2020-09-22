@@ -7,8 +7,6 @@ import numpy as np
 import general_robotics_toolbox as rox
 from qpsolvers import solve_qp
 
-from js import print_div
-
 class JogCartesianSpace_impl(object):
     def __init__(self):
         self.url_robot = None
@@ -22,7 +20,6 @@ class JogCartesianSpace_impl(object):
 
     def jog_cartesian(self, P_axis, R_axis):
         print("Jog Joints is called")
-        print_div("Jog Joints is called")
 
         if self.robot is not None:
             print("Jog in Cartesian Space with command P_axis" + str(P_axis) + "and R_axis"+ str(R_axis)) 
