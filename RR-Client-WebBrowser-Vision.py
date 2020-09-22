@@ -10,7 +10,7 @@ class ClientVision(object):
     def __init__(self, url):
         self.url = url
         self.loop_client = RR.WebLoop()
-        self.loop_client.call_soon(async_client_main())
+        self.loop_client.call_soon(self.async_client_main())
 
     async def async_client_main(self):
         self.c_host = await RRN.AsyncConnectService(self.url,None,None,None,None)
