@@ -46,31 +46,6 @@ class ClientVision(object):
 
             image_data = ImageData.new(bytes(imageBytes),image.width,image.height)
             self.ctx.putImageData(image_data, 0, 0,0,0,320,240)
-
-
-
-
-# def new_frame(pipe_ep):
-#     global canvas, ctx
-    
-#     #Loop to get the newest frame
-#     while (pipe_ep.Available > 0):
-#         #Receive the packet
-#         image=pipe_ep.ReceivePacket()
-#         #Convert the packet to an image and set the global variable
-        
-#         if (canvas == None):
-#             canvas = document.getElementById("camera_image")
-#             ctx = canvas.getContext("2d")
-        
-#         imageBytes=np.zeros(4*image.width*image.height, dtype=np.uint8)        #dtype essential here, IndexSizeError
-#         imageBytes[3::4] = 255
-#         imageBytes[0::4] = image.data[2::3]
-#         imageBytes[1::4] = image.data[1::3]
-#         imageBytes[2::4] = image.data[0::3]
-
-#         image_data=ImageData.new(bytes(imageBytes),image.width,image.height)
-#         ctx.putImageData(image_data, 0, 0,0,0,320,240)
        
 async def client_vision():
     # rr+ws : WebSocket connection without encryption
@@ -80,25 +55,9 @@ async def client_vision():
     url ='rr+ws://192.168.50.152:2355?service=Webcam'
     
     try:
-        cli_vision = ClientVision(url) # 
-
-        # c_host = await RRN.AsyncConnectService(url,None,None,None,None)
-        # c = await c_host.async_get_Webcams(0,None)
-
-        # p = await c.FrameStream.AsyncConnect(-1,None)
+        # Run the client as a class to access client data in a more convenient way
+        cli_vision = ClientVision(url) 
         
-        # global canvas, ctx
-        # canvas = document.getElementById("camera_image")
-        # ctx = canvas.getContext("2d")
-        # print_div("Camera is Running!<br>")
-
-        # # while True:            
-        # p.PacketReceivedEvent+=new_frame
-            
-        # c.async_StartStreaming(None)
-                   
-        # await RRN.AsyncSleep(0.01,None)
-
     except:
         import traceback
         print_div(traceback.format_exc())
