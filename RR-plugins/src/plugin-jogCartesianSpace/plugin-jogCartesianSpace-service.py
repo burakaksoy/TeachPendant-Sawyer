@@ -79,7 +79,7 @@ class JogCartesianSpace_impl(object):
                 print("Specified joints might be out of range")
                 import traceback
                 print(traceback.format_exc())
-                raise
+                # raise
 
         else:
             # Give an error message to show that the robot is not connected
