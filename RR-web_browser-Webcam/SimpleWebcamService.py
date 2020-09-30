@@ -37,6 +37,7 @@ class Webcam_impl(object):
                 self._capture=cv2.VideoCapture(cameraid + cv2.CAP_DSHOW)
             else:
                 self._capture=cv2.VideoCapture(cameraid)
+                # self._capture=cv2.VideoCapture(0)
             self._capture.set(3,320)
             self._capture.set(4,240)
 
@@ -190,8 +191,11 @@ def main():
     args = parser.parse_args()
 
     #Initialize the webcam host root object
-    # camera_names=[(0,"Left"),(1,"Right")]
-    camera_names=[(0,"Right")]
+    # camera_names=[(0,"Left"),(4,"Right")]
+    # camera_names=[(0,"Left"),(2,"Right")]
+    # camera_names=[(0,"Right")]
+    camera_names=[(0,"Left"),(2,"Mid"),(4,"Right")]
+
     if args.camera_names is not None:
         camera_names_split=list(filter(None,args.camera_names.split(',')))
         assert(len(camera_names_split) > 0)
@@ -217,6 +221,12 @@ def main():
         
         c1=obj.get_Webcams(0)[0]
         c1.CaptureFrameToBuffer()
+
+        c2=obj.get_Webcams(2)[0]
+        c2.CaptureFrameToBuffer()
+
+        c3=obj.get_Webcams(4)[0]
+        c3.CaptureFrameToBuffer()
     
         if args.wait_signal:  
             #Wait for shutdown signal if running in service mode          

@@ -18,8 +18,20 @@ class JogCartesianSpace_impl(object):
         self.move_distance = 0.01 # meters
         self.rotate_angle = np.deg2rad(5) # radians
 
+        self.pose_at_command = None 
+        self.num_jog_command = 0
+        
+
     def jog_cartesian(self, P_axis, R_axis):
         print("Jog Joints is called")
+
+        if self.pose_at_command is None:
+            print("You need to call prepare_jog() function before calling jog_cartesian(P_axis,R_axis) function")
+            return
+        else:
+            self.num_jog_command += 1
+            print("num: " + str(self.num_jog_command))
+
 
         if self.robot is not None:
             print("Jog in Cartesian Space with command P_axis" + str(P_axis) + "and R_axis"+ str(R_axis)) 
@@ -32,7 +44,8 @@ class JogCartesianSpace_impl(object):
 
             ## Jog the robot in cartesian space
             # Update the end effector pose info
-            pose = self.get_current_pose()
+            # pose = self.get_current_pose()
+            pose = self.pose_at_command 
             
             Rd = pose.R
             pd = pose.p
@@ -40,10 +53,12 @@ class JogCartesianSpace_impl(object):
             # if P_axis is not None:
             zero_vec = np.array(([0.,0.,0.]))
             if not np.array_equal(P_axis, zero_vec):
-                pd = pd + Rd.dot(self.move_distance * P_axis)
+                # Desired Position
+                pd = pd + Rd.dot(self.num_jog_command * self.move_distance * P_axis)
             if not np.array_equal(R_axis, zero_vec):
                 # R = rox.rot(np.array(([1.],[0.],[0.])), 0.261799)
-                R = rox.rot(R_axis, self.rotate_angle)
+                R = rox.rot(R_axis, self.num_jog_command * self.rotate_angle)
+                # Desired Orientation
                 Rd = Rd.dot(R) # Rotate
 
             try:
@@ -65,7 +80,7 @@ class JogCartesianSpace_impl(object):
                 print("Specified joints might be out of range")
                 import traceback
                 print(traceback.format_exc())
-                raise
+                # raise
 
         else:
             # Give an error message to show that the robot is not connected
@@ -169,7 +184,7 @@ class JogCartesianSpace_impl(object):
         pose = rox.fwdkin(self.robot_rox, d_q) # Returns as pose.R and pose.p, loo rox for details
         return pose
 
-    def update_ik_info(self, R_d, p_d):
+    def update_ik_info(self, R_d, p_d): # inverse kinematics with least squares minimization
         # R_d, p_d: Desired orientation and position
         d_q = self.get_current_joint_positions()
         
@@ -242,7 +257,7 @@ class JogCartesianSpace_impl(object):
         # print_div_ik_info(str(rox.Transform(R_d,p_d)) +"<br>"+ joints_text +"<br>"+ str(converged) + ", itr = " + str(itr))
         return q_cur, converged
 
-    def update_ik_info2(self, R_d, p_d): # Uses QP solver
+    def update_ik_info2(self, R_d, p_d): # inverse kinematics that uses QP solver
         # R_d, p_d: Desired orientation and position
         d_q = self.get_current_joint_positions()
         
@@ -326,7 +341,7 @@ class JogCartesianSpace_impl(object):
             # Convergence Check
             converged = (np.hstack((s,EP)) < 0.0001).all()
             # print_div( "<br> converged? " + str(converged) ) # DEBUG
-            print( "converged? " + str(converged) ) # DEBUG
+            # print( "converged? " + str(converged) ) # DEBUG
             
             itr += 1 # Increase the iteration
         
@@ -335,6 +350,12 @@ class JogCartesianSpace_impl(object):
         #     joints_text+= "(%.3f, %.3f) " % (np.rad2deg(i), i)   
         # print_div_ik_info(str(rox.Transform(R_d,p_d)) +"<br>"+ joints_text +"<br>"+ str(converged) + ", itr = " + str(itr))
         return q_cur, converged
+
+    def prepare_jog(self):
+        self.pose_at_command = self.get_current_pose()
+        self.num_jog_command = 0
+        
+
 
 
 

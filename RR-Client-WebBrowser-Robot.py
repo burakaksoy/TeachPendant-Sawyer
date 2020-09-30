@@ -152,6 +152,8 @@ def jog_cartesian_gamepad(P_axis, R_axis):
 
 async def async_jog_cartesian_gamepad(P_axis, R_axis):
     global plugin_jogCartesianSpace
+    await plugin_jogCartesianSpace.async_prepare_jog(None)
+    await plugin_jogCartesianSpace.async_jog_cartesian(P_axis, R_axis, None)
         
     global is_gamepadaxisactive
     global is_gamepadbuttondown
@@ -309,7 +311,9 @@ def jog_cartesian(P_axis, R_axis):
 
 async def async_jog_cartesian(P_axis, R_axis):
     global plugin_jogCartesianSpace
-
+    await plugin_jogCartesianSpace.async_prepare_jog(None)
+    await plugin_jogCartesianSpace.async_jog_cartesian(P_axis, R_axis, None)
+    
     global is_mousedown
     while (is_mousedown):
         # Call Jog Cartesian Space Service funtion to handle this jogging
@@ -824,8 +828,8 @@ async def client_drive():
         global plugin_jogJointSpace
         plugin_jogJointSpace = await RRN.AsyncConnectService(url_plugin_jogJointSpace,None,None,None,None)
         await plugin_jogJointSpace.async_connect2robot(url,None)
-
         print_div('JogJointSpace plugin is connected..<br>')
+
 
         ## JogCartesianSpace plugin
         print_div('JogCartesianSpace plugin is connecting..<br>')
@@ -835,18 +839,8 @@ async def client_drive():
         global plugin_jogCartesianSpace
         plugin_jogCartesianSpace = await RRN.AsyncConnectService(url_plugin_jogCartesianSpace,None,None,None,None)
         await plugin_jogCartesianSpace.async_connect2robot(url,None)
-
         print_div('JogJointSpace plugin is connected..<br>')
         
-        ## Vision plugin
-        print_div('Vision plugin is connecting..<br>')
-
-        # url_plugin_vision = 'rr+ws://localhost:8889?service=Vision'
-        url_plugin_vision = 'rr+ws://' + ip_plugins + ':8889?service=Vision'
-        global plugin_vision
-        plugin_vision = await RRN.AsyncConnectService(url_plugin_vision,None,None,None,None)
-
-        print_div('Vision plugin is connected!<br>')
 
         # PLUGIN SERVICE CONNECTIONS END__________________________________
          

@@ -1,0 +1,8 @@
+#Service to provide interface to RR-webBrowser-plugin-cameraCalibration
+service experimental.pluginCameraCalibration
+
+stdver 0.10
+
+object CameraCalibration
+
+end
