@@ -842,35 +842,6 @@ async def client_drive():
         print_div('JogJointSpace plugin is connected..<br>')
         
 
-        ## CameraFeedback plugin
-        print_div('CameraFeedback plugin is connecting..<br>')
-
-        # url_plugin_cameraFeedback = 'rr+ws://localhost:8889?service=CameraFeedback'
-        url_plugin_cameraFeedback = 'rr+ws://' + ip_plugins + ':8889?service=CameraFeedback'
-        global plugin_cameraFeedback
-        plugin_cameraFeedback = await RRN.AsyncConnectService(url_plugin_cameraFeedback,None,None,None,None)
-        print_div('CameraFeedback plugin is connected!<br>')
-
-
-        ## CameraTraining plugin
-        print_div('CameraTraining plugin is connecting..<br>')
-
-        # url_plugin_cameraTraining = 'rr+ws://localhost:8889?service=CameraTraining'
-        url_plugin_cameraTraining = 'rr+ws://' + ip_plugins + ':8892?service=CameraTraining'
-        global plugin_cameraTraining
-        plugin_cameraTraining = await RRN.AsyncConnectService(url_plugin_cameraTraining,None,None,None,None)
-        print_div('CameraTraining plugin is connected!<br>')
-
-
-        ## CameraCalibration plugin
-        print_div('CameraCalibration plugin is connecting..<br>')
-
-        # url_plugin_cameraCalibration = 'rr+ws://localhost:8889?service=CameraCalibration'
-        url_plugin_cameraCalibration = 'rr+ws://' + ip_plugins + ':8893?service=CameraCalibration'
-        global plugin_cameraCalibration
-        plugin_cameraCalibration = await RRN.AsyncConnectService(url_plugin_cameraCalibration,None,None,None,None)
-        print_div('CameraCalibration plugin is connected!<br>')
-
         # PLUGIN SERVICE CONNECTIONS END__________________________________
          
         print_div('READY!<br>')
