@@ -12,7 +12,7 @@ from js import print_div_ik_info
 from js import print_div_cur_pose
 
 from RobotRaconteur.Client import *
-import time
+# import time
 import numpy as np
 import sys
 # import math
@@ -420,20 +420,14 @@ async def async_go_sel_pose_func():
 
 def playback_poses_func(self):
     print_div("Playing Back Poses..")
-    loop.call_soon(async_playback_poses_func())
+    global is_jogging
+    if (not is_jogging): 
+        is_jogging = True
+        loop.call_soon(async_playback_poses_func())
+    else:
+        print_div("Jogging has not finished yet..<br>")
 
 async def async_playback_poses_func():
-    global d, num_joints, joint_lower_limits, joint_upper_limits, joint_vel_limits
-    
-    # Import Necessary Structures
-    # global JointTrajectoryWaypoint, JointTrajectory
-    JointTrajectoryWaypoint = RRN.GetStructureType("com.robotraconteur.robotics.trajectory.JointTrajectoryWaypoint",d)
-    JointTrajectory = RRN.GetStructureType("com.robotraconteur.robotics.trajectory.JointTrajectory",d)
-
-    # Get Joint Names
-    robot_info = await d.async_get_robot_info(None)
-    joint_names = [j.joint_identifier.name for j in robot_info.joint_info]
-
     # Get elements, poses and paramaters from web interface
     poses_list = document.getElementById("saved_poses_list")
     num_loops_elem = document.getElementById("num_loops_in")
@@ -441,130 +435,19 @@ async def async_playback_poses_func():
     joint_vel_range = document.getElementById("joint_vel_range")
     joint_vel_ratio = float(joint_vel_range.value)/100.0
 
-    time_loops_elem = document.getElementById("time_loops_in")
-    time_loops = float(time_loops_elem.value)
-
     # Time to complete the playback
-    t_complete = time_loops #seconds
-    
-    # Create waypoints array 
-    waypoints = []
+    time_loops_elem = document.getElementById("time_loops_in")
+    t_complete = float(time_loops_elem.value) #seconds
+
     if poses_list.length >= 4:
-        index = 0 # index in saved poses list
-        while index < (poses_list.length):
-            sel_pose = poses_list.options[index].value # angles as str
-            joint_angles = np.fromstring(sel_pose, dtype=float, sep=',')*np.deg2rad(1) # in rad
-
-            if not (joint_angles < joint_upper_limits).all() or not (joint_angles > joint_lower_limits).all():
-                print_div("Specified joints are out of range<br>")
-                return
-            else:
-                # Go to initial waypoint
-                if index == 0:
-                    await d.async_jog_joint(joint_angles, joint_vel_limits, False, True,None)
-                    await RRN.AsyncSleep(2,None)
-
-                # Define the time to be at that waypoint
-                t = float(index)*(float(t_complete)/float(poses_list.length))
-                # Add the joint angles to waypoints array
-                wp = JointTrajectoryWaypoint()
-                wp.joint_position = joint_angles # (j_end - j_start)*(float(i)/10.0) + j_start
-                wp.time_from_start = t
-                waypoints.append(wp)
-
-            index += 1
-        # Complete the loop, Add the 1st joint angles to waypoints array again
-        t = float(index)*(float(t_complete)/float(poses_list.length))
-        # Add the joint angles to waypoints array
-        wp = JointTrajectoryWaypoint()
-        wp.joint_position = waypoints[0].joint_position
-        wp.time_from_start = t
-        waypoints.append(wp)
-
+        global plugin_savePlayback
+        await plugin_savePlayback.async_playback_poses(num_loops, joint_vel_ratio, t_complete, None)
     else:
         print_div("You need at least 4 different points. Add some poses to Saved Poses and try again<br>")
-        # # Put robot to jogging mode back
-        # await d.async_set_command_mode(halt_mode,None,5)
-        # await RRN.AsyncSleep(0.01,None)
-        # await d.async_set_command_mode(jog_mode,None,5)
-        # await RRN.AsyncSleep(0.01,None)
-        return
 
-    # Put robot to trajectory mode
-    await d.async_set_command_mode(halt_mode,None,5)
-    await RRN.AsyncSleep(0.01,None)
-    await d.async_set_command_mode(trajectory_mode,None,5)
-    await RRN.AsyncSleep(0.01,None)
+    global is_jogging
+    is_jogging = False
 
-    # Create the trajectory
-    traj = JointTrajectory()
-    traj.joint_names = joint_names
-    traj.waypoints = waypoints
-    d.async_set_speed_ratio(joint_vel_ratio,None,5)
-
-    try:
-        # Execute the trajectory number of loops times
-        i = 0 # loop
-        while i < num_loops:
-            traj_gen = await d.async_execute_trajectory(traj, None)
-        
-            while (True):
-                t = time.time()
-
-                # robot_state = state_w.InValue
-                try:
-                    # print_div("Here")
-                    res = await traj_gen.AsyncNext(None, None)        
-                    # print_div(res.action_status)
-                except RR.StopIterationException:
-                    break
-
-            i += 1
-            print_div("Loop:" + str(i) + "is done..<br>")
-    except:
-        # import traceback
-        # print_div(traceback.format_exc())
-        print_div("Robot accelaration or velocity limits might be out of range. Increase the loop time or slow down the speed ratio<br>")
-        # return
-        # raise
-
-    # Put robot to jogging mode back
-    await d.async_set_command_mode(halt_mode,None,5)
-    await RRN.AsyncSleep(0.01,None)
-    await d.async_set_command_mode(jog_mode,None,5)
-    await RRN.AsyncSleep(0.01,None)
-
-    # ##############################################################
-    # if poses_list.length > 0:
-    #     i = 0 # loop
-    #     while i < num_loops:
-    #         index = 0 # index in saved poses list
-    #         while index < (poses_list.length):
-    #             sel_pose = poses_list.options[index].value # angles as str
-    #             joint_angles = np.fromstring(sel_pose, dtype=float, sep=',')*np.deg2rad(1) # in rad
-
-    #             if not (joint_angles <= joint_upper_limits).all() or not (joint_angles >= joint_lower_limits).all():
-    #                 print_div("Specified joints are out of range<br>")
-    #                 return
-    #             else:
-    #                 try:
-    #                     await d.async_jog_joint(joint_angles, joint_vel_limits*joint_vel_ratio, False, True, None)
-    #                 except:
-    #                     print_div("Specified joints might be out of range<br>")
-    #                     return
-
-    #             index += 1
-    #         # Complete the loop, go back the first pose
-    #         sel_pose = poses_list.options[0].value # angles as str
-    #         joint_angles = np.fromstring(sel_pose, dtype=float, sep=',')*np.deg2rad(1) # in rad
-
-    #         i += 1
-
-    # else:
-    #     print_div("Add some poses to Saved Poses and try again<br>")
-    #     return
-
-###############################################################
 # ---------------------------END: SAVE PLAYBACK POSES --------------------------- #
 
 async def update_state_flags():
@@ -632,19 +515,16 @@ async def update_kin_info():
     HnP_text = await plugin_updateInfo.async_kinematics_str(None)
     print_div_kin_info(HnP_text)
 
-
 async def update_end_info():
     global plugin_updateInfo
     pose_str = await plugin_updateInfo.async_current_pose_str(None)
     print_div_end_info(pose_str) 
     print_div_cur_pose(pose_str)
 
-
 def mouseup_func(self):
     global is_mousedown
     is_mousedown = False
     # print_div("Mouse is up<br>")
-
 
 def gamepadbuttonup():
     global is_gamepadbuttondown
@@ -665,8 +545,6 @@ def gamepadaxisactive():
     global is_gamepadaxisactive
     is_gamepadaxisactive = True
     # print_div("Gamepadaxis is active<br>")
-
-
 
 async def client_drive():
     # rr+ws : WebSocket connection without encryption
@@ -882,7 +760,6 @@ async def client_drive():
 
         global is_jogging
         is_jogging = False
-
         global is_mousedown
         is_mousedown = False        
 
@@ -890,7 +767,6 @@ async def client_drive():
 
         global is_gamepadbuttondown
         is_gamepadbuttondown = False
-
         global is_gamepadaxisactive
         is_gamepadaxisactive = False
 

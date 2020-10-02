@@ -7,4 +7,5 @@ object SavePlayback
     function void connect2robot(string url_robot)
     function void save_cur_pose()
     function void go_sel_pose(int32 index)
+    function void playback_poses(int32 num_loops, double joint_vel_ratio, double t_complete)
 end
