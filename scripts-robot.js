@@ -11,7 +11,7 @@ function print_div(message)
 function print_div_j_info(message)
 {   
     var id="" 
-    var angles_array = message.split("<br>");
+    var angles_array = message.split(",");
     for (let i = 0; i < angles_array.length - 1 ; i++) {
         id = "j" + (i+1).toString() + "_angle_out" 
         document.getElementById(id).innerHTML = angles_array[i];
@@ -55,10 +55,11 @@ function print_div_ik_info(message)
     $("#print_div_ik_info").html(message)
 }
 
-function print_div_cur_pose(msg_orientation, msg_position)
+function print_div_cur_pose(msg)
 {
-    $("#cur_ZYX_angles").html(msg_orientation)
-    $("#cur_position").html(msg_position)
+    var msg_array = msg.split(";");
+    $("#cur_ZYX_angles").html(msg_array[1])
+    $("#cur_position").html(msg_array[0])
 }
 
 function upSelPose()

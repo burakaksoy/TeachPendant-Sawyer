@@ -354,11 +354,6 @@ class JogCartesianSpace_impl(object):
     def prepare_jog(self):
         self.pose_at_command = self.get_current_pose()
         self.num_jog_command = 0
-        
-
-
-
-
 
 
 def main():

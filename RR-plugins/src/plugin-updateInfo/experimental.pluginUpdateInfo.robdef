@@ -1,0 +1,14 @@
+#Service to provide interface to RR-webBrowser-plugin-updateInfo
+service experimental.pluginUpdateInfo
+
+stdver 0.10
+
+object UpdateInfo
+    function void connect2robot(string url_robot)
+    function string current_pose_str()
+    function string state_flags_str()
+    function string current_joint_angles_str()
+    function string{list} joint_limits_str_array()
+    function string joint_num_type_vel_acc_name_str()
+    function string kinematics_str()
+end

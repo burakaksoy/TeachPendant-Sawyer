@@ -15,11 +15,10 @@ from RobotRaconteur.Client import *
 import time
 import numpy as np
 import sys
-import math
+# import math
 
-sys.path.append("./my_source.zip")
-import general_robotics_toolbox as rox
-# from qpsolvers import solve_qp
+# sys.path.append("./my_source.zip")
+# import general_robotics_toolbox as rox
 
 # ---------------------------BEGIN: BLOCKLY FUNCTIONS  --------------------------- #
 def jog_joints2(q_i, degree_diff, is_relative):
@@ -32,10 +31,10 @@ def jog_joints2(q_i, degree_diff, is_relative):
 
 
 async def async_jog_joints2(q_i, degree_diff, is_relative):
-    global d, d_q, num_joints, joint_lower_limits, joint_upper_limits, joint_vel_limits
+    global d, num_joints, joint_lower_limits, joint_upper_limits, joint_vel_limits
 
     # Update joint angles
-    d_q = await update_joint_info() # Joint angles in radian ndarray
+    d_q, _ = await update_joint_info() # Joint angles in radian ndarray, N x 1
     
     await update_state_flags()
 
@@ -81,13 +80,13 @@ def jog_joints_gamepad(joint_speed_constants):
 
 async def async_jog_joints_gamepad(joint_speed_constants):
     degree_diff = 1
-    global d, d_q, num_joints, joint_lower_limits, joint_upper_limits, joint_vel_limits
+    global d, num_joints, joint_lower_limits, joint_upper_limits, joint_vel_limits
 
     global is_gamepadaxisactive
     global is_gamepadbuttondown
     if (is_gamepadaxisactive or is_gamepadbuttondown): 
         # Update joint angles
-        d_q = await update_joint_info() # Joint angles in radian ndarray
+        d_q, _ = await update_joint_info() # Joint angles in radian ndarray, N x 1
         
         # Trim joint speed constants accordingto number of joints
         joint_speed_constants = joint_speed_constants[:num_joints]
@@ -370,114 +369,53 @@ def tZ_pos_func(self):
 def tZ_neg_func(self):
     print_div('&theta;Z- button pressed<br>')
     jog_cartesian(np.array(([0.,0.,0.])), np.array(([0.,0.,-1.])))
-
-#########################################################
-# ZYX Euler angles calculation from rotation matrix
-def isclose(x, y, rtol=1.e-5, atol=1.e-8):
-    return abs(x-y) <= atol + rtol * abs(y)
-
-def euler_angles_from_rotation_matrix(R):
-    '''
-    From a paper by Gregory G. Slabaugh (undated),
-    "Computing Euler angles from a rotation matrix
-    '''
-    phi = 0.0
-    if isclose(R[2,0],-1.0):
-        theta = math.pi/2.0
-        psi = math.atan2(R[0,1],R[0,2])
-    elif isclose(R[2,0],1.0):
-        theta = -math.pi/2.0
-        psi = math.atan2(-R[0,1],-R[0,2])
-    else:
-        theta = -math.asin(R[2,0])
-        cos_theta = math.cos(theta)
-        psi = math.atan2(R[2,1]/cos_theta, R[2,2]/cos_theta)
-        phi = math.atan2(R[1,0]/cos_theta, R[0,0]/cos_theta)
-    return psi, theta, phi #  x y z for Rz * Ry * Rx
-#########################################################
-#########################################################
-
-async def update_end_info():
-    global robot
-    global d_q
-    
-    pose = rox.fwdkin(robot, d_q)
-       
-    print_div_end_info(str(pose))
-    # print_div_end_info( np.array_str(pose.R, precision=4, suppress_small=True).replace('\n', '\n' + ' '*4))
-    
-    # Calculate euler ZYX angles from pose and write them into:
-    x,y,z = euler_angles_from_rotation_matrix(pose.R)
-    str_rx = "%.2f" % (np.rad2deg(x))
-    str_ry = "%.2f" % (np.rad2deg(y))
-    str_rz = "%.2f" % (np.rad2deg(z))
-    str_px = "%.3f" % (pose.p[0])
-    str_py = "%.3f" % (pose.p[1])
-    str_pz = "%.3f" % (pose.p[2])
-    xyz_orient_str = "[" + str_rx + ", " + str_ry + ", " + str_rz + "]"
-    xyz_positi_str = "[" + str_px + ", " + str_py + ", " + str_pz + "]"
-    print_div_cur_pose(xyz_orient_str,xyz_positi_str)
-    return pose
 # ---------------------------END: CARTESIAN SPACE JOGGING --------------------------- #
 
 # ---------------------------BEGIN: SAVE PLAYBACK POSES --------------------------- #
 def save_cur_pose_func(self):
     print_div('Saving to "Saved Poses" list..<br>')
+    loop.call_soon(async_save_cur_pose_func())
     
-    global d_q # Get the current joint angles in rad ndarray
-    # Convert them into degrees for text view
-    joints_text=""
-    for i in d_q:
-        joints_text+= "%.2f," % (np.rad2deg(i))
-    joints_text = joints_text[:-1] # Delete the last comma
+async def async_save_cur_pose_func():
+    # Get the current joint angles as ndarray and str
+    _, joints_text = await update_joint_info() # Current Joint angles in radian ndarray, N x 1 and str
+    joints_text = joints_text[:-1] # Delete the last comma    
 
-    # Add the current joint angles to the saved poses list
+    # Add the current joint angles to the saved poses list on web browser UI
     element_id = "saved_poses_list"
     poses_list = document.getElementById(element_id)
     option = document.createElement("option")
     option.text = joints_text
     poses_list.add(option)
 
+    # Save the cur pose to plug in as well
+    global plugin_savePlayback
+    await plugin_savePlayback.async_save_cur_pose(None)
+
 def go_sel_pose_func(self):
     print_div("Moving to selected pose..<br>")
-
     global is_jogging
-
     if (not is_jogging): 
         is_jogging = True
         loop.call_soon(async_go_sel_pose_func())
     else:
         print_div("Jogging has not finished yet..<br>")
 
-
 async def async_go_sel_pose_func():
-    global d, num_joints, joint_lower_limits, joint_upper_limits, joint_vel_limits
-    global is_jogging
-
-    # Read the selected pose from the browser
+    # Read the selected pose index from the browser
     element_id = "saved_poses_list"
     poses_list = document.getElementById(element_id)
     index = poses_list.selectedIndex
-
     try:
         if index == -1:
             print_div("Please select a pose from Saved Poses.<br>")
-            raise
         else:
-            sel_pose = poses_list.options[index].value # angles as str
-            joint_angles = np.fromstring(sel_pose, dtype=float, sep=',')*np.deg2rad(1) # in rad
-
-            if not (joint_angles < joint_upper_limits).all() or not (joint_angles > joint_lower_limits).all():
-                print_div("Specified joints are out of range<br>")
-                raise
-            else:
-                try:
-                    await d.async_jog_joint(joint_angles, joint_vel_limits, False, True,None)
-                except:
-                    print_div("Specified joints might be out of range<br>")
-                    raise
+            global plugin_savePlayback
+            await plugin_savePlayback.async_go_sel_pose(index,None)
     except:
-        is_jogging = False
+        pass
+
+    global is_jogging
     is_jogging = False
 
 def playback_poses_func(self):
@@ -486,7 +424,12 @@ def playback_poses_func(self):
 
 async def async_playback_poses_func():
     global d, num_joints, joint_lower_limits, joint_upper_limits, joint_vel_limits
-    global JointTrajectoryWaypoint, JointTrajectory
+    
+    # Import Necessary Structures
+    # global JointTrajectoryWaypoint, JointTrajectory
+    JointTrajectoryWaypoint = RRN.GetStructureType("com.robotraconteur.robotics.trajectory.JointTrajectoryWaypoint",d)
+    JointTrajectory = RRN.GetStructureType("com.robotraconteur.robotics.trajectory.JointTrajectory",d)
+
     # Get Joint Names
     robot_info = await d.async_get_robot_info(None)
     joint_names = [j.joint_identifier.name for j in robot_info.joint_info]
@@ -627,43 +570,27 @@ async def async_playback_poses_func():
 async def update_state_flags():
     # For reading robot state flags
     #print_div_flag_info("State Flags Updating..")
-    
-    global d
-    d_state = await d.robot_state.AsyncPeekInValue(None,5)
-    
-    global robot_const
-    state_flags_enum = robot_const['RobotStateFlags']
-    # print_div(state_flags_enum.items())
-    
-    flags_text =""
-    for flag_name, flag_code in state_flags_enum.items():
-        if flag_code & d_state[0].robot_state_flags != 0:
-            flags_text += flag_name + " "
+    global plugin_updateInfo
+    flags_text = await plugin_updateInfo.async_state_flags_str(None)
     print_div_flag_info(flags_text)
   
   
 async def update_joint_info():
     # For reading Joint Angles
     # print_div_j_info("Joint info Updating..")
-    
     global d
     d_state = await d.robot_state.AsyncPeekInValue(None,5)    
     d_q = d_state[0].joint_position
     
-    joints_text=""
-    for i in d_q:
-        # joints_text+= "%.2f, %.2f<br>" % (np.rad2deg(i), i)
-        joints_text+= "%.2f<br>" % (np.rad2deg(i))
-    # joints_text += ", shape = " + str(d_q.shape) + "<br>" # DEBUG
-    print_div_j_info(joints_text)
-    # print_div_j_info(type(d_q).__name__)
-    # print_div_j_info(d_q.tolist())
-    return d_q # in radian ndarray
+    global plugin_updateInfo
+    joints_text = await plugin_updateInfo.async_current_joint_angles_str(None)
+      
+    return d_q, joints_text  # returns d_q in radian ndarray, joints_text str to print to browser.
 
 async def update_num_info():
     # For reading about number of robot joints, joint types, joint limits etc
     # print_div_num_info("Number of Joints info updating")
- 
+    
     global d    
     robot_info = await d.async_get_robot_info(None) 
     joint_info = robot_info.joint_info # A list of jointInfo
@@ -691,48 +618,26 @@ async def update_num_info():
     joint_vel_limits = np.asarray(joint_vel_limits)
     joint_acc_limits = np.asarray(joint_acc_limits)
     
-    joint_lower_limits_text = ""    
-    for i in joint_lower_limits:
-        joint_lower_limits_text += "%.2f " % (np.rad2deg(i))
-        
-    joint_upper_limits_text = ""
-    for i in joint_upper_limits:
-        joint_upper_limits_text += "%.2f " % (np.rad2deg(i))
-    
-    print_div_j_limit_info(joint_lower_limits_text, joint_upper_limits_text)
-    
-    print_div_num_info( str(len(joint_info)) +"<br>"+ str(joint_types) +"<br>"+ str(joint_vel_limits) +"<br>"+ str(joint_acc_limits) +"<br>"+ str(joint_names) ) # +"<br>"+ str(joint_uuids))
+    global plugin_updateInfo
+    joint_limits_text = await plugin_updateInfo.async_joint_limits_str_array(None)
+    print_div_j_limit_info(joint_limits_text[0], joint_limits_text[1])
+
+    joint_num_type_vel_acc_name_text = await plugin_updateInfo.async_joint_num_type_vel_acc_name_str(None)
+    print_div_num_info(joint_num_type_vel_acc_name_text) 
     
     return len(joint_info), joint_types, joint_lower_limits, joint_upper_limits, joint_vel_limits, joint_acc_limits, joint_names
      
-async def update_kin_info():
-    global d
-    global num_joints    
-    robot_info = await d.async_get_robot_info(None)
-    chains = robot_info.chains # Get RobotKinChainInfo
-    H = chains[0].H # Axes of the joints, 3xN 
-    P = chains[0].P # P vectors between joint centers (Product of Exponenetials Convention)
-    # print_div_kin_info(type(H).__name__)
-    
-    H_shaped = np.zeros((3, num_joints))
-    H_text = "H (axis):<br>"
-    itr = 0
-    for i in H:
-        H_shaped[:,itr] = (i[0],i[1],i[2])
-        H_text+= "|" + " %.1f " %i[0] + " %.1f " %i[1] + " %.1f " %i[2]  + "|<br> "
-        itr += 1
-    
-    itr = 0
-    P_shaped = np.zeros((3, num_joints+1))    
-    P_text = "P (in meters):<br>"
-    for i in P:
-        P_shaped[:,itr] = (i[0],i[1],i[2])
-        P_text+= "|" + " %.3f " %i[0] + " %.3f " %i[1] + " %.3f " %i[2]  + " |<br> "
-        itr += 1
-        
-    #print_div_j_info(joints_text)
-    print_div_kin_info(H_text + "<br>" + P_text)  
-    return H_shaped, P_shaped  
+async def update_kin_info():        
+    global plugin_updateInfo
+    HnP_text = await plugin_updateInfo.async_kinematics_str(None)
+    print_div_kin_info(HnP_text)
+
+
+async def update_end_info():
+    global plugin_updateInfo
+    pose_str = await plugin_updateInfo.async_current_pose_str(None)
+    print_div_end_info(pose_str) 
+    print_div_cur_pose(pose_str)
 
 
 def mouseup_func(self):
@@ -794,11 +699,6 @@ async def client_drive():
         jog_mode = robot_const["RobotCommandMode"]["jog"]
         position_mode = robot_const["RobotCommandMode"]["velocity_command"]
         trajectory_mode = robot_const["RobotCommandMode"]["trajectory"]
-        
-        # Import Necessary Structures
-        global JointTrajectoryWaypoint, JointTrajectory
-        JointTrajectoryWaypoint = RRN.GetStructureType("com.robotraconteur.robotics.trajectory.JointTrajectoryWaypoint",d)
-        JointTrajectory = RRN.GetStructureType("com.robotraconteur.robotics.trajectory.JointTrajectory",d)
 
         # Put robot to jogging mode
         # await d.async_set_command_mode(halt_mode,None,5)
@@ -820,6 +720,16 @@ async def client_drive():
 
         # PLUGIN SERVICE CONNECTIONS BEGIN________________________________
 
+        ## UpdateInfo plugin
+        print_div('UpdateInfo plugin is connecting..<br>')
+
+        # url_plugin_updateInfo = 'rr+ws://localhost:8895?service=UpdateInfo'
+        url_plugin_updateInfo = 'rr+ws://' + ip_plugins + ':8895?service=UpdateInfo'
+        global plugin_updateInfo
+        plugin_updateInfo = await RRN.AsyncConnectService(url_plugin_updateInfo,None,None,None,None)
+        await plugin_updateInfo.async_connect2robot(url,None)
+        print_div('UpdateInfo plugin is connected..<br>')
+
         ## JogJointSpace plugin
         print_div('JogJointSpace plugin is connecting..<br>')
 
@@ -830,7 +740,6 @@ async def client_drive():
         await plugin_jogJointSpace.async_connect2robot(url,None)
         print_div('JogJointSpace plugin is connected..<br>')
 
-
         ## JogCartesianSpace plugin
         print_div('JogCartesianSpace plugin is connecting..<br>')
 
@@ -840,32 +749,35 @@ async def client_drive():
         plugin_jogCartesianSpace = await RRN.AsyncConnectService(url_plugin_jogCartesianSpace,None,None,None,None)
         await plugin_jogCartesianSpace.async_connect2robot(url,None)
         print_div('JogJointSpace plugin is connected..<br>')
+
+        ## SavePlayback plugin
+        print_div('SavePlayback plugin is connecting..<br>')
+
+        # url_plugin_savePlayback = 'rr+ws://localhost:8894?service=SavePlayback'
+        url_plugin_savePlayback = 'rr+ws://' + ip_plugins + ':8894?service=SavePlayback'
+        global plugin_savePlayback
+        plugin_savePlayback = await RRN.AsyncConnectService(url_plugin_savePlayback,None,None,None,None)
+        await plugin_savePlayback.async_connect2robot(url,None)
+        print_div('SavePlayback plugin is connected..<br>')
         
 
         # PLUGIN SERVICE CONNECTIONS END__________________________________
          
         print_div('READY!<br>')
         
-        global d_q
         # Get the current joint positions
-        d_q = await update_joint_info() # Joint angles in radian ndarray, N x 1
+        _, joints_text = await update_joint_info() # Joint angles in radian ndarray, N x 1 and str
+        print_div_j_info(joints_text)
                   
         global num_joints, joint_types, joint_lower_limits, joint_upper_limits, joint_vel_limits, joint_acc_limits, joint_names
         # Get the number of Joints, Joint Types, Limits etc in the robot.
         num_joints, joint_types, joint_lower_limits, joint_upper_limits, joint_vel_limits, joint_acc_limits, joint_names  = await update_num_info()
         
         # Get the kinematics info, P and H in product of exponentials convention
-        H, P = await update_kin_info()
-        
-        # print_div_end_info(str(H))
-        
-        global robot # Robotics Toolbox Robot Object (NOT THE RR ROBOT OBJECT, IT IS d)
-        # Now we are ready to create the robot from toolbox
-        # robot = rox.Robot(H,P,joint_types-1,joint_lower_limits,joint_upper_limits,joint_vel_limits,joint_acc_limits)
-        robot = rox.Robot(H,P,joint_types-1)
+        await update_kin_info()
         
         # UPdate the end effector pose info
-        pose = await update_end_info() # Current pose object from Robotics Toolbox of the end effector
+        await update_end_info()
             
         # Element references
         # Joint Space Control Buttons
@@ -981,15 +893,14 @@ async def client_drive():
 
         global is_gamepadaxisactive
         is_gamepadaxisactive = False
-        
 
         while True:
-            
             # Update joint angles
-            d_q = await update_joint_info() # Joint angles in radian ndarray
+            _, joints_text = await update_joint_info() # Joint angles in radian ndarray, N x 1 and str
+            print_div_j_info(joints_text)
             
             # UPdate the end effector pose info
-            pose = await update_end_info()
+            await update_end_info()
             
             await update_state_flags()
             
