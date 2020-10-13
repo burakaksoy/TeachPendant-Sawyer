@@ -201,6 +201,22 @@ dotnet SawyerRobotRaconteurDriver.dll --robot-info-file=sawyer_robot_default_con
 ```
 
 ***Note:***
+*If you see an error as follows*
+```
+Unhandled exception. System.IO.IOException: Error in identifier settings file
+  at RobotRaconteur.Companion.InfoParser.LocalIdentifiersManager.GetIdentifierForNameAndLock(String category, String name) in C:\Users\wasonj\Documents\RobotRaconteur2\RobotRaconteurNET.Companion\InfoParser\LocalIdentifierManager.cs:line 244
+  at RobotRaconteur.Companion.InfoParser.RobotInfoParser.LoadRobotInfoYamlWithIdentifierLocks(YamlRobotInfo yaml_robot_info) in C:\Users\wasonj\Documents\RobotRaconteur2\RobotRaconteurNET.Companion\InfoParser\RobotInfoParser.cs:line 298
+  at RobotRaconteur.Companion.InfoParser.RobotInfoParser.LoadRobotInfoYamlWithIdentifierLocks(String filename) in C:\Users\wasonj\Documents\RobotRaconteur2\RobotRaconteurNET.Companion\InfoParser\RobotInfoParser.cs:line 275
+  at SawyerRobotRaconteurDriver.Program.Main(String[] args) in C:\Users\wasonj\Documents\RobotRaconteur2\drivers\SawyerRobotRaconteurDriver\Program.cs:line 73
+Aborted (core dumped)
+```
+*It is about RR is not able to load the native dll. For solution run the following command:*
+```
+sudo apt install librobotraconteur-net-native
+```
+
+
+***Note:***
 *STEPS 5-7 can be combined in a file eg. "commands" and can be executed with*
 ```
 ./commands

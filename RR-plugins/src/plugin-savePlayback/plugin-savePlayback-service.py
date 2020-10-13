@@ -47,7 +47,8 @@ class SavePlayback_impl(object):
             self.robot.command_mode = self.jog_mode
 
             # call jogging function to go to desired joint angles
-            self.robot.jog_joint(q_desired, self.joint_vel_limits, False, True)
+            # self.robot.jog_joint(q_desired, self.joint_vel_limits, False, True)
+            self.robot.jog_freespace(q_desired, self.joint_vel_limits, True)
 
         else:
             # Give an error message to show that the robot is not connected

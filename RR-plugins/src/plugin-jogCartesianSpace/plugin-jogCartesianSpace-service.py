@@ -75,7 +75,8 @@ class JogCartesianSpace_impl(object):
                 else:
                     wait = True
                     relative = False
-                    self.robot.jog_joint(joint_angles, self.joint_vel_limits, relative, wait)
+                    # self.robot.jog_joint(joint_angles, self.joint_vel_limits, relative, wait)
+                    self.robot.jog_freespace(joint_angles, self.joint_vel_limits, wait)
             except:
                 print("Specified joints might be out of range")
                 import traceback
@@ -89,6 +90,9 @@ class JogCartesianSpace_impl(object):
     def connect2robot(self, url_robot):
         if self.robot is None:
             self.url_robot = url_robot
+            # ip = '192.168.50.152' # robot service ip
+            # self.url_robot = 'rr+tcp://'+ ip +':58653?service=sawyer' # TRY
+
             self.robot = RRN.ConnectService(self.url_robot) # connect to robot with the given url
             
             # self.robot.reset_errors()

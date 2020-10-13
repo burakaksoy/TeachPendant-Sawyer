@@ -105,7 +105,8 @@ async def async_jog_joints_gamepad(joint_speed_constants):
             print_div("Specified joints might be out of range<br>")
         else:
             try:
-                await d.async_jog_joint(joint_diff.astype(np.double), joint_vel_limits, True, False,None)
+                # await d.async_jog_joint(joint_diff.astype(np.double), joint_vel_limits, True, False,None)
+                await d.async_jog_freespace((d_q + joint_diff).astype(np.double), joint_vel_limits, False,None)
             except:
                 print_div("Specified joints might be out of range(gamepad))")
                 import traceback
@@ -118,7 +119,8 @@ def home_func_gamepad():
     # print_div('Homing...<br>')    
     global d, num_joints, joint_vel_limits
     
-    d.async_jog_joint(np.zeros((num_joints,)), joint_vel_limits, False, True,None)
+    # d.async_jog_joint(np.zeros((num_joints,)), joint_vel_limits, False, True,None)
+    d.async_jog_freespace(np.zeros((num_joints,)), joint_vel_limits,True,None)
 
     global is_jogging
     is_jogging = False  
@@ -256,7 +258,7 @@ def stop_func(self):
     
     #d.async_jog_joint(np.zeros((num_joints,)), joint_vel_limits, False, True,None)
     global plugin_jogJointSpace
-    plugin_jogJointSpace.async_jog_joints_with_limits(np.zeros((num_joints,)),np.zeros((num_joints,)),np.zeros((num_joints,)),joint_vel_limits,False,True,None)
+    plugin_jogJointSpace.async_jog_joints_with_limits(np.zeros((num_joints,)),joint_vel_limits,True,None)
 
     global is_jogging
     is_jogging = False
@@ -291,7 +293,7 @@ async def async_move_to_angles_func():
             is_jogging = False
             return
 
-    await plugin_jogJointSpace.async_jog_joints_with_limits(joint_angles,joint_angles,joint_angles,joint_vel_limits,False,True,None)
+    await plugin_jogJointSpace.async_jog_joints_with_limits(joint_angles,joint_vel_limits,True,None)
 
     is_jogging = False
 # ---------------------------END: JOINT SPACE JOGGING --------------------------- #
@@ -548,14 +550,15 @@ def gamepadaxisactive():
 
 async def client_drive():
     # rr+ws : WebSocket connection without encryption
-    ip = '192.168.50.152' # robot service ip
+    # ip = '192.168.50.152' # robot service ip
+    ip = '192.168.50.40' # robot service ip
     # ip = 'localhost'
     
     ip_plugins = '192.168.50.152' # plugins ip
     # ip_plugins = 'localhost' # plugins ip
 
-    url ='rr+ws://'+ ip +':58653?service=sawyer'   
-    # url ='rr+ws://128.113.224.23:58654?service=sawyer' # sawyer in lab
+    url ='rr+ws://'+ ip +':58653?service=robot'   
+    # url ='rr+ws://128.113.224.23:58654?service=robot' # sawyer in lab
 
     # url ='rr+ws://'+ ip +':58655?service=robot' #ABB
 

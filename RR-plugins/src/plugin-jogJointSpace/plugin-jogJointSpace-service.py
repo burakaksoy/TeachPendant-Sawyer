@@ -29,7 +29,8 @@ class JogJointSpace_impl(object):
                 joint_diff = np.zeros((self.num_joints,))
                 joint_diff[q_i-1] = sign*np.deg2rad(self.degree_diff)
 
-                self.jog_joints_with_limits((cur_q + joint_diff),(cur_q + joint_diff),joint_diff, self.joint_vel_limits,True,True)
+                # self.jog_joints_with_limits((cur_q + joint_diff),(cur_q + joint_diff),joint_diff, self.joint_vel_limits,True,True)
+                self.jog_joints_with_limits((cur_q + joint_diff), self.joint_vel_limits,True)
                 
                 # if not ((cur_q + joint_diff) < self.joint_upper_limits).all() or not ((cur_q + joint_diff) > self.joint_lower_limits).all():
                 #     print("Specified joints might be out of range")
@@ -43,12 +44,13 @@ class JogJointSpace_impl(object):
             # Give an error message to show that the robot is not connected
             print("Robot is not connected to JogJointSpace service yet!")
 
-    def jog_joints_with_limits(self,up_limits,low_limits, joint_position, max_velocity,relative=False,wait=True):
-        if not (up_limits < self.joint_upper_limits).all() or not (low_limits > self.joint_lower_limits).all():
+    def jog_joints_with_limits(self,joint_position, max_velocity,wait=True):
+        if not (joint_position < self.joint_upper_limits).all() or not (joint_position > self.joint_lower_limits).all():
             print("Specified joints might be out of range")
         else:
             try:
-                self.robot.jog_joint(joint_position, max_velocity, relative, wait)
+                # self.robot.jog_joint(joint_position, max_velocity, relative, wait)
+                self.robot.jog_freespace(joint_position, max_velocity, wait)
             except:
                 print("Specified joints might be out of range222")
 

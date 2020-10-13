@@ -185,6 +185,8 @@ class ClientVision(object):
 async   def client_vision():
     # ip_cam = 'localhost'
     ip_cam = '192.168.50.152'
+    # ip_cam = '192.168.50.40'
+    
     # ip_plugins = 'localhost'
     ip_plugins = '192.168.50.152'
     
