@@ -182,7 +182,7 @@ class ClientVision(object):
         print_div("Selecting the cam.. <br>")
         self.loop_client.call_soon(self.async_show_selected_cam_feedback())
        
-async   def client_vision():
+async def client_vision():
     # ip_cam = 'localhost'
     ip_cam = '192.168.50.152'
     # ip_cam = '192.168.50.40'

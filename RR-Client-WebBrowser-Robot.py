@@ -550,8 +550,8 @@ def gamepadaxisactive():
 
 async def client_drive():
     # rr+ws : WebSocket connection without encryption
-    # ip = '192.168.50.152' # robot service ip
-    ip = '192.168.50.40' # robot service ip
+    ip = '192.168.50.152' # robot service ip
+    # ip = '192.168.50.40' # robot service ip
     # ip = 'localhost'
     
     ip_plugins = '192.168.50.152' # plugins ip
@@ -564,9 +564,37 @@ async def client_drive():
 
     # url = 'rr+ws://'+ ip +':23333?service=robot' # Dr.Wasons's Robot
 
+    # url = 'rr+ws://[fe80::7c64:bf9f:7c1d:5a9e]:58653/?nodeid=eb42bd99-6352-4784-9769-6a6ea260f558&service=robot'
+    # url = 'rr+ws:///?nodeid=b257c6ac-d0f0-444a-9971-e29718605924&service=robot'
+
     print_div('Program started, please wait..<br>')
 
+    
+
     try:
+        # Discover Available Robots
+        ## Discovery plugin
+        print_div('Discovery plugin is connecting..<br>')
+
+        url_plugin_discovery = 'rr+ws://' + ip_plugins + ':8896?service=Discovery'
+        global plugin_discovery
+        plugin_discovery = await RRN.AsyncConnectService(url_plugin_discovery,None,None,None,None)
+        print_div('discovery plugin is connected..<br>')
+
+        RobotConnectionURLs = await plugin_discovery.async_available_robot_ConnectionURLs(None)
+        # print_div(str(RobotConnectionURLs))
+        # RobotNames = await plugin_discovery.async_available_robot_Names(None)
+        # print_div("Available Robots:<br>"+str(RobotNames)+ "<br>" )
+        RobotNodeNames = await plugin_discovery.async_available_robot_NodeNames(None)
+        print_div("Available Robots:<br>"+str(RobotNodeNames)+ "<br>" )
+
+        # Set the url of the robot
+        # url = RobotConnectionURLs[1]
+        print_div(str(url) + "<br>")
+
+        await RRN.AsyncSleep(2,None)
+
+
         #Connect to the service
         global d # d is the robot object from RR
         d = await RRN.AsyncConnectService(url,None,None,None,None)
