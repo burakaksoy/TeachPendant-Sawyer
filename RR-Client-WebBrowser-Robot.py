@@ -421,7 +421,7 @@ async def async_go_sel_pose_func():
     is_jogging = False
 
 def playback_poses_func(self):
-    print_div("Playing Back Poses..")
+    print_div("Playing Back Poses..<br>")
     global is_jogging
     if (not is_jogging): 
         is_jogging = True
@@ -450,7 +450,90 @@ async def async_playback_poses_func():
     global is_jogging
     is_jogging = False
 
+def del_sel_pose_func(self):
+    print_div("Deleting seleted Pose..<br>")
+    loop.call_soon(async_del_sel_pose_func())
+
+async def async_del_sel_pose_func():
+    # Read the selected pose index from the browser
+    element_id = "saved_poses_list"
+    poses_list = document.getElementById(element_id)
+    index = poses_list.selectedIndex
+    try:
+        if index == -1:
+            print_div("Please select a pose from Saved Poses.<br>")
+        else:
+            global plugin_savePlayback
+            await plugin_savePlayback.async_del_sel_pose(index,None)
+            # Delete from UI too.
+            poses_list.remove(index); 
+    except:
+        pass
+        
+def up_sel_pose_func(self):
+    print_div("Move up seleted Pose..<br>")
+    loop.call_soon(async_up_sel_pose_func())
+
+async def async_up_sel_pose_func():
+    # Read the selected pose index from the browser
+    element_id = "saved_poses_list"
+    poses_list = document.getElementById(element_id)
+    index = poses_list.selectedIndex
+    try:
+        if index == -1:
+            print_div("Please select a pose from Saved Poses.<br>")
+        else:
+            global plugin_savePlayback
+            await plugin_savePlayback.async_up_sel_pose(index,None)
+            # Up it from UI too.
+            if index > 0:
+                option = poses_list.options[index];
+                poses_list.remove(index);
+                poses_list.add(option,index-1)
+
+    except:
+        pass
+
+def down_sel_pose_func(self):
+    print_div("Move down seleted Pose..<br>")
+    loop.call_soon(async_down_sel_pose_func())
+
+async def async_down_sel_pose_func():
+    # Read the selected pose index from the browser
+    element_id = "saved_poses_list"
+    poses_list = document.getElementById(element_id)
+    index = poses_list.selectedIndex
+    try:
+        if index == -1:
+            print_div("Please select a pose from Saved Poses.<br>")
+        else:
+            global plugin_savePlayback
+            await plugin_savePlayback.async_down_sel_pose(index,None)
+            # Down it from UI too.
+            if index < poses_list.length-1:
+                option = poses_list.options[index];
+                poses_list.remove(index);
+                poses_list.add(option,index+1)
+
+    except:
+        pass
+
+
 # ---------------------------END: SAVE PLAYBACK POSES --------------------------- #
+
+# ---------------------------START: Select Robot --------------------------- #
+
+async def async_select_available_robot_url(robot_urls):
+    print_div("Selecting the robot URL.. <br>")
+    # Read the selected robot index from the browser  
+    element_id = "available_robots"
+    available_robots_list = document.getElementById(element_id)
+    index = available_robots_list.selectedIndex
+    
+    return robot_urls[index]
+
+# ---------------------------END: Select Robot --------------------------- #
+
 
 async def update_state_flags():
     # For reading robot state flags
@@ -548,6 +631,11 @@ def gamepadaxisactive():
     is_gamepadaxisactive = True
     # print_div("Gamepadaxis is active<br>")
 
+def stop_robot_func(self):
+    global is_stop_robot
+    is_stop_robot = True
+    print_div("Robot stop is called <br>")
+
 async def client_drive():
     # rr+ws : WebSocket connection without encryption
     ip = '192.168.50.152' # robot service ip
@@ -557,17 +645,34 @@ async def client_drive():
     ip_plugins = '192.168.50.152' # plugins ip
     # ip_plugins = 'localhost' # plugins ip
 
-    url ='rr+ws://'+ ip +':58653?service=robot'   
+    url ='rr+ws://'+ ip +':58653?service=robot'   # Sawyer simulation
     # url ='rr+ws://128.113.224.23:58654?service=robot' # sawyer in lab
 
     # url ='rr+ws://'+ ip +':58655?service=robot' #ABB
 
-    # url = 'rr+ws://'+ ip +':23333?service=robot' # Dr.Wasons's Robot
+    # url = 'rr+ws://'+ ip +':23333?service=robot' # Dr.Wasons's Robot (rp260)
 
     # url = 'rr+ws://[fe80::7c64:bf9f:7c1d:5a9e]:58653/?nodeid=eb42bd99-6352-4784-9769-6a6ea260f558&service=robot'
     # url = 'rr+ws:///?nodeid=b257c6ac-d0f0-444a-9971-e29718605924&service=robot'
 
+
+    #_________________________ multiple robot urls _________________
+    ip = '192.168.50.40' # robot service ip
+    url_sawyer = 'rr+ws://'+ ip +':58653?service=robot' # Sawyer simulation
+
+    ip = '192.168.50.152' # robot service ip
+    url_rp260 = 'rr+ws://'+ ip +':23333?service=robot'  # Dr.Wasons's Robot (rp260)
+
+    ip = '192.168.50.152' # robot service ip
+    url_abb = 'rr+ws://'+ ip +':58655?service=robot'  # ABB
+
+    robot_urls = [url_sawyer,url_rp260, url_abb]
+
+    url = await async_select_available_robot_url(robot_urls)
+    print_div('Slected Robot url: '+ url + '<br>')
+
     print_div('Program started, please wait..<br>')
+    #_________________________ multiple robot urls _________________
 
     
 
@@ -592,8 +697,7 @@ async def client_drive():
         # url = RobotConnectionURLs[1]
         print_div(str(url) + "<br>")
 
-        await RRN.AsyncSleep(2,None)
-
+        # await RRN.AsyncSleep(2,None)
 
         #Connect to the service
         global d # d is the robot object from RR
@@ -734,13 +838,14 @@ async def client_drive():
         button_theta_Z_pos = document.getElementById("theta_Z_pos_btn")
         button_theta_Z_neg = document.getElementById("theta_Z_neg_btn")
         
-        # Move robot to a certain default position
-        # move_to_angles_func(None)
-
         # Playback Poses Buttons
         button_save_cur_pose = document.getElementById("save_pose_btn")
         button_go_sel_pose = document.getElementById("go_sel_pose_btn")
         button_playback_poses = document.getElementById("playback_poses_btn")
+        button_del_sel_pose = document.getElementById("del_sel_pose_btn")
+        button_up_sel_pose = document.getElementById("up_sel_pose_btn")
+        button_down_sel_pose = document.getElementById("down_sel_pose_btn")
+
 
 
         button_stop.addEventListener("click", stop_func)
@@ -785,9 +890,14 @@ async def client_drive():
         button_theta_Z_pos.addEventListener("mousedown", tZ_pos_func)
         button_theta_Z_neg.addEventListener("mousedown", tZ_neg_func)
         
+        # Playback Poses Buttons event listeners
         button_save_cur_pose.addEventListener("click", save_cur_pose_func)
         button_go_sel_pose.addEventListener("click", go_sel_pose_func)
         button_playback_poses.addEventListener("click", playback_poses_func)
+        button_del_sel_pose.addEventListener("click", del_sel_pose_func)
+        button_up_sel_pose.addEventListener("click", up_sel_pose_func)
+        button_down_sel_pose.addEventListener("click", down_sel_pose_func)
+
 
         global is_jogging
         is_jogging = False
@@ -801,7 +911,18 @@ async def client_drive():
         global is_gamepadaxisactive
         is_gamepadaxisactive = False
 
-        while True:
+        # ---------------------------
+        # Element reference for start robot button
+        button_start_robot = document.getElementById("start_robot_btn")
+        # Event listener for stop robot func
+        button_start_robot.addEventListener("mousedown", stop_robot_func)
+
+        global is_stop_robot 
+        is_stop_robot = False
+        # ---------------------------
+
+
+        while not is_stop_robot:
             # Update joint angles
             _, joints_text = await update_joint_info() # Joint angles in radian ndarray, N x 1 and str
             print_div_j_info(joints_text)
@@ -810,6 +931,47 @@ async def client_drive():
             await update_end_info()
             
             await update_state_flags()
+
+
+        # Remove all event listeners before return
+        button_stop.removeEventListener("click", stop_func)
+        button_j1_pos.removeEventListener("mousedown", j1_pos_func)
+        button_j1_neg.removeEventListener("mousedown", j1_neg_func)
+        button_j2_pos.removeEventListener("mousedown", j2_pos_func)
+        button_j2_neg.removeEventListener("mousedown", j2_neg_func)
+        button_j3_pos.removeEventListener("mousedown", j3_pos_func)
+        button_j3_neg.removeEventListener("mousedown", j3_neg_func)
+        button_j4_pos.removeEventListener("mousedown", j4_pos_func)
+        button_j4_neg.removeEventListener("mousedown", j4_neg_func)
+        button_j5_pos.removeEventListener("mousedown", j5_pos_func)
+        button_j5_neg.removeEventListener("mousedown", j5_neg_func)
+        button_j6_pos.removeEventListener("mousedown", j6_pos_func)
+        button_j6_neg.removeEventListener("mousedown", j6_neg_func)
+        button_j7_pos.removeEventListener("mousedown", j7_pos_func) 
+        button_j7_neg.removeEventListener("mousedown", j7_neg_func)
+        button_angles_submit.removeEventListener("click", move_to_angles_func)
+        button_X_pos.removeEventListener("mousedown", X_pos_func)
+        button_X_neg.removeEventListener("mousedown", X_neg_func)
+        button_Y_pos.removeEventListener("mousedown", Y_pos_func)
+        button_Y_neg.removeEventListener("mousedown", Y_neg_func)
+        button_Z_pos.removeEventListener("mousedown", Z_pos_func)
+        button_Z_neg.removeEventListener("mousedown", Z_neg_func)
+        button_theta_X_pos.removeEventListener("mousedown", tX_pos_func)
+        button_theta_X_neg.removeEventListener("mousedown", tX_neg_func)
+        button_theta_Y_pos.removeEventListener("mousedown", tY_pos_func)
+        button_theta_Y_neg.removeEventListener("mousedown", tY_neg_func)
+        button_theta_Z_pos.removeEventListener("mousedown", tZ_pos_func)
+        button_theta_Z_neg.removeEventListener("mousedown", tZ_neg_func)
+        button_save_cur_pose.removeEventListener("click", save_cur_pose_func)
+        button_go_sel_pose.removeEventListener("click", go_sel_pose_func)
+        button_playback_poses.removeEventListener("click", playback_poses_func)
+        document.removeEventListener("mouseup", mouseup_func)
+        button_start_robot.removeEventListener("mousedown", stop_robot_func)
+        button_del_sel_pose.removeEventListener("click", del_sel_pose_func)
+        button_up_sel_pose.removeEventListener("click", up_sel_pose_func)
+        button_down_sel_pose.removeEventListener("click", down_sel_pose_func)
+
+        return
             
     except:
         import traceback

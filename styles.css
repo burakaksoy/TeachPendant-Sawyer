@@ -308,6 +308,10 @@ textarea{
   width: 100%;
 }
 
+#start_robot_btn{
+  height: unset;
+}
+
 #blocklyDiv{
   /*height: 480px; */
   /*width: 600px;*/

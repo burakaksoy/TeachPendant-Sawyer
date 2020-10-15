@@ -62,33 +62,33 @@ function print_div_cur_pose(msg)
     $("#cur_position").html(msg_array[0])
 }
 
-function upSelPose()
-{
-    var x = document.getElementById("saved_poses_list");
-    var index = x.selectedIndex
-    if (index > 0) {
-      var option = x.options[index];
-      x.remove(index);
-      x.add(option,index-1)
-    }
-}
+// function upSelPose()
+// {
+//     var x = document.getElementById("saved_poses_list");
+//     var index = x.selectedIndex
+//     if (index > 0) {
+//       var option = x.options[index];
+//       x.remove(index);
+//       x.add(option,index-1)
+//     }
+// }
 
-function downSelPose()
-{
-    var x = document.getElementById("saved_poses_list");
-    var index = x.selectedIndex
-    if (index < x.length-1) {
-      var option = x.options[index];
-      x.remove(index);
-      x.add(option,index+1)
-    }
-}
+// function downSelPose()
+// {
+//     var x = document.getElementById("saved_poses_list");
+//     var index = x.selectedIndex
+//     if (index < x.length-1) {
+//       var option = x.options[index];
+//       x.remove(index);
+//       x.add(option,index+1)
+//     }
+// }
 
-function delSelPose()
-{
-    var x = document.getElementById("saved_poses_list");
-    x.remove(x.selectedIndex);
-}
+// function delSelPose()
+// {
+//     var x = document.getElementById("saved_poses_list");
+//     x.remove(x.selectedIndex);
+// }
 
 
 function showJointVelValue()
@@ -98,7 +98,12 @@ function showJointVelValue()
     percent.innerHTML = slider.value;
 }
 
+function run_robot(){
+    run_test();
+}
+
 async function run_test(){
+    console.log("Robot start is called");
     await languagePluginLoader;
     await pyodide.loadPackage(["numpy"]);      
 
@@ -108,10 +113,8 @@ async function run_test(){
     // const response = await fetch("./RR-Client-WebBrowser.py", {cache: "no-store"});
     const client_zip = await response_zip.arrayBuffer();
     let FS = pyodide._module.FS; 
-    FS.writeFile("./my_source.zip", new Uint8Array(client_zip))
+    FS.writeFile("./my_source.zip", new Uint8Array(client_zip));
 
     const client_py = await response.text();                
-    pyodide.runPython(client_py)
+    pyodide.runPython(client_py);
 }
-
-run_test();

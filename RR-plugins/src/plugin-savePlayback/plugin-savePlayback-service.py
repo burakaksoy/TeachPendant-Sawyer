@@ -16,6 +16,15 @@ class SavePlayback_impl(object):
         self.saved_joint_angles_lst = [] # List to store saved joint angle ndarrays
         self.saved_endeff_poses_lst = [] # List to store corresponding end eff. pose rox pose objects
 
+    def reset(self):
+        self.url_robot = None
+        self.robot = None ## RR robot object
+        self.robot_rox = None #Robotics Toolbox robot object
+
+        self.saved_joint_angles_lst = [] # List to store saved joint angle ndarrays
+        self.saved_endeff_poses_lst = [] # List to store corresponding end eff. pose rox pose objects
+
+
 
     def save_cur_pose(self):
         print("save_cur_pose is called")
@@ -77,7 +86,7 @@ class SavePlayback_impl(object):
         else:
             # Give an error that says the robot is already connected
             print("Robot is already connected to SavePlayback service! Trying to connect again..")
-            self.robot = None
+            self.reset()
             self.connect2robot(url_robot)
 
     def assign_robot_details(self):
@@ -362,6 +371,63 @@ class SavePlayback_impl(object):
         # ###############################################################
 
         # ###############################################################
+
+    def del_sel_pose(self,index):
+        print("del_sel_pose is called")
+        if self.robot is not None:
+            # delete the desired joint angles pose from the list
+            q_desired = self.saved_joint_angles_lst.pop(index)
+            print("Desired angles:" + str(q_desired) + " is deleted..")
+            
+            # delete the corresponding end effector pose as well
+            pose_desired = self.saved_endeff_poses_lst.pop(index)
+            print("Corresponding Desired pose:" + str(pose_desired) + " is deleted..")
+
+        else:
+            # Give an error message to show that the robot is not connected
+            print("Robot is not connected to SavePlayback service yet!")
+
+    def up_sel_pose(self,index):
+        print("up_sel_pose is called")
+        if self.robot is not None and (index > 0):
+
+            # delete the desired joint angles pose from the list
+            q_desired = self.saved_joint_angles_lst.pop(index)
+            # Insert it to previous index
+            self.saved_joint_angles_lst.insert(index-1, q_desired)
+            print("Desired angles:" + str(q_desired) + " is moved UP..")
+            
+            # delete the corresponding end effector pose as well
+            pose_desired = self.saved_endeff_poses_lst.pop(index)
+            # Insert it to previous index
+            self.saved_endeff_poses_lst.insert(index-1,pose_desired)
+            print("Corresponding Desired pose:" + str(pose_desired) + " is moved UP as well..")
+
+        else:
+            # Give an error message to show that the robot is not connected
+            print("Robot is not connected to SavePlayback service yet or index out of range!")
+
+
+    def down_sel_pose(self,index):
+        print("down_sel_pose is called")
+        if self.robot is not None and (index < len(self.saved_joint_angles_lst)-1):
+
+            # delete the desired joint angles pose from the list
+            q_desired = self.saved_joint_angles_lst.pop(index)
+            # Insert it to next index
+            self.saved_joint_angles_lst.insert(index+1, q_desired)
+            print("Desired angles:" + str(q_desired) + " is moved DOWN..")
+            
+            # delete the corresponding end effector pose as well
+            pose_desired = self.saved_endeff_poses_lst.pop(index)
+            # Insert it to next index
+            self.saved_endeff_poses_lst.insert(index+1,pose_desired)
+            print("Corresponding Desired pose:" + str(pose_desired) + " is moved DOWN as well..")
+
+        else:
+            # Give an error message to show that the robot is not connected
+            print("Robot is not connected to SavePlayback service yet or index out of range!")
+
 
 def main():
     # RR.ServerNodeSetup("NodeName", TCP listen port, optional set of flags as parameters)

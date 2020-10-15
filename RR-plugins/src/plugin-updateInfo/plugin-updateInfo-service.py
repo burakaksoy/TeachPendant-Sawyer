@@ -13,6 +13,11 @@ class UpdateInfo_impl(object):
         self.robot = None ## RR robot object
         self.robot_rox = None #Robotics Toolbox robot object
 
+    def reset(self):
+        self.url_robot = None
+        self.robot = None ## RR robot object
+        self.robot_rox = None #Robotics Toolbox robot object
+
     def connect2robot(self, url_robot):
         if self.robot is None:
             self.url_robot = url_robot
@@ -32,11 +37,11 @@ class UpdateInfo_impl(object):
             self.assign_robot_details()
             
             # log that the robot is successfully connected  
-            print("Robot is connected to SavePlayback service!")
+            print("Robot is connected to UpdateInfo service!")
         else:
             # Give an error that says the robot is already connected
-            print("Robot is already connected to SavePlayback service! Trying to connect again..")
-            self.robot = None
+            print("Robot is already connected to UpdateInfo service! Trying to connect again..")
+            self.reset()
             self.connect2robot(url_robot)
 
     def assign_robot_details(self):
@@ -75,7 +80,7 @@ class UpdateInfo_impl(object):
 
         else:
             # Give an error message to show that the robot is not connected
-            print("Assign robot details failed. Robot is not connected to JogJointSpace service yet!")
+            print("Assign robot details failed. Robot is not connected to UpdateInfo service yet!")
 
     def create_robot_rox(self):
         chains = self.robot_info.chains # Get RobotKinChainInfo

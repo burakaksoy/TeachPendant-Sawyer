@@ -11,6 +11,12 @@ class JogJointSpace_impl(object):
 
         self.degree_diff = 1
 
+    def reset(self):
+        self.url_robot = None
+        self.robot = None ## RR robot object
+        self.robot_rox = None #Robotics Toolbox robot object
+
+
     def jog_joints(self, q_i, sign):
         print("Jog Joints is called")
         if self.robot is not None:
@@ -49,10 +55,18 @@ class JogJointSpace_impl(object):
             print("Specified joints might be out of range")
         else:
             try:
+                # Put the robot to jogging mode
+                self.robot.command_mode = self.halt_mode
+                # time.sleep(0.1)
+                self.robot.command_mode = self.jog_mode
+                # time.sleep(0.1)
+
                 # self.robot.jog_joint(joint_position, max_velocity, relative, wait)
                 self.robot.jog_freespace(joint_position, max_velocity, wait)
             except:
-                print("Specified joints might be out of range222")
+                # print("Specified joints might be out of range222")
+                import traceback
+                print(traceback.format_exc())
 
     def connect2robot(self, url_robot):
         if self.robot is None:
@@ -77,7 +91,7 @@ class JogJointSpace_impl(object):
         else:
             # Give an error that says the robot is already connected
             print("Robot is already connected to JogJointSpace service! Trying to connect again..")
-            self.robot = None
+            self.reset()
             self.connect2robot(url_robot)
 
 

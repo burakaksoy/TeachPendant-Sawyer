@@ -13,13 +13,21 @@ class JogCartesianSpace_impl(object):
         self.robot = None ## RR robot object
         self.robot_rox = None #Robotics Toolbox robot object
 
-
         # Incremental difference amounts to jog in cartesian space
         self.move_distance = 0.01 # meters
         self.rotate_angle = np.deg2rad(5) # radians
 
         self.pose_at_command = None 
         self.num_jog_command = 0
+
+    def reset(self):
+        self.url_robot = None
+        self.robot = None ## RR robot object
+        self.robot_rox = None #Robotics Toolbox robot object
+
+        self.pose_at_command = None 
+        self.num_jog_command = 0
+
         
 
     def jog_cartesian(self, P_axis, R_axis):
@@ -113,7 +121,7 @@ class JogCartesianSpace_impl(object):
         else:
             # Give an error that says the robot is already connected
             print("Robot is already connected to JogCartesianSpace service! Trying to connect again..")
-            self.robot = None
+            self.reset()
             self.connect2robot(url_robot)
 
     def assign_robot_details(self):
