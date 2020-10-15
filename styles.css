@@ -286,9 +286,26 @@ textarea{
   width: 90%;
   height: 100%;
   position:absolute;
+  top: 0%;
+  left: 10%;
+  box-shadow: -3px 0px 9px 0px rgba( 0, 0, 0, 0.4 );
+}
+
+/*#titleContainer{
+  width: 90%;
+  height: 5%;
+  position:absolute;
   top: 0;
   left: 10%;
   box-shadow: -3px 0px 9px 0px rgba( 0, 0, 0, 0.4 );
+  background: #222;
+  overflow: auto;
+}*/
+
+#available_robots{
+  display: block;
+  font-size: 14pt;
+  width: 100%;
 }
 
 #blocklyDiv{

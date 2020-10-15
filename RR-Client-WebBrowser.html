@@ -40,7 +40,17 @@
         <div id="wrapper">
             <ul id="menuContainer"></ul>
             <div id="layoutContainer"></div>
-            
+
+            <li id = "robotOptsContainer">
+                <form>
+                    <label for="chosen_robot"></label>
+                    <select name="available_robots" id="available_robots">
+                        <option value="sawyer">Sawyer</option>
+                        <option value="rp260">Rp260</option>
+                    </select>
+                </form>
+            </li> 
+
             <div id="saveLayoutStateContainer">
                 <div class="btn-group">
                     <button id="saveLayoutState_btn" type="button">Save Current Layout State</button>

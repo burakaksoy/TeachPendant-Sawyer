@@ -271,6 +271,11 @@ $(document).ready(function() {
 
     // $("#print_div_ik_info").html("message")
 
+    var element_name = $('#robotOptsContainer');
+    $( '#menuContainer' ).append( element_name );
+    var seperator = $('<hr>');
+    $( '#menuContainer' ).append( seperator );
+
     var addMenuItem = function(component_name) {
         var element_name = $( '<li>' + component_name + '</li>' );
         
