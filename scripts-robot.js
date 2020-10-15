@@ -99,6 +99,12 @@ function showJointVelValue()
 }
 
 function run_robot(){
+    // clear the saved poses list before running the new robot
+    var poses_list = document.getElementById("saved_poses_list")
+    var length = poses_list.options.length;
+    for (i = length-1; i >= 0; i--) {
+      poses_list.options[i] = null;
+    }
     run_test();
 }
 
