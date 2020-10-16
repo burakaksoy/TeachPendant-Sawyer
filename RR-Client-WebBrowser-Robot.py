@@ -666,7 +666,11 @@ async def client_drive():
     ip = '192.168.50.152' # robot service ip
     url_abb = 'rr+ws://'+ ip +':58655?service=robot'  # ABB
 
-    robot_urls = [url_sawyer,url_rp260, url_abb]
+    ip = '192.168.50.152' # robot service ip
+    url_ur5 = 'rr+ws://'+ ip +':58655?service=robot'  # UR5
+
+    # robot_urls = [url_sawyer,url_rp260, url_abb]
+    robot_urls = [url_sawyer,url_ur5, url_abb]
 
     url = await async_select_available_robot_url(robot_urls)
     print_div('Slected Robot url: '+ url + '<br>')
