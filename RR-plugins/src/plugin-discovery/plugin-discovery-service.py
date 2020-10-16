@@ -13,7 +13,7 @@ class Discovery_impl(object):
         self.autodiscover() # discover the robots
 
     def autodiscover(self):
-        time.sleep(2)
+        # time.sleep(2)
         self.res=RRN.FindServiceByType(self.service_type, self.transportschemes)
         for serviceinfo2 in self.res:
             print(serviceinfo2.NodeID) 
