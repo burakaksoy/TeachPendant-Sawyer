@@ -20,51 +20,51 @@ import sys
 # sys.path.append("./my_source.zip")
 # import general_robotics_toolbox as rox
 
-# ---------------------------BEGIN: BLOCKLY FUNCTIONS  --------------------------- #
-def jog_joints2(q_i, degree_diff, is_relative):
-    global is_jogging
-    if (not is_jogging): 
-        is_jogging = True
-        loop.call_soon(async_jog_joints2(q_i, degree_diff, is_relative))
-    else:
-        print_div("Jogging has not finished yet..<br>")
+# # ---------------------------BEGIN: BLOCKLY FUNCTIONS  --------------------------- #
+# def jog_joints2(q_i, degree_diff, is_relative):
+#     global is_jogging
+#     if (not is_jogging): 
+#         is_jogging = True
+#         loop.call_soon(async_jog_joints2(q_i, degree_diff, is_relative))
+#     else:
+#         print_div("Jogging has not finished yet..<br>")
 
 
-async def async_jog_joints2(q_i, degree_diff, is_relative):
-    global d, num_joints, joint_lower_limits, joint_upper_limits, joint_vel_limits
+# async def async_jog_joints2(q_i, degree_diff, is_relative):
+#     global d, num_joints, joint_lower_limits, joint_upper_limits, joint_vel_limits
 
-    # Update joint angles
-    d_q, _ = await update_joint_info() # Joint angles in radian ndarray, N x 1
+#     # Update joint angles
+#     d_q, _ = await update_joint_info() # Joint angles in radian ndarray, N x 1
     
-    await update_state_flags()
+#     await update_state_flags()
 
-    if (num_joints < q_i):
-        print_div("Currently Controlled Robot only have " + str(num_joints) + " joints..<br>")
-    else:
+#     if (num_joints < q_i):
+#         print_div("Currently Controlled Robot only have " + str(num_joints) + " joints..<br>")
+#     else:
         
-        if (is_relative):
-            joint_diff = np.zeros((num_joints,))
-            joint_diff[q_i-1] = np.deg2rad(degree_diff)
-        else:
-            joint_diff = d_q
-            joint_diff[q_i-1] = np.deg2rad(degree_diff)
+#         if (is_relative):
+#             joint_diff = np.zeros((num_joints,))
+#             joint_diff[q_i-1] = np.deg2rad(degree_diff)
+#         else:
+#             joint_diff = d_q
+#             joint_diff[q_i-1] = np.deg2rad(degree_diff)
         
-        if not ((d_q + joint_diff) < joint_upper_limits).all() or not ((d_q + joint_diff) > joint_lower_limits).all():
-            print_div("Specified joints might be out of range<br>")
-        else:
-            try:
-                await d.async_jog_joint(joint_diff, joint_vel_limits, is_relative, True,None)
-                # await RRN.AsyncSleep(2,None)
-            except:
-                print_div("Specified joints might be out of range2<br>")
-                # import traceback
-                # print_div(traceback.format_exc())
-                # raise
+#         if not ((d_q + joint_diff) < joint_upper_limits).all() or not ((d_q + joint_diff) > joint_lower_limits).all():
+#             print_div("Specified joints might be out of range<br>")
+#         else:
+#             try:
+#                 await d.async_jog_joint(joint_diff, joint_vel_limits, is_relative, True,None)
+#                 # await RRN.AsyncSleep(2,None)
+#             except:
+#                 print_div("Specified joints might be out of range2<br>")
+#                 # import traceback
+#                 # print_div(traceback.format_exc())
+#                 # raise
 
-    global is_jogging
-    is_jogging = False
+#     global is_jogging
+#     is_jogging = False
 
-# ---------------------------END: BLOCKLY FUNCTIONS --------------------------- #
+# # ---------------------------END: BLOCKLY FUNCTIONS --------------------------- #
 
 # ---------------------------BEGIN: GAMEPAD FUNCTIONS  --------------------------- #
 def jog_joints_gamepad(joint_speed_constants):
@@ -75,55 +75,57 @@ def jog_joints_gamepad(joint_speed_constants):
     if (not is_jogging): 
         is_jogging = True
         loop.call_soon(async_jog_joints_gamepad(joint_speed_constants))
-    # else:
-    #     print_div("Jogging has not finished yet..<br>")
+    else:
+        print_div("Jogging has not finished yet..<br>")
 
 async def async_jog_joints_gamepad(joint_speed_constants):
-    degree_diff = 1
-    global d, num_joints, joint_lower_limits, joint_upper_limits, joint_vel_limits
+    # degree_diff = 1
+    # global d, num_joints, joint_lower_limits, joint_upper_limits, joint_vel_limits
 
+    global plugin_jogJointSpace
     global is_gamepadaxisactive
     global is_gamepadbuttondown
     if (is_gamepadaxisactive or is_gamepadbuttondown): 
-        # Update joint angles
-        d_q, _ = await update_joint_info() # Joint angles in radian ndarray, N x 1
+        # # Update joint angles
+        # d_q, _ = await update_joint_info() # Joint angles in radian ndarray, N x 1
         
-        # Trim joint speed constants accordingto number of joints
-        joint_speed_constants = joint_speed_constants[:num_joints]
-        # print_div("joint_speed_constants: "+str(joint_speed_constants)+"<br>")
+        # # Trim joint speed constants accordingto number of joints
+        # joint_speed_constants = joint_speed_constants[:num_joints]
+        # # print_div("joint_speed_constants: "+str(joint_speed_constants)+"<br>")
 
-        signs = np.divide(np.abs(joint_speed_constants),joint_speed_constants)
-        np.nan_to_num(signs, copy=False)
-        # print_div("signs: "+str(signs)+"<br>")
+        # signs = np.divide(np.abs(joint_speed_constants),joint_speed_constants)
+        # np.nan_to_num(signs, copy=False)
+        # # print_div("signs: "+str(signs)+"<br>")
 
-        joint_diff = np.ones((num_joints,))
-        joint_diff = np.multiply(signs,np.deg2rad(degree_diff))
+        # joint_diff = np.ones((num_joints,))
+        # joint_diff = np.multiply(signs,np.deg2rad(degree_diff))
         # print_div("joint_diff: "+str(joint_diff)+"<br>")
 
+        # if not ((d_q + joint_diff) < joint_upper_limits).all() or not ((d_q + joint_diff) > joint_lower_limits).all():
+        #     print_div("Specified joints might be out of range<br>")
+        # else:
+        #     try:
+        #         # await d.async_jog_joint(joint_diff.astype(np.double), joint_vel_limits, True, False,None)
+        #         await d.async_jog_freespace((d_q + joint_diff).astype(np.double), joint_vel_limits, False,None)
+        #     except:
+        #         print_div("Specified joints might be out of range(gamepad))")
+        #         import traceback
+        #         print_div(traceback.format_exc())
 
-        if not ((d_q + joint_diff) < joint_upper_limits).all() or not ((d_q + joint_diff) > joint_lower_limits).all():
-            print_div("Specified joints might be out of range<br>")
-        else:
-            try:
-                # await d.async_jog_joint(joint_diff.astype(np.double), joint_vel_limits, True, False,None)
-                await d.async_jog_freespace((d_q + joint_diff).astype(np.double), joint_vel_limits, False,None)
-            except:
-                print_div("Specified joints might be out of range(gamepad))")
-                import traceback
-                print_div(traceback.format_exc())
+
+        # Call Jog Joint Space Service funtion to handle this jogging
+        await plugin_jogJointSpace.async_jog_joints_gamepad(joint_speed_constants, None)
 
     global is_jogging
     is_jogging = False
 
 def home_func_gamepad():
     # print_div('Homing...<br>')    
-    global d, num_joints, joint_vel_limits
-    
-    # d.async_jog_joint(np.zeros((num_joints,)), joint_vel_limits, False, True,None)
-    d.async_jog_freespace(np.zeros((num_joints,)), joint_vel_limits,True,None)
+    global plugin_jogJointSpace
+    plugin_jogJointSpace.async_jog_joints_zeros(None)
 
     global is_jogging
-    is_jogging = False  
+    is_jogging = False 
 # ........................................
 def jog_cartesian_gamepad(P_axis, R_axis):
     if P_axis != [0.0,0.0,0.0]:
@@ -154,7 +156,6 @@ def jog_cartesian_gamepad(P_axis, R_axis):
 async def async_jog_cartesian_gamepad(P_axis, R_axis):
     global plugin_jogCartesianSpace
     await plugin_jogCartesianSpace.async_prepare_jog(None)
-    await plugin_jogCartesianSpace.async_jog_cartesian(P_axis, R_axis, None)
         
     global is_gamepadaxisactive
     global is_gamepadbuttondown
@@ -253,12 +254,9 @@ def j7_neg_func(self):
 # TODO: Implement this properly
 def stop_func(self):
     print_div('STOP button pressed<br>')    
-    global num_joints, joint_vel_limits
-    #global d
     
-    #d.async_jog_joint(np.zeros((num_joints,)), joint_vel_limits, False, True,None)
     global plugin_jogJointSpace
-    plugin_jogJointSpace.async_jog_joints_with_limits(np.zeros((num_joints,)),joint_vel_limits,True,None)
+    plugin_jogJointSpace.async_jog_joints_zeros(None)
 
     global is_jogging
     is_jogging = False
@@ -643,7 +641,7 @@ async def client_drive():
     # ip = 'localhost'
     
     ip_plugins = '192.168.50.152' # plugins ip
-    ip_plugins = '128.113.224.154' # plugins ip lab
+    # ip_plugins = '128.113.224.154' # plugins ip lab
     # ip_plugins = 'localhost' # plugins ip
 
     url ='rr+ws://'+ ip +':58653?service=robot'   # Sawyer simulation
@@ -659,22 +657,22 @@ async def client_drive():
 
     #_________________________ multiple robot urls _________________
     ip = '192.168.50.40' # robot service ip
-    ip = '128.113.224.64' # robot service ip
+    # ip = '128.113.224.64' # robot service ip in Lab
     url_sawyer = 'rr+ws://'+ ip +':58653?service=robot' # Sawyer simulation
-    url_sawyer = 'rr+ws://'+ ip +':58654?service=robot' # Sawyer simulation
+    # url_sawyer = 'rr+ws://'+ ip +':58654?service=robot' # Sawyer simulation in Lab
 
     ip = '192.168.50.152' # robot service ip
     url_rp260 = 'rr+ws://'+ ip +':23333?service=robot'  # Dr.Wasons's Robot (rp260)
 
     ip = '192.168.50.152' # robot service ip
-    ip = '128.113.224.12' # robot service ip
+    # ip = '128.113.224.12' # robot service ip in Lab
     url_abb = 'rr+ws://'+ ip +':58655?service=robot'  # ABB
-    url_abb = 'rr+ws://'+ ip +':58651?service=robot'  # ABB
+    # url_abb = 'rr+ws://'+ ip +':58651?service=robot'  # ABB in Lab
 
     ip = '192.168.50.152' # robot service ip
-    ip = '128.113.224.83' # robot service ip
-    url_ur5 = 'rr+ws://'+ ip +':58655?service=robot'  # UR5
+    # ip = '128.113.224.83' # robot service ip in Lab
     url_ur5 = 'rr+ws://'+ ip +':58653?service=robot'  # UR5
+    # url_ur5 = 'rr+ws://'+ ip +':58653?service=robot'  # UR5 in Lab
 
     # robot_urls = [url_sawyer,url_rp260, url_abb]
     robot_urls = [url_sawyer,url_ur5, url_abb]
@@ -716,13 +714,13 @@ async def client_drive():
         # d.async_reset_errors(None)
         # d.async_enable(None)
         
-        # Define Robot modes
-        global robot_const, halt_mode, jog_mode, position_mode, trajectory_mode
-        robot_const = RRN.GetConstants("com.robotraconteur.robotics.robot", d)
-        halt_mode = robot_const["RobotCommandMode"]["halt"]
-        jog_mode = robot_const["RobotCommandMode"]["jog"]
-        position_mode = robot_const["RobotCommandMode"]["velocity_command"]
-        trajectory_mode = robot_const["RobotCommandMode"]["trajectory"]
+        # # Define Robot modes
+        # global robot_const, halt_mode, jog_mode, position_mode, trajectory_mode
+        # robot_const = RRN.GetConstants("com.robotraconteur.robotics.robot", d)
+        # halt_mode = robot_const["RobotCommandMode"]["halt"]
+        # jog_mode = robot_const["RobotCommandMode"]["jog"]
+        # position_mode = robot_const["RobotCommandMode"]["velocity_command"]
+        # trajectory_mode = robot_const["RobotCommandMode"]["trajectory"]
 
         # Put robot to jogging mode
         # await d.async_set_command_mode(halt_mode,None,5)

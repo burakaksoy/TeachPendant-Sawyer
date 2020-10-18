@@ -9,7 +9,7 @@ class JogJointSpace_impl(object):
         self.url_robot = None
         self.robot = None
 
-        self.degree_diff = 1
+        self.degree_diff = 5
 
     def reset(self):
         self.url_robot = None
@@ -67,6 +67,49 @@ class JogJointSpace_impl(object):
                 # print("Specified joints might be out of range222")
                 import traceback
                 print(traceback.format_exc())
+
+    def jog_joints_gamepad(self,joint_speed_constants):
+        print("Jog Joints Gamepad is called")
+        if self.robot is not None:
+            # Put the robot to jogging mode
+            self.robot.command_mode = self.halt_mode
+            # time.sleep(0.1)
+            self.robot.command_mode = self.jog_mode
+            # time.sleep(0.1)
+            
+            # get the current joint angles
+            cur_q = self.get_current_joint_positions()
+
+            # Trim joint speed constants accordingto number of joints
+            joint_speed_constants = joint_speed_constants[:self.num_joints]
+
+            signs = np.divide(np.abs(joint_speed_constants),joint_speed_constants)
+            np.nan_to_num(signs, copy=False)
+
+            joint_diff = np.ones((self.num_joints,))
+            joint_diff = np.multiply(signs,np.deg2rad(self.degree_diff))
+
+            # self.jog_joints_with_limits((cur_q + joint_diff),(cur_q + joint_diff),joint_diff, self.joint_vel_limits,True,True)
+            self.jog_joints_with_limits((cur_q + joint_diff), self.joint_vel_limits,False)
+
+        else:
+            # Give an error message to show that the robot is not connected
+            print("Robot is not connected to JogJointSpace service yet!")
+
+    def jog_joints_zeros(self):
+        print("Jog Joints Zeros is called")
+        if self.robot is not None:
+            # Put the robot to jogging mode
+            self.robot.command_mode = self.halt_mode
+            # time.sleep(0.1)
+            self.robot.command_mode = self.jog_mode
+            # time.sleep(0.1)
+            
+            self.jog_joints_with_limits(np.zeros((self.num_joints,)), self.joint_vel_limits,True)
+
+        else:
+            # Give an error message to show that the robot is not connected
+            print("Robot is not connected to JogJointSpace service yet!")
 
     def connect2robot(self, url_robot):
         if self.robot is None:

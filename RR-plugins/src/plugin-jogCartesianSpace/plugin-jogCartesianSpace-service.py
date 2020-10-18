@@ -14,7 +14,7 @@ class JogCartesianSpace_impl(object):
         self.robot_rox = None #Robotics Toolbox robot object
 
         # Incremental difference amounts to jog in cartesian space
-        self.move_distance = 0.01 # meters
+        self.move_distance = 0.05 # meters
         self.rotate_angle = np.deg2rad(5) # radians
 
         self.pose_at_command = None 

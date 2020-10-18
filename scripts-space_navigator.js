@@ -188,7 +188,10 @@ function updateStatus() {
 
             gamepad_mode = gamepadModeSwitcher(controller);
 
-            gamepadMode(gamepad_mode,controller);
+            if (is_gamepadaxisactive || is_gamepadbuttondown){
+                gamepadMode(gamepad_mode,controller);    
+            }
+            // gamepadMode(gamepad_mode,controller);
         } 
         else if (is_initial_pressed == false && controller.axes[2] == 1.0){
             is_initial_pressed = true;

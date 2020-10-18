@@ -7,4 +7,6 @@ object JogJointSpace
     function void connect2robot(string url_robot)
     function void jog_joints(int32 q_i, int32 sign)
     function void jog_joints_with_limits(double[] joint_position, double[] max_velocity,bool wait)
+    function void jog_joints_gamepad(double[] joint_speed_constants)
+    function void jog_joints_zeros()
 end
