@@ -9,4 +9,5 @@ object JogJointSpace
     function void jog_joints_with_limits(double[] joint_position, double[] max_velocity,bool wait)
     function void jog_joints_gamepad(double[] joint_speed_constants)
     function void jog_joints_zeros()
+    function void jog_joints_to_angles(double[] joint_position)
 end

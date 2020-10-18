@@ -273,14 +273,30 @@ def move_to_angles_func(self):
         print_div("Jogging has not finished yet..<br>")
     
 async def async_move_to_angles_func():
-    global plugin_jogJointSpace
-    global num_joints, joint_vel_limits
     global is_jogging
+    global plugin_jogJointSpace
+    # global num_joints, joint_vel_limits
 
-    joint_angles = np.zeros((num_joints,))
+    # joint_angles = np.zeros((num_joints,))
+    # element_id = "j1_angle_in"
+    
+    # for j in range(1,num_joints+1):
+    #     element_id = "j" + str(j) + "_angle_in"
+    #     text_container_angle = document.getElementById(element_id)
+    #     angle = text_container_angle.value # str and in degrees
+    #     try: # if not angle == None or not angle == "":
+    #         joint_angles[j-1] = float(angle)* np.deg2rad(1)
+    #     except: # else:
+    #         print_div("Please specify angle of each joint!<br>")
+    #         is_jogging = False
+    #         return
+
+    # await plugin_jogJointSpace.async_jog_joints_with_limits(joint_angles,joint_vel_limits,True,None)
+
+    joint_angles = np.zeros((7,))
     element_id = "j1_angle_in"
     
-    for j in range(1,num_joints+1):
+    for j in range(1,7+1):
         element_id = "j" + str(j) + "_angle_in"
         text_container_angle = document.getElementById(element_id)
         angle = text_container_angle.value # str and in degrees
@@ -291,7 +307,7 @@ async def async_move_to_angles_func():
             is_jogging = False
             return
 
-    await plugin_jogJointSpace.async_jog_joints_with_limits(joint_angles,joint_vel_limits,True,None)
+    await plugin_jogJointSpace.async_jog_joints_to_angles(joint_angles,None)
 
     is_jogging = False
 # ---------------------------END: JOINT SPACE JOGGING --------------------------- #
@@ -378,7 +394,8 @@ def save_cur_pose_func(self):
     
 async def async_save_cur_pose_func():
     # Get the current joint angles as ndarray and str
-    _, joints_text = await update_joint_info() # Current Joint angles in radian ndarray, N x 1 and str
+    # _, joints_text = await update_joint_info() # Current Joint angles in radian ndarray, N x 1 and str
+    joints_text = await update_joint_info() # Current Joint angles in radian ndarray, N x 1 and str
     joints_text = joints_text[:-1] # Delete the last comma    
 
     # Add the current joint angles to the saved poses list on web browser UI
@@ -544,45 +561,46 @@ async def update_state_flags():
 async def update_joint_info():
     # For reading Joint Angles
     # print_div_j_info("Joint info Updating..")
-    global d
-    d_state = await d.robot_state.AsyncPeekInValue(None,5)    
-    d_q = d_state[0].joint_position
+    # global d
+    # d_state = await d.robot_state.AsyncPeekInValue(None,5)    
+    # d_q = d_state[0].joint_position
     
     global plugin_updateInfo
     joints_text = await plugin_updateInfo.async_current_joint_angles_str(None)
       
-    return d_q, joints_text  # returns d_q in radian ndarray, joints_text str to print to browser.
+    # return d_q, joints_text  # returns d_q in radian ndarray, joints_text str to print to browser.
+    return joints_text  # joints_text str to print to browser.
 
 async def update_num_info():
     # For reading about number of robot joints, joint types, joint limits etc
     # print_div_num_info("Number of Joints info updating")
     
-    global d    
-    robot_info = await d.async_get_robot_info(None) 
-    joint_info = robot_info.joint_info # A list of jointInfo
+    # global d    
+    # robot_info = await d.async_get_robot_info(None) 
+    # joint_info = robot_info.joint_info # A list of jointInfo
     
-    joint_types = [] # A list or array of N numbers containing the joint type. 1 for rotary, 3 for prismatic
-    joint_lower_limits = [] # list or numpy.array
-    joint_upper_limits = [] # list or numpy.array
-    joint_vel_limits = [] # list or numpy.array
-    joint_acc_limits = [] # list or numpy.array
-    joint_names = [] # list of string
-    joint_uuids = [] 
-    for joint in joint_info:
-        joint_types.append(joint.joint_type)
-        joint_lower_limits.append(joint.joint_limits.lower)
-        joint_upper_limits.append(joint.joint_limits.upper)
-        joint_vel_limits.append(joint.joint_limits.velocity)
-        joint_acc_limits.append(joint.joint_limits.acceleration)
-        joint_names.append(joint.joint_identifier.name)
-        joint_uuids.append(joint.joint_identifier.uuid)
+    # joint_types = [] # A list or array of N numbers containing the joint type. 1 for rotary, 3 for prismatic
+    # joint_lower_limits = [] # list or numpy.array
+    # joint_upper_limits = [] # list or numpy.array
+    # joint_vel_limits = [] # list or numpy.array
+    # joint_acc_limits = [] # list or numpy.array
+    # joint_names = [] # list of string
+    # joint_uuids = [] 
+    # for joint in joint_info:
+    #     joint_types.append(joint.joint_type)
+    #     joint_lower_limits.append(joint.joint_limits.lower)
+    #     joint_upper_limits.append(joint.joint_limits.upper)
+    #     joint_vel_limits.append(joint.joint_limits.velocity)
+    #     joint_acc_limits.append(joint.joint_limits.acceleration)
+    #     joint_names.append(joint.joint_identifier.name)
+    #     joint_uuids.append(joint.joint_identifier.uuid)
         
-    # convert them to numpy arrays
-    joint_types = np.asarray(joint_types)
-    joint_lower_limits = np.asarray(joint_lower_limits)
-    joint_upper_limits = np.asarray(joint_upper_limits)
-    joint_vel_limits = np.asarray(joint_vel_limits)
-    joint_acc_limits = np.asarray(joint_acc_limits)
+    # # convert them to numpy arrays
+    # joint_types = np.asarray(joint_types)
+    # joint_lower_limits = np.asarray(joint_lower_limits)
+    # joint_upper_limits = np.asarray(joint_upper_limits)
+    # joint_vel_limits = np.asarray(joint_vel_limits)
+    # joint_acc_limits = np.asarray(joint_acc_limits)
     
     global plugin_updateInfo
     joint_limits_text = await plugin_updateInfo.async_joint_limits_str_array(None)
@@ -591,7 +609,7 @@ async def update_num_info():
     joint_num_type_vel_acc_name_text = await plugin_updateInfo.async_joint_num_type_vel_acc_name_str(None)
     print_div_num_info(joint_num_type_vel_acc_name_text) 
     
-    return len(joint_info), joint_types, joint_lower_limits, joint_upper_limits, joint_vel_limits, joint_acc_limits, joint_names
+    # return len(joint_info), joint_types, joint_lower_limits, joint_upper_limits, joint_vel_limits, joint_acc_limits, joint_names
      
 async def update_kin_info():        
     global plugin_updateInfo
@@ -709,8 +727,8 @@ async def client_drive():
         # await RRN.AsyncSleep(2,None)
 
         #Connect to the service
-        global d # d is the robot object from RR
-        d = await RRN.AsyncConnectService(url,None,None,None,None)
+        # global d # d is the robot object from RR
+        # d = await RRN.AsyncConnectService(url,None,None,None,None)
         # d.async_reset_errors(None)
         # d.async_enable(None)
         
@@ -788,12 +806,14 @@ async def client_drive():
         print_div('READY!<br>')
         
         # Get the current joint positions
-        _, joints_text = await update_joint_info() # Joint angles in radian ndarray, N x 1 and str
+        # _, joints_text = await update_joint_info() # Joint angles in radian ndarray, N x 1 and str
+        joints_text = await update_joint_info() # Joint angles in radian ndarray, N x 1 and str
         print_div_j_info(joints_text)
                   
-        global num_joints, joint_types, joint_lower_limits, joint_upper_limits, joint_vel_limits, joint_acc_limits, joint_names
-        # Get the number of Joints, Joint Types, Limits etc in the robot.
-        num_joints, joint_types, joint_lower_limits, joint_upper_limits, joint_vel_limits, joint_acc_limits, joint_names  = await update_num_info()
+        # global num_joints, joint_types, joint_lower_limits, joint_upper_limits, joint_vel_limits, joint_acc_limits, joint_names
+        # # Get the number of Joints, Joint Types, Limits etc in the robot.
+        # num_joints, joint_types, joint_lower_limits, joint_upper_limits, joint_vel_limits, joint_acc_limits, joint_names  = await update_num_info()
+        await update_num_info()
         
         # Get the kinematics info, P and H in product of exponentials convention
         await update_kin_info()
@@ -933,7 +953,8 @@ async def client_drive():
 
         while not is_stop_robot:
             # Update joint angles
-            _, joints_text = await update_joint_info() # Joint angles in radian ndarray, N x 1 and str
+            # _, joints_text = await update_joint_info() # Joint angles in radian ndarray, N x 1 and str
+            joints_text = await update_joint_info() # Joint angles as str
             print_div_j_info(joints_text)
             
             # UPdate the end effector pose info

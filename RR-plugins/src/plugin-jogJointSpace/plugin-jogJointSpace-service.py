@@ -61,6 +61,8 @@ class JogJointSpace_impl(object):
                 self.robot.command_mode = self.jog_mode
                 # time.sleep(0.1)
 
+                # Trim joint positions according to number of joints
+                joint_position = joint_position[:self.num_joints]
                 # self.robot.jog_joint(joint_position, max_velocity, relative, wait)
                 self.robot.jog_freespace(joint_position, max_velocity, wait)
             except:
@@ -106,6 +108,25 @@ class JogJointSpace_impl(object):
             # time.sleep(0.1)
             
             self.jog_joints_with_limits(np.zeros((self.num_joints,)), self.joint_vel_limits,True)
+
+        else:
+            # Give an error message to show that the robot is not connected
+            print("Robot is not connected to JogJointSpace service yet!")
+
+    def jog_joints_to_angles(self, joint_position):
+        print("Jog Joints to Angles is called")
+        # Similar to jog_joints_with_limits. But,
+        # Moves the robot to the specified joint angles with max speed
+        if self.robot is not None:
+            # Put the robot to jogging mode
+            self.robot.command_mode = self.halt_mode
+            # time.sleep(0.1)
+            self.robot.command_mode = self.jog_mode
+            # time.sleep(0.1)
+            # print(joint_position[:self.num_joints])
+            # print(joint_position)
+
+            self.jog_joints_with_limits(joint_position[:self.num_joints], self.joint_vel_limits,True)
 
         else:
             # Give an error message to show that the robot is not connected
