@@ -84,7 +84,7 @@ class JogCartesianSpace_impl(object):
                     wait = True
                     relative = False
                     # self.robot.jog_joint(joint_angles, self.joint_vel_limits, relative, wait)
-                    self.robot.jog_freespace(joint_angles, self.joint_vel_limits, wait)
+                    self.robot.jog_freespace(joint_angles, self.joint_vel_limits/8.0, wait)
             except:
                 print("Specified joints might be out of range")
                 import traceback
@@ -362,6 +362,7 @@ class JogCartesianSpace_impl(object):
         #     joints_text+= "(%.3f, %.3f) " % (np.rad2deg(i), i)   
         # print_div_ik_info(str(rox.Transform(R_d,p_d)) +"<br>"+ joints_text +"<br>"+ str(converged) + ", itr = " + str(itr))
         return q_cur, converged
+
 
     def prepare_jog(self):
         self.pose_at_command = self.get_current_pose()

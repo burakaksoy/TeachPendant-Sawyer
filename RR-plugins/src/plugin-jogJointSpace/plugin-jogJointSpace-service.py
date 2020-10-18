@@ -64,7 +64,7 @@ class JogJointSpace_impl(object):
                 # Trim joint positions according to number of joints
                 joint_position = joint_position[:self.num_joints]
                 # self.robot.jog_joint(joint_position, max_velocity, relative, wait)
-                self.robot.jog_freespace(joint_position, max_velocity, wait)
+                self.robot.jog_freespace(joint_position, max_velocity/8.0, wait)
             except:
                 # print("Specified joints might be out of range222")
                 import traceback

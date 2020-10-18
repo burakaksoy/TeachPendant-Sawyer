@@ -70,7 +70,7 @@ class ClientDiscovery(object):
         await self.plugin_discovery.async_autodiscover(None)
 
         try:
-            print_div("Clearing the previous available robot options..")
+            # print_div("Clearing the previous available robot options..")
             length = self.available_robots_list.options.length
             i = length-1
             while i >= 0:
