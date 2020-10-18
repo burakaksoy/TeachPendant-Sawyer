@@ -527,7 +527,6 @@ async def async_select_available_robot_url(robot_urls):
     element_id = "available_robots"
     available_robots_list = document.getElementById(element_id)
     index = available_robots_list.selectedIndex
-    
     return robot_urls[index]
 
 # ---------------------------END: Select Robot --------------------------- #
@@ -637,7 +636,7 @@ def stop_robot_func(self):
 
 async def client_drive():
     # rr+ws : WebSocket connection without encryption
-    ip = '192.168.50.152' # robot service ip
+    # ip = '192.168.50.152' # robot service ip
     # ip = '192.168.50.40' # robot service ip
     # ip = 'localhost'
     
@@ -645,7 +644,7 @@ async def client_drive():
     # ip_plugins = '128.113.224.154' # plugins ip lab
     # ip_plugins = 'localhost' # plugins ip
 
-    url ='rr+ws://'+ ip +':58653?service=robot'   # Sawyer simulation
+    # url ='rr+ws://'+ ip +':58653?service=robot'   # Sawyer simulation
     # url ='rr+ws://128.113.224.23:58654?service=robot' # sawyer in lab
 
     # url ='rr+ws://'+ ip +':58655?service=robot' #ABB
@@ -656,33 +655,33 @@ async def client_drive():
     # url = 'rr+ws:///?nodeid=b257c6ac-d0f0-444a-9971-e29718605924&service=robot'
 
 
-    #_________________________ multiple robot urls _________________
-    ip = '192.168.50.40' # robot service ip
-    # ip = '128.113.224.64' # robot service ip in Lab
-    url_sawyer = 'rr+ws://'+ ip +':58653?service=robot' # Sawyer simulation
-    # url_sawyer = 'rr+ws://'+ ip +':58654?service=robot' # Sawyer simulation in Lab
+    # #_________________________ multiple robot urls _________________
+    # ip = '192.168.50.40' # robot service ip
+    # # ip = '128.113.224.64' # robot service ip in Lab
+    # url_sawyer = 'rr+ws://'+ ip +':58653?service=robot' # Sawyer simulation
+    # # url_sawyer = 'rr+ws://'+ ip +':58654?service=robot' # Sawyer simulation in Lab
 
-    ip = '192.168.50.152' # robot service ip
-    url_rp260 = 'rr+ws://'+ ip +':23333?service=robot'  # Dr.Wasons's Robot (rp260)
+    # ip = '192.168.50.152' # robot service ip
+    # url_rp260 = 'rr+ws://'+ ip +':23333?service=robot'  # Dr.Wasons's Robot (rp260)
 
-    ip = '192.168.50.152' # robot service ip
-    # ip = '128.113.224.12' # robot service ip in Lab
-    url_abb = 'rr+ws://'+ ip +':58655?service=robot'  # ABB
-    # url_abb = 'rr+ws://'+ ip +':58651?service=robot'  # ABB in Lab
+    # ip = '192.168.50.152' # robot service ip
+    # # ip = '128.113.224.12' # robot service ip in Lab
+    # url_abb = 'rr+ws://'+ ip +':58655?service=robot'  # ABB
+    # # url_abb = 'rr+ws://'+ ip +':58651?service=robot'  # ABB in Lab
 
-    ip = '192.168.50.152' # robot service ip
-    # ip = '128.113.224.83' # robot service ip in Lab
-    url_ur5 = 'rr+ws://'+ ip +':58653?service=robot'  # UR5
-    # url_ur5 = 'rr+ws://'+ ip +':58653?service=robot'  # UR5 in Lab
+    # ip = '192.168.50.152' # robot service ip
+    # # ip = '128.113.224.83' # robot service ip in Lab
+    # url_ur5 = 'rr+ws://'+ ip +':58653?service=robot'  # UR5
+    # # url_ur5 = 'rr+ws://'+ ip +':58653?service=robot'  # UR5 in Lab
 
-    # robot_urls = [url_sawyer,url_rp260, url_abb]
-    robot_urls = [url_sawyer,url_ur5, url_abb]
+    # # robot_urls = [url_sawyer,url_rp260, url_abb]
+    # robot_urls = [url_sawyer,url_ur5, url_abb]
 
-    url = await async_select_available_robot_url(robot_urls)
-    print_div('Selected Robot url: '+ url + '<br>')
+    # url = await async_select_available_robot_url(robot_urls)
+    # # print_div('Selected Robot url: '+ url + '<br>')
 
-    print_div('Program started, please wait..<br>')
-    #_________________________ multiple robot urls _________________
+    # print_div('Program started, please wait..<br>')
+    # #_________________________ multiple robot urls _________________
 
     
 
@@ -700,17 +699,17 @@ async def client_drive():
         # print_div(str(RobotConnectionURLs))
         # RobotNames = await plugin_discovery.async_available_robot_Names(None)
         # print_div("Available Robots:<br>"+str(RobotNames)+ "<br>" )
-        RobotNodeNames = await plugin_discovery.async_available_robot_NodeNames(None)
-        print_div("Available Robots:<br>"+str(RobotNodeNames)+ "<br>" )
+        # RobotNodeNames = await plugin_discovery.async_available_robot_NodeNames(None)
+        # print_div("Available Robots:<br>"+str(RobotNodeNames)+ "<br>" )
 
-        # # Trying -----
-        # url = await async_select_available_robot_url(RobotConnectionURLs)
-        # print_div('Selected Robot url: '+ url + '<br>')
-        # # ------------
+        # Trying -----
+        url = await async_select_available_robot_url(RobotConnectionURLs)
+        print_div('Selected Robot url: '+ url + '<br>')
+        # ------------
 
         # Set the url of the robot
         # url = RobotConnectionURLs[1]
-        print_div(str(url) + "<br>")
+        # print_div(str(url) + "<br>")
 
         # await RRN.AsyncSleep(2,None)
 

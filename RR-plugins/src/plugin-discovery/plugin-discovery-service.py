@@ -8,12 +8,16 @@ import time
 class Discovery_impl(object):
     def __init__(self):
         self.transportschemes = ["rr+local","rr+tcp","rrs+tcp"] 
-        self.transportscheme_desired = "rr+ws"
+        # self.transportscheme_desired = "rr+ws"
         self.service_type = "com.robotraconteur.robotics.robot.Robot" # Discover robots
-        self.autodiscover() # discover the robots
+
+        self.connectionURLs = [] # Available robot connection URLs
+        self.Names = [] # Available robot names 
+        self.NodeNames = [] # Available robot nodeNames (sawyer, abb, etc..)
+
+        self.autodiscover() # discover the robots every 5 seconds
 
     def autodiscover(self):
-        # time.sleep(2)
         self.res=RRN.FindServiceByType(self.service_type, self.transportschemes)
         for serviceinfo2 in self.res:
             print(serviceinfo2.NodeID) 
@@ -25,35 +29,38 @@ class Discovery_impl(object):
             print(serviceinfo2.ConnectionURL[0])
             print("-------------------------------")
 
-    
-    # function string{list} available_robot_ConnectionURLs()
-    def available_robot_ConnectionURLs(self):
-        self.autodiscover()
-        connectionURLs = []
+        self.connectionURLs = []
         for serviceinfo2 in self.res:
             # Replace the transportsheme with the desired transport sheme
             url = serviceinfo2.ConnectionURL[0]
             # for tscheme in self.transportschemes:
             #     url = url.replace(tscheme, self.transportscheme_desired, 1)
             
-            connectionURLs.append(url)
-        return connectionURLs
+            self.connectionURLs.append(url)
+
+        self.Names = []
+        for serviceinfo2 in self.res:
+            self.Names.append(serviceinfo2.Name)
+
+        self.NodeNames = []
+        for serviceinfo2 in self.res:
+            self.NodeNames.append(serviceinfo2.NodeName)
+
+    
+    # function string{list} available_robot_ConnectionURLs()
+    def available_robot_ConnectionURLs(self):
+        # self.autodiscover()
+        return self.connectionURLs
     
     # function string{list} available_robot_Names()
     def available_robot_Names(self):
-        self.autodiscover()
-        Names = []
-        for serviceinfo2 in self.res:
-            Names.append(serviceinfo2.Name)
-        return Names
+        # self.autodiscover()        
+        return self.Names
 
     # function string{list} available_robot_NodeNames()
     def available_robot_NodeNames(self):
-        self.autodiscover()
-        NodeNames = []
-        for serviceinfo2 in self.res:
-            NodeNames.append(serviceinfo2.NodeName)
-        return NodeNames
+        # self.autodiscover()
+        return self.NodeNames
 
 def main():
     # RR.ServerNodeSetup("NodeName", TCP listen port, optional set of flags as parameters)
@@ -66,6 +73,11 @@ def main():
         Discovery_inst = Discovery_impl()
         # register service with service name "Discovery", type "experimental.pluginDiscovery.Discovery", actual object: Discovery_inst
         RRN.RegisterService("Discovery","experimental.pluginDiscovery.Discovery",Discovery_inst)
+
+        # # These are for using the service on Web Browsers
+        # node_setup.tcp_transport.AddWebSocketAllowedOrigin("http://localhost")
+        # node_setup.tcp_transport.AddWebSocketAllowedOrigin("http://localhost:8000")
+        # node_setup.tcp_transport.AddWebSocketAllowedOrigin("https://johnwason.github.io")
 
         #Wait for the user to shutdown the service
         if (sys.version_info > (3, 0)):

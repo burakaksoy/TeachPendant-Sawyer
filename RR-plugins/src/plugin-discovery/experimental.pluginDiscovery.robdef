@@ -7,4 +7,5 @@ object Discovery
     function string{list} available_robot_ConnectionURLs()
     function string{list} available_robot_Names()
     function string{list} available_robot_NodeNames()
+    function void autodiscover()
 end
