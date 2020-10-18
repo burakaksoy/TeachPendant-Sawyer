@@ -643,6 +643,7 @@ async def client_drive():
     # ip = 'localhost'
     
     ip_plugins = '192.168.50.152' # plugins ip
+    ip_plugins = '128.113.224.154' # plugins ip lab
     # ip_plugins = 'localhost' # plugins ip
 
     url ='rr+ws://'+ ip +':58653?service=robot'   # Sawyer simulation
@@ -658,16 +659,22 @@ async def client_drive():
 
     #_________________________ multiple robot urls _________________
     ip = '192.168.50.40' # robot service ip
+    ip = '128.113.224.64' # robot service ip
     url_sawyer = 'rr+ws://'+ ip +':58653?service=robot' # Sawyer simulation
+    url_sawyer = 'rr+ws://'+ ip +':58654?service=robot' # Sawyer simulation
 
     ip = '192.168.50.152' # robot service ip
     url_rp260 = 'rr+ws://'+ ip +':23333?service=robot'  # Dr.Wasons's Robot (rp260)
 
     ip = '192.168.50.152' # robot service ip
+    ip = '128.113.224.12' # robot service ip
     url_abb = 'rr+ws://'+ ip +':58655?service=robot'  # ABB
+    url_abb = 'rr+ws://'+ ip +':58651?service=robot'  # ABB
 
     ip = '192.168.50.152' # robot service ip
+    ip = '128.113.224.83' # robot service ip
     url_ur5 = 'rr+ws://'+ ip +':58655?service=robot'  # UR5
+    url_ur5 = 'rr+ws://'+ ip +':58653?service=robot'  # UR5
 
     # robot_urls = [url_sawyer,url_rp260, url_abb]
     robot_urls = [url_sawyer,url_ur5, url_abb]
@@ -706,8 +713,8 @@ async def client_drive():
         #Connect to the service
         global d # d is the robot object from RR
         d = await RRN.AsyncConnectService(url,None,None,None,None)
-        d.async_reset_errors(None)
-        d.async_enable(None)
+        # d.async_reset_errors(None)
+        # d.async_enable(None)
         
         # Define Robot modes
         global robot_const, halt_mode, jog_mode, position_mode, trajectory_mode
