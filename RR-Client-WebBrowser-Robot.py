@@ -275,23 +275,6 @@ def move_to_angles_func(self):
 async def async_move_to_angles_func():
     global is_jogging
     global plugin_jogJointSpace
-    # global num_joints, joint_vel_limits
-
-    # joint_angles = np.zeros((num_joints,))
-    # element_id = "j1_angle_in"
-    
-    # for j in range(1,num_joints+1):
-    #     element_id = "j" + str(j) + "_angle_in"
-    #     text_container_angle = document.getElementById(element_id)
-    #     angle = text_container_angle.value # str and in degrees
-    #     try: # if not angle == None or not angle == "":
-    #         joint_angles[j-1] = float(angle)* np.deg2rad(1)
-    #     except: # else:
-    #         print_div("Please specify angle of each joint!<br>")
-    #         is_jogging = False
-    #         return
-
-    # await plugin_jogJointSpace.async_jog_joints_with_limits(joint_angles,joint_vel_limits,True,None)
 
     joint_angles = np.zeros((7,))
     element_id = "j1_angle_in"
@@ -696,7 +679,7 @@ async def client_drive():
     robot_urls = [url_sawyer,url_ur5, url_abb]
 
     url = await async_select_available_robot_url(robot_urls)
-    print_div('Slected Robot url: '+ url + '<br>')
+    print_div('Selected Robot url: '+ url + '<br>')
 
     print_div('Program started, please wait..<br>')
     #_________________________ multiple robot urls _________________
@@ -719,6 +702,11 @@ async def client_drive():
         # print_div("Available Robots:<br>"+str(RobotNames)+ "<br>" )
         RobotNodeNames = await plugin_discovery.async_available_robot_NodeNames(None)
         print_div("Available Robots:<br>"+str(RobotNodeNames)+ "<br>" )
+
+        # # Trying -----
+        # url = await async_select_available_robot_url(RobotConnectionURLs)
+        # print_div('Selected Robot url: '+ url + '<br>')
+        # # ------------
 
         # Set the url of the robot
         # url = RobotConnectionURLs[1]
