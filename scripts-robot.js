@@ -98,13 +98,47 @@ function showJointVelValue()
     percent.innerHTML = slider.value;
 }
 
-function run_robot(){
-    // clear the saved poses list before running the new robot
+function clearSavedPoses(){
     var poses_list = document.getElementById("saved_poses_list")
     var length = poses_list.options.length;
     for (i = length-1; i >= 0; i--) {
       poses_list.options[i] = null;
     }
+}
+
+function clear_div_j_info(){
+    var id="" 
+    for (let i = 0; i < 7; i++) {
+        id = "j" + (i+1).toString() + "_angle_out" 
+        document.getElementById(id).innerHTML = null;
+    }
+}
+
+function clear_div_j_limit_info(){
+    var id="j1_neg_limit" 
+    for (let i = 0; i < 7; i++) {
+        id = "j" + (i+1).toString() + "_neg_limit" 
+        document.getElementById(id).innerHTML = null;
+    }
+    
+    var id="j1_pos_limit" 
+    for (let i = 0; i < 7; i++) {
+        id = "j" + (i+1).toString() + "_pos_limit" 
+        document.getElementById(id).innerHTML = null;
+    }
+}
+
+function run_robot(){
+    // clear the saved poses list before running the new robot
+    clearSavedPoses();
+
+    // clear current Joint angles
+    clear_div_j_info();
+
+    // clear the Joint limits
+    clear_div_j_limit_info();
+
+    // Run the robot client
     run_test();
 }
 
