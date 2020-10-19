@@ -238,7 +238,7 @@ textarea{
 }
 
 #menuContainer{
-  width: 10%;
+  width: 15%;
   height: 80%;
   position:absolute;
   top: 0;
@@ -265,7 +265,7 @@ textarea{
 
 #saveLayoutStateContainer{
   overflow: auto;
-  width: 10%;
+  width: 15%;
   height: 20%;
   position:relative;
   top: 80%;
@@ -283,11 +283,11 @@ textarea{
 
 
 #layoutContainer{
-  width: 90%;
+  width: 85%;
   height: 100%;
   position:absolute;
   top: 0%;
-  left: 10%;
+  left: 15%;
   box-shadow: -3px 0px 9px 0px rgba( 0, 0, 0, 0.4 );
 }
 
@@ -304,7 +304,7 @@ textarea{
 
 #available_robots{
   display: block;
-  font-size: 14pt;
+  /*font-size: 14pt;*/
   width: 100%;
 }
 
