@@ -156,8 +156,11 @@ function gamepadMode(mode, controller){
             // var P_axis = [axes[0],-axes[1],-axes[2]]; 
             // var R_axis = [-axes[4],-axes[3],-axes[5]];
 
-            var P_axis = [axes[1],axes[0],-axes[2]]; 
-            var R_axis = [axes[4],axes[3],-axes[5]];
+            // var P_axis = [axes[1],axes[0],-axes[2]]; 
+            // var R_axis = [axes[4],axes[3],-axes[5]];
+
+            var P_axis = [-axes[2],axes[0],-axes[1]]; 
+            var R_axis = [-axes[5],axes[3],-axes[4]];
 
             // if (is_gamepadbuttondown){
             //    console.log("jog_cartesian_gamepad([" + P_axis + "]," + "[" + R_axis + "]  )"); 
