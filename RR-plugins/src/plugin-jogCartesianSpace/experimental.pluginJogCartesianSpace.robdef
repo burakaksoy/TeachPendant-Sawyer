@@ -7,4 +7,6 @@ object JogCartesianSpace
     function void connect2robot(string url_robot)
     function void jog_cartesian(double[] P_axis, double[] R_axis)
     function void prepare_jog()
+    function void jog_cartesian2(double[] P_axis, double[] R_axis)
+    function void stop_joints()
 end 

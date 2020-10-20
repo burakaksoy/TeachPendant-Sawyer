@@ -115,6 +115,7 @@ async def async_jog_joints_gamepad(joint_speed_constants):
 
         # Call Jog Joint Space Service funtion to handle this jogging
         await plugin_jogJointSpace.async_jog_joints_gamepad(joint_speed_constants, None)
+        # TODO above line
 
     global is_jogging
     is_jogging = False
@@ -160,10 +161,12 @@ async def async_jog_cartesian_gamepad(P_axis, R_axis):
     global is_gamepadaxisactive
     global is_gamepadbuttondown
     # print_div("here 0<br>")
-    if (is_gamepadaxisactive or is_gamepadbuttondown): 
+    while (is_gamepadaxisactive or is_gamepadbuttondown): 
         # Call Jog Cartesian Space Service funtion to handle this jogging
-        await plugin_jogCartesianSpace.async_jog_cartesian(P_axis, R_axis, None)
+        # await plugin_jogCartesianSpace.async_jog_cartesian(P_axis, R_axis, None)
+        await plugin_jogCartesianSpace.async_jog_cartesian2(P_axis, R_axis, None)
 
+    await plugin_jogCartesianSpace.async_stop_joints(None)
     global is_jogging
     is_jogging = False
 
@@ -312,13 +315,15 @@ def jog_cartesian(P_axis, R_axis):
 async def async_jog_cartesian(P_axis, R_axis):
     global plugin_jogCartesianSpace
     await plugin_jogCartesianSpace.async_prepare_jog(None)
-    await plugin_jogCartesianSpace.async_jog_cartesian(P_axis, R_axis, None)
+    # await plugin_jogCartesianSpace.async_jog_cartesian(P_axis, R_axis, None)
     
     global is_mousedown
     while (is_mousedown):
         # Call Jog Cartesian Space Service funtion to handle this jogging
-        await plugin_jogCartesianSpace.async_jog_cartesian(P_axis, R_axis, None)
+        # await plugin_jogCartesianSpace.async_jog_cartesian(P_axis, R_axis, None)
+        await plugin_jogCartesianSpace.async_jog_cartesian2(P_axis, R_axis, None)
 
+    await plugin_jogCartesianSpace.async_stop_joints(None)
     global is_jogging
     is_jogging = False
         

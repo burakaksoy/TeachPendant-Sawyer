@@ -15,14 +15,14 @@ class JogJointSpace_impl(object):
         self.robot = None
         self.robot_rox = None #Robotics Toolbox robot object
 
-        self.degree_diff = 5
+        self.degree_diff = 10 # in degrees
         self.dt = 0.01 #seconds, amount of time continuosly jog joints
 
 
     def reset(self):
         # Stop the joints first due to safety
         self.stop_joints()
-        
+
         self.url_robot = None
         self.robot_sub = None
         self.robot = None ## RR robot object
@@ -33,15 +33,17 @@ class JogJointSpace_impl(object):
     def jog_joints2(self, q_i, sign):
         print("Jog Joints2 is called")
         if self.robot is not None:
-            # Put the robot to POSITION mode
-            self.robot.command_mode = self.halt_mode
-            # time.sleep(0.1)
-            self.robot.command_mode = self.position_mode
-            # time.sleep(0.1)
+            if self.is_enabled_velocity_mode == False:
+                # Put the robot to POSITION mode
+                self.robot.command_mode = self.halt_mode
+                # time.sleep(0.1)
+                self.robot.command_mode = self.position_mode
+                # time.sleep(0.1)
 
-            #enable velocity mode
-            self.vel_ctrl.enable_velocity_mode()
-            self.is_enabled_velocity_mode = True
+            if self.is_enabled_velocity_mode == False:
+                #enable velocity mode
+                self.vel_ctrl.enable_velocity_mode()
+                self.is_enabled_velocity_mode = True
 
             # Jog the robot
             if (self.num_joints < q_i):
@@ -55,7 +57,7 @@ class JogJointSpace_impl(object):
 
                 now=time.time()
                 while time.time()- now < self.dt:
-                    self.vel_ctrl.set_velocity_command(qdot)
+                    self.vel_ctrl.set_velocity_command(2*qdot)
 
         else:
             # Give an error message to show that the robot is not connected
@@ -64,11 +66,12 @@ class JogJointSpace_impl(object):
     def stop_joints(self):
         print("stop_joints is called")
         if self.robot is not None:
-            # Put the robot to POSITION mode
-            self.robot.command_mode = self.halt_mode
-            # time.sleep(0.1)
-            self.robot.command_mode = self.position_mode
-            # time.sleep(0.1)
+            if self.is_enabled_velocity_mode == False:
+                # Put the robot to POSITION mode
+                self.robot.command_mode = self.halt_mode
+                # time.sleep(0.1)
+                self.robot.command_mode = self.position_mode
+                # time.sleep(0.1)
 
             if self.is_enabled_velocity_mode == False:
                 #enable velocity mode
@@ -219,10 +222,12 @@ class JogJointSpace_impl(object):
 
             # ---------------------------
             # self.robot_sub=RRN.SubscribeService(self.url_robot)
-            self.state_w = self.robot_sub.SubscribeWire("robot_state")
+            # self.state_w = self.robot_sub.SubscribeWire("robot_state")
             self.is_enabled_velocity_mode = False
-            self.cmd_w = self.robot_sub.SubscribeWire("position_command")
-            self.vel_ctrl = EmulatedVelocityControl(self.robot,self.state_w, self.cmd_w, self.dt)
+            # self.cmd_w = self.robot_sub.SubscribeWire("position_command")
+            # self.vel_ctrl = EmulatedVelocityControl(self.robot,self.state_w, self.cmd_w, self.dt)
+
+            self.vel_ctrl = EmulatedVelocityControl(self.robot, self.dt)
             # ---------------------------
             
             # log that the robot is successfully connected  
