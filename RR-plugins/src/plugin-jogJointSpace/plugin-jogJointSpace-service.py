@@ -37,14 +37,6 @@ class JogJointSpace_impl(object):
 
                 # self.jog_joints_with_limits((cur_q + joint_diff),(cur_q + joint_diff),joint_diff, self.joint_vel_limits,True,True)
                 self.jog_joints_with_limits((cur_q + joint_diff), self.joint_vel_limits,True)
-                
-                # if not ((cur_q + joint_diff) < self.joint_upper_limits).all() or not ((cur_q + joint_diff) > self.joint_lower_limits).all():
-                #     print("Specified joints might be out of range")
-                # else:
-                #     try:
-                #         self.robot.jog_joint(joint_diff, self.joint_vel_limits, True, True)
-                #     except:
-                #         print("Specified joints might be out of range222")
 
         else:
             # Give an error message to show that the robot is not connected
