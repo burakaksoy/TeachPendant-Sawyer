@@ -40,7 +40,20 @@
         <div id="wrapper">
             <ul id="menuContainer"></ul>
             <div id="layoutContainer"></div>
-            
+
+            <li id = "robotOptsContainer">
+                <form>
+                    <label for="chosen_robot">Select robot:</label>
+                    <select name="available_robots" id="available_robots">
+                        <!-- <option value="sawyer">Sawyer</option>
+                        <option value="ur">UR</option>
+                        <option value="abb">ABB</option> -->
+                        <!-- <option value="4">4</option> -->
+                    </select>
+                </form>
+                <button id="start_robot_btn" type="button" onclick="run_robot()">Start</button>
+            </li> 
+
             <div id="saveLayoutStateContainer">
                 <div class="btn-group">
                     <button id="saveLayoutState_btn" type="button">Save Current Layout State</button>
@@ -54,7 +67,10 @@
 
         <!-- General JS -->
         <script type="text/javascript" src="./scripts-robot.js"></script>
-        <script type="text/javascript" src="./scripts-vision.js"></script>
+        <!-- <script type="text/javascript" src="./scripts-vision.js"></script> -->
+        
+        <!-- Auto robot discovery -->
+        <script type="text/javascript" src="./scripts-discovery.js"></script>
 
 
         <!-- Content HTMLs -->
@@ -211,13 +227,13 @@
                     <td COLSPAN="3"> <button id="save_pose_btn" type="button" style="width: 100%;">SAVE Current Pose</button> </td>
                 </tr>
                 <tr>
-                    <td COLSPAN="3"> <button id="up_sel_pose_btn" type="button" style="width: 100%;" onclick="upSelPose()">Move UP Selected Pose</button> </td>
+                    <td COLSPAN="3"> <button id="up_sel_pose_btn" type="button" style="width: 100%;">Move UP Selected Pose</button> </td>
                 </tr>
                 <tr>
-                    <td COLSPAN="3"> <button id="down_sel_pose_btn" type="button" style="width: 100%;" onclick="downSelPose()">Move DOWN Selected Pose</button> </td>
+                    <td COLSPAN="3"> <button id="down_sel_pose_btn" type="button" style="width: 100%;">Move DOWN Selected Pose</button> </td>
                 </tr>
                 <tr>
-                    <td COLSPAN="3"> <button id="del_sel_pose_btn" type="button" style="width: 100%;" onclick="delSelPose()">REMOVE Selected Pose</button> </td>
+                    <td COLSPAN="3"> <button id="del_sel_pose_btn" type="button" style="width: 100%;">REMOVE Selected Pose</button> </td>
                 </tr>
                 <tr>
                     <td COLSPAN="3"> <button id="go_sel_pose_btn" type="button" style="width: 100%;">GO to Selected Pose</button> </td>
@@ -234,7 +250,7 @@
                 </tr>
                 <tr>
                     <td COLSPAN="2"> Loop Time (s): </td> 
-                    <td> <input type="number" id="time_loops_in" placeholder="1 Loop time when speed is 100%" value="3.0" min="0" step="0.001"> </td>
+                    <td> <input type="number" id="time_loops_in" placeholder="1 Loop time when speed is 100%" value="10.0" min="0" step="0.5"> </td>
                 </tr>
                 <tr>
                      <td COLSPAN="3"> <button id="playback_poses_btn" type="button" style="width: 100%;">(GO to initial pose and) <br> PLAYBACK Saved Poses!</button> </td>
@@ -577,6 +593,7 @@
 
         <!-- Space Navigator (space mouse as gamepad) -->
         <script type="text/javascript" src="./scripts-space_navigator.js"></script>
+
 
     </body>
 </html>

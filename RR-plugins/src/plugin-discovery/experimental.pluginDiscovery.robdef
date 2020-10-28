@@ -1,0 +1,11 @@
+#Service to provide interface to RR-webBrowser-plugin-discovery
+service experimental.pluginDiscovery
+
+stdver 0.10
+
+object Discovery
+    function string{list} available_robot_ConnectionURLs()
+    function string{list} available_robot_Names()
+    function string{list} available_robot_NodeNames()
+    function void autodiscover()
+end

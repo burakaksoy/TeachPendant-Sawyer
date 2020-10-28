@@ -4,4 +4,7 @@
 ("experimental.plugin-cameraFeedback-service", 8889)
 ("experimental.plugin-cameraTraining-service", 8892)
 ("experimental.plugin-cameraCalibration-service", 8893)
+("experimental.plugin-savePlayback-service", 8894)
+("experimental.plugin-updateInfo-service", 8895)
+("experimental.plugin-discovery-service", 8896)
 

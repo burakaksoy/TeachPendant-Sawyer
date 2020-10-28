@@ -6,5 +6,10 @@ stdver 0.10
 object JogJointSpace
     function void connect2robot(string url_robot)
     function void jog_joints(int32 q_i, int32 sign)
-    function void jog_joints_with_limits(double[] up_limits, double[] low_limits, double[] joint_position, double[] max_velocity, bool relative,bool wait)
+    function void jog_joints_with_limits(double[] joint_position, double[] max_velocity,bool wait)
+    function void jog_joints_gamepad(double[] joint_speed_constants)
+    function void jog_joints_zeros()
+    function void jog_joints_to_angles(double[] joint_position)
+    function void jog_joints2(int32 q_i, int32 sign)
+    function void stop_joints()
 end

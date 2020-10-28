@@ -7,20 +7,129 @@ import numpy as np
 import general_robotics_toolbox as rox
 from qpsolvers import solve_qp
 
+from vel_emulate_sub import EmulatedVelocityControl
+import time
+
 class JogCartesianSpace_impl(object):
     def __init__(self):
+        self.url_robot = None
+        self.robot_sub = None
+        self.robot = None ## RR robot object
+        self.robot_rox = None #Robotics Toolbox robot object
+
+        # Incremental difference amounts to jog in cartesian space
+        self.move_distance = 0.05 # meters
+        self.rotate_angle = np.deg2rad(1) # radians
+
+        self.pose_at_command = None 
+        self.num_jog_command = 0
+
+        self.dt = 0.02 #seconds, amount of time continuosly jog joints
+
+
+    def reset(self):
+        # Stop the joints first due to safety
+        self.stop_joints()
+
         self.url_robot = None
         self.robot = None ## RR robot object
         self.robot_rox = None #Robotics Toolbox robot object
 
-
-        # Incremental difference amounts to jog in cartesian space
-        self.move_distance = 0.01 # meters
-        self.rotate_angle = np.deg2rad(5) # radians
-
         self.pose_at_command = None 
         self.num_jog_command = 0
-        
+
+    def jog_cartesian2(self, P_axis, R_axis):
+        print("Jog Joints2 is called")
+
+        if self.pose_at_command is None:
+            print("You need to call prepare_jog() function before calling jog_cartesian(P_axis,R_axis) function")
+            return
+        else:
+            self.num_jog_command += 1
+            print("num: " + str(self.num_jog_command))
+
+
+        if self.robot is not None:
+            print("Jog in Cartesian Space with command P_axis" + str(P_axis) + "and R_axis"+ str(R_axis)) 
+
+            if self.is_enabled_velocity_mode == False:
+                ## Put the robot to POSITION mode
+                self.robot.command_mode = self.halt_mode
+                # time.sleep(0.1)
+                self.robot.command_mode = self.position_mode
+                # time.sleep(0.1)
+
+            if self.is_enabled_velocity_mode == False:
+                #enable velocity mode
+                self.vel_ctrl.enable_velocity_mode()
+                self.is_enabled_velocity_mode = True
+
+            ## Jog the robot in cartesian space
+            # Update the end effector pose info
+            # pose = self.get_current_pose()
+            pose = self.pose_at_command 
+            # Get the corresponding joint angles at that time
+            # d_q = self.get_current_joint_positions()
+
+            # Calculate desired pose
+            Rd = pose.R
+            pd = pose.p                
+            # if P_axis is not None:
+            zero_vec = np.array(([0.,0.,0.]))
+            if not np.array_equal(P_axis, zero_vec):
+                # Desired Position
+                # pd = pd + Rd.dot( self.move_distance * P_axis)
+                pd = pd + Rd.dot(self.num_jog_command * self.move_distance * P_axis)
+            if not np.array_equal(R_axis, zero_vec):
+                # R = rox.rot(np.array(([1.],[0.],[0.])), 0.261799)
+                # R = rox.rot(R_axis, self.rotate_angle)
+                R = rox.rot(R_axis, self.num_jog_command * self.rotate_angle)
+                # Desired Orientation
+                Rd = Rd.dot(R) # Rotate
+
+            try:
+                # calculate the required joint speeds (q_dot) to achive desired pose
+                # qdot = self.update_qdot(Rd,pd,d_q)
+                qdot = self.update_qdot(Rd,pd)
+
+                now=time.time()
+                while time.time()- now < self.dt:
+                    self.vel_ctrl.set_velocity_command(qdot)
+            except:
+                print("Specified joints might be out of range")
+                import traceback
+                print(traceback.format_exc())
+                # raise
+
+        else:
+            # Give an error message to show that the robot is not connected
+            print("Robot is not connected to JogCartesianSpace service yet!")
+
+
+    def stop_joints(self):
+        print("stop_joints is called")
+        if self.robot is not None:
+            if self.is_enabled_velocity_mode == False:
+                # Put the robot to POSITION mode
+                self.robot.command_mode = self.halt_mode
+                # time.sleep(0.1)
+                self.robot.command_mode = self.position_mode
+                # time.sleep(0.1)
+
+            if self.is_enabled_velocity_mode == False:
+                #enable velocity mode
+                self.vel_ctrl.enable_velocity_mode()
+                self.is_enabled_velocity_mode = True
+
+            # stop the robot
+            self.vel_ctrl.set_velocity_command(np.zeros((self.num_joints,)))
+
+            # disable velocity mode
+            self.vel_ctrl.disable_velocity_mode() 
+            self.is_enabled_velocity_mode = False
+        else:
+            # Give an error message to show that the robot is not connected
+            print("Robot is not connected to JogCartesianSpace service yet!")        
 
     def jog_cartesian(self, P_axis, R_axis):
         print("Jog Joints is called")
@@ -75,7 +184,8 @@ class JogCartesianSpace_impl(object):
                 else:
                     wait = True
                     relative = False
-                    self.robot.jog_joint(joint_angles, self.joint_vel_limits, relative, wait)
+                    # self.robot.jog_joint(joint_angles, self.joint_vel_limits, relative, wait)
+                    self.robot.jog_freespace(joint_angles, self.joint_vel_limits, wait)
             except:
                 print("Specified joints might be out of range")
                 import traceback
@@ -84,12 +194,15 @@ class JogCartesianSpace_impl(object):
 
         else:
             # Give an error message to show that the robot is not connected
-            print("Robot is not connected to JogJointSpace service yet!")
+            print("Robot is not connected to JogCartesianSpace service yet!")
 
     def connect2robot(self, url_robot):
         if self.robot is None:
             self.url_robot = url_robot
-            self.robot = RRN.ConnectService(self.url_robot) # connect to robot with the given url
+
+            # self.robot = RRN.ConnectService(self.url_robot) # connect to robot with the given url
+            self.robot_sub = RRN.SubscribeService(self.url_robot)
+            self.robot = self.robot_sub.GetDefaultClientWait(1) 
             
             # self.robot.reset_errors()
             # self.robot.enable()
@@ -99,17 +212,27 @@ class JogCartesianSpace_impl(object):
             self.halt_mode = self.robot_const["RobotCommandMode"]["halt"]
             self.jog_mode = self.robot_const["RobotCommandMode"]["jog"]
             
-            # self.position_mode = self.robot_const["RobotCommandMode"]["velocity_command"]
+            self.position_mode = self.robot_const["RobotCommandMode"]["position_command"]
             # self.trajectory_mode = self.robot_const["RobotCommandMode"]["trajectory"]
 
             self.assign_robot_details()
+
+            # ---------------------------
+            # self.robot_sub=RRN.SubscribeService(self.url_robot)
+            # self.state_w = self.robot_sub.SubscribeWire("robot_state")
+            self.is_enabled_velocity_mode = False
+            # self.cmd_w = self.robot_sub.SubscribeWire("position_command")
+            # self.vel_ctrl = EmulatedVelocityControl(self.robot,self.state_w, self.cmd_w, self.dt)
+
+            self.vel_ctrl = EmulatedVelocityControl(self.robot, self.dt)
+            # ---------------------------
             
             # log that the robot is successfully connected  
             print("Robot is connected to JogCartesianSpace service!")
         else:
             # Give an error that says the robot is already connected
             print("Robot is already connected to JogCartesianSpace service! Trying to connect again..")
-            self.robot = None
+            self.reset()
             self.connect2robot(url_robot)
 
     def assign_robot_details(self):
@@ -351,14 +474,93 @@ class JogCartesianSpace_impl(object):
         # print_div_ik_info(str(rox.Transform(R_d,p_d)) +"<br>"+ joints_text +"<br>"+ str(converged) + ", itr = " + str(itr))
         return q_cur, converged
 
-    def prepare_jog(self):
-        self.pose_at_command = self.get_current_pose()
-        self.num_jog_command = 0
+    # def update_qdot(self, R_d, p_d,d_q): # inverse kinematics that uses QP solver
+    def update_qdot(self, R_d, p_d): # inverse kinematics that uses QP solver
+        # R_d, p_d: Desired orientation and position
+        # d_q current joint angles
+        d_q = self.get_current_joint_positions()
         
+        q_cur = d_q # initial guess on the current joint angles
+        q_cur = d_q.reshape((self.num_joints,1)) 
+        
+        epsilon = 0.01 # Damping Constant #0.001
+        Kq = epsilon * np.eye(len(q_cur)) # small value to make sure positive definite used in Damped Least Square
+        # print_div( "<br> Kq " + str(Kq) ) # DEBUG
+        
+        
+        # print_div( "<br> q_cur " + str(q_cur) ) # DEBUG
+            
+        pose = rox.fwdkin(self.robot_rox,q_cur)
+        R_cur = pose.R
+        p_cur = pose.p
+        
+        #calculate current Jacobian
+        J0T = rox.robotjacobian(self.robot_rox,q_cur)
+        
+        # Transform Jacobian to End effector frame from the base frame
+        Tr = np.zeros((6,6))
+        Tr[:3,:3] = R_cur.T 
+        Tr[3:,3:] = R_cur.T
+        J0T = Tr @ J0T
+        
+        Jp=J0T[3:,:]
+        JR=J0T[:3,:]                      #decompose to position and orientation Jacobian
+        
+        # Error in position and orientation
+        # ER = np.matmul(R_cur, np.transpose(R_d))
+        ER = np.matmul(np.transpose(R_d),R_cur)
+        #print_div( "<br> ER " + str(ER) ) # DEBUG
+
+        # EP = p_cur - p_d                         
+        EP = R_cur.T @ (p_cur - p_d)                         
+        #print_div( "<br> EP " + str(EP) ) # DEBUG
+
+        #decompose ER to (k,theta) pair
+        k, theta = rox.R2rot(ER)                  
+        # print_div( "<br> k " + str(k) ) # DEBUG
+        # print_div( "<br> theta " + str(theta) ) # DEBUG
+        
+        ## set up s for different norm for ER
+        # s=2*np.dot(k,np.sin(theta)) #eR1
+        # s = np.dot(k,np.sin(theta/2))         #eR2
+        s = np.sin(theta/2) * np.array(k)         #eR2
+        # s=2*theta*k              #eR3
+        # s=np.dot(J_phi,phi)              #eR4
+        # print_div( "<br> s " + str(s) ) # DEBUG         
+
+        Kp = np.eye(3)
+        KR = np.eye(3)        #gains for position and orientation error
+        
+        vd = - Kp @ EP
+        wd = - KR @ s
+        
+        w= 10000            #set the weight between orientation and position
+
+        H = Jp.T @ Jp + w*JR.T @ JR + Kq 
+        H = (H + H.T)/2
+
+        f= -(Jp.T @ vd + w* JR.T @ wd)               #setup quadprog parameters
+        #     quadratic function with +/-qddot (1 rad/s^2) as upper/lower bound 
+
+        qdot_star = solve_qp(H, f) 
+
+        q_dot = self.normalize_dq(qdot_star)
+        
+        return q_dot
+
+    def normalize_dq(self,q):
+        # q[:-1]=0.5*q[:-1]/(np.linalg.norm(q[:-1])) 
+        q=q/(np.linalg.norm(q)) 
+        return q 
 
 
-
-
+    def prepare_jog(self):
+        if self.robot is not None:
+            self.pose_at_command = self.get_current_pose()
+            self.num_jog_command = 0
+        else:
+            # Give an error message to show that the robot is not connected
+            print("Robot is not connected to JogCartesianSpace service yet!")
 
 
 def main():

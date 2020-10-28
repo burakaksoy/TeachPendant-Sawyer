@@ -12,60 +12,59 @@ from js import print_div_ik_info
 from js import print_div_cur_pose
 
 from RobotRaconteur.Client import *
-import time
+# import time
 import numpy as np
 import sys
-import math
+# import math
 
-sys.path.append("./my_source.zip")
-import general_robotics_toolbox as rox
-# from qpsolvers import solve_qp
+# sys.path.append("./my_source.zip")
+# import general_robotics_toolbox as rox
 
-# ---------------------------BEGIN: BLOCKLY FUNCTIONS  --------------------------- #
-def jog_joints2(q_i, degree_diff, is_relative):
-    global is_jogging
-    if (not is_jogging): 
-        is_jogging = True
-        loop.call_soon(async_jog_joints2(q_i, degree_diff, is_relative))
-    else:
-        print_div("Jogging has not finished yet..<br>")
+# # ---------------------------BEGIN: BLOCKLY FUNCTIONS  --------------------------- #
+# def jog_joints2(q_i, degree_diff, is_relative):
+#     global is_jogging
+#     if (not is_jogging): 
+#         is_jogging = True
+#         loop.call_soon(async_jog_joints2(q_i, degree_diff, is_relative))
+#     else:
+#         print_div("Jogging has not finished yet..<br>")
 
 
-async def async_jog_joints2(q_i, degree_diff, is_relative):
-    global d, d_q, num_joints, joint_lower_limits, joint_upper_limits, joint_vel_limits
+# async def async_jog_joints2(q_i, degree_diff, is_relative):
+#     global d, num_joints, joint_lower_limits, joint_upper_limits, joint_vel_limits
 
-    # Update joint angles
-    d_q = await update_joint_info() # Joint angles in radian ndarray
+#     # Update joint angles
+#     d_q, _ = await update_joint_info() # Joint angles in radian ndarray, N x 1
     
-    await update_state_flags()
+#     await update_state_flags()
 
-    if (num_joints < q_i):
-        print_div("Currently Controlled Robot only have " + str(num_joints) + " joints..<br>")
-    else:
+#     if (num_joints < q_i):
+#         print_div("Currently Controlled Robot only have " + str(num_joints) + " joints..<br>")
+#     else:
         
-        if (is_relative):
-            joint_diff = np.zeros((num_joints,))
-            joint_diff[q_i-1] = np.deg2rad(degree_diff)
-        else:
-            joint_diff = d_q
-            joint_diff[q_i-1] = np.deg2rad(degree_diff)
+#         if (is_relative):
+#             joint_diff = np.zeros((num_joints,))
+#             joint_diff[q_i-1] = np.deg2rad(degree_diff)
+#         else:
+#             joint_diff = d_q
+#             joint_diff[q_i-1] = np.deg2rad(degree_diff)
         
-        if not ((d_q + joint_diff) < joint_upper_limits).all() or not ((d_q + joint_diff) > joint_lower_limits).all():
-            print_div("Specified joints might be out of range<br>")
-        else:
-            try:
-                await d.async_jog_joint(joint_diff, joint_vel_limits, is_relative, True,None)
-                # await RRN.AsyncSleep(2,None)
-            except:
-                print_div("Specified joints might be out of range2<br>")
-                # import traceback
-                # print_div(traceback.format_exc())
-                # raise
+#         if not ((d_q + joint_diff) < joint_upper_limits).all() or not ((d_q + joint_diff) > joint_lower_limits).all():
+#             print_div("Specified joints might be out of range<br>")
+#         else:
+#             try:
+#                 await d.async_jog_joint(joint_diff, joint_vel_limits, is_relative, True,None)
+#                 # await RRN.AsyncSleep(2,None)
+#             except:
+#                 print_div("Specified joints might be out of range2<br>")
+#                 # import traceback
+#                 # print_div(traceback.format_exc())
+#                 # raise
 
-    global is_jogging
-    is_jogging = False
+#     global is_jogging
+#     is_jogging = False
 
-# ---------------------------END: BLOCKLY FUNCTIONS --------------------------- #
+# # ---------------------------END: BLOCKLY FUNCTIONS --------------------------- #
 
 # ---------------------------BEGIN: GAMEPAD FUNCTIONS  --------------------------- #
 def jog_joints_gamepad(joint_speed_constants):
@@ -76,53 +75,58 @@ def jog_joints_gamepad(joint_speed_constants):
     if (not is_jogging): 
         is_jogging = True
         loop.call_soon(async_jog_joints_gamepad(joint_speed_constants))
-    # else:
-    #     print_div("Jogging has not finished yet..<br>")
+    else:
+        print_div("Jogging has not finished yet..<br>")
 
 async def async_jog_joints_gamepad(joint_speed_constants):
-    degree_diff = 1
-    global d, d_q, num_joints, joint_lower_limits, joint_upper_limits, joint_vel_limits
+    # degree_diff = 1
+    # global d, num_joints, joint_lower_limits, joint_upper_limits, joint_vel_limits
 
+    global plugin_jogJointSpace
     global is_gamepadaxisactive
     global is_gamepadbuttondown
     if (is_gamepadaxisactive or is_gamepadbuttondown): 
-        # Update joint angles
-        d_q = await update_joint_info() # Joint angles in radian ndarray
+        # # Update joint angles
+        # d_q, _ = await update_joint_info() # Joint angles in radian ndarray, N x 1
         
-        # Trim joint speed constants accordingto number of joints
-        joint_speed_constants = joint_speed_constants[:num_joints]
-        # print_div("joint_speed_constants: "+str(joint_speed_constants)+"<br>")
+        # # Trim joint speed constants accordingto number of joints
+        # joint_speed_constants = joint_speed_constants[:num_joints]
+        # # print_div("joint_speed_constants: "+str(joint_speed_constants)+"<br>")
 
-        signs = np.divide(np.abs(joint_speed_constants),joint_speed_constants)
-        np.nan_to_num(signs, copy=False)
-        # print_div("signs: "+str(signs)+"<br>")
+        # signs = np.divide(np.abs(joint_speed_constants),joint_speed_constants)
+        # np.nan_to_num(signs, copy=False)
+        # # print_div("signs: "+str(signs)+"<br>")
 
-        joint_diff = np.ones((num_joints,))
-        joint_diff = np.multiply(signs,np.deg2rad(degree_diff))
+        # joint_diff = np.ones((num_joints,))
+        # joint_diff = np.multiply(signs,np.deg2rad(degree_diff))
         # print_div("joint_diff: "+str(joint_diff)+"<br>")
 
+        # if not ((d_q + joint_diff) < joint_upper_limits).all() or not ((d_q + joint_diff) > joint_lower_limits).all():
+        #     print_div("Specified joints might be out of range<br>")
+        # else:
+        #     try:
+        #         # await d.async_jog_joint(joint_diff.astype(np.double), joint_vel_limits, True, False,None)
+        #         await d.async_jog_freespace((d_q + joint_diff).astype(np.double), joint_vel_limits, False,None)
+        #     except:
+        #         print_div("Specified joints might be out of range(gamepad))")
+        #         import traceback
+        #         print_div(traceback.format_exc())
 
-        if not ((d_q + joint_diff) < joint_upper_limits).all() or not ((d_q + joint_diff) > joint_lower_limits).all():
-            print_div("Specified joints might be out of range<br>")
-        else:
-            try:
-                await d.async_jog_joint(joint_diff.astype(np.double), joint_vel_limits, True, False,None)
-            except:
-                print_div("Specified joints might be out of range(gamepad))")
-                import traceback
-                print_div(traceback.format_exc())
+
+        # Call Jog Joint Space Service funtion to handle this jogging
+        await plugin_jogJointSpace.async_jog_joints_gamepad(joint_speed_constants, None)
+        # TODO above line
 
     global is_jogging
     is_jogging = False
 
 def home_func_gamepad():
     # print_div('Homing...<br>')    
-    global d, num_joints, joint_vel_limits
-    
-    d.async_jog_joint(np.zeros((num_joints,)), joint_vel_limits, False, True,None)
+    global plugin_jogJointSpace
+    plugin_jogJointSpace.async_jog_joints_zeros(None)
 
     global is_jogging
-    is_jogging = False  
+    is_jogging = False 
 # ........................................
 def jog_cartesian_gamepad(P_axis, R_axis):
     if P_axis != [0.0,0.0,0.0]:
@@ -153,15 +157,16 @@ def jog_cartesian_gamepad(P_axis, R_axis):
 async def async_jog_cartesian_gamepad(P_axis, R_axis):
     global plugin_jogCartesianSpace
     await plugin_jogCartesianSpace.async_prepare_jog(None)
-    await plugin_jogCartesianSpace.async_jog_cartesian(P_axis, R_axis, None)
         
     global is_gamepadaxisactive
     global is_gamepadbuttondown
     # print_div("here 0<br>")
-    if (is_gamepadaxisactive or is_gamepadbuttondown): 
+    while (is_gamepadaxisactive or is_gamepadbuttondown): 
         # Call Jog Cartesian Space Service funtion to handle this jogging
-        await plugin_jogCartesianSpace.async_jog_cartesian(P_axis, R_axis, None)
+        # await plugin_jogCartesianSpace.async_jog_cartesian(P_axis, R_axis, None)
+        await plugin_jogCartesianSpace.async_jog_cartesian2(P_axis, R_axis, None)
 
+    await plugin_jogCartesianSpace.async_stop_joints(None)
     global is_jogging
     is_jogging = False
 
@@ -186,10 +191,12 @@ async def async_jog_joints(q_i, sign):
     global is_mousedown
     while (is_mousedown): 
         # Call Jog Joint Space Service funtion to handle this jogging
-        await plugin_jogJointSpace.async_jog_joints(q_i, sign, None)
+        await plugin_jogJointSpace.async_jog_joints2(q_i, sign, None)
 
+    await plugin_jogJointSpace.async_stop_joints(None)
     global is_jogging
-    is_jogging = False    
+    is_jogging = False
+
 
 def j1_pos_func(self):
     print_div('j1+ button pressed<br>')
@@ -252,12 +259,9 @@ def j7_neg_func(self):
 # TODO: Implement this properly
 def stop_func(self):
     print_div('STOP button pressed<br>')    
-    global num_joints, joint_vel_limits
-    #global d
     
-    #d.async_jog_joint(np.zeros((num_joints,)), joint_vel_limits, False, True,None)
     global plugin_jogJointSpace
-    plugin_jogJointSpace.async_jog_joints_with_limits(np.zeros((num_joints,)),np.zeros((num_joints,)),np.zeros((num_joints,)),joint_vel_limits,False,True,None)
+    plugin_jogJointSpace.async_jog_joints_zeros(None)
 
     global is_jogging
     is_jogging = False
@@ -274,14 +278,13 @@ def move_to_angles_func(self):
         print_div("Jogging has not finished yet..<br>")
     
 async def async_move_to_angles_func():
-    global plugin_jogJointSpace
-    global num_joints, joint_vel_limits
     global is_jogging
+    global plugin_jogJointSpace
 
-    joint_angles = np.zeros((num_joints,))
+    joint_angles = np.zeros((7,))
     element_id = "j1_angle_in"
     
-    for j in range(1,num_joints+1):
+    for j in range(1,7+1):
         element_id = "j" + str(j) + "_angle_in"
         text_container_angle = document.getElementById(element_id)
         angle = text_container_angle.value # str and in degrees
@@ -292,7 +295,7 @@ async def async_move_to_angles_func():
             is_jogging = False
             return
 
-    await plugin_jogJointSpace.async_jog_joints_with_limits(joint_angles,joint_angles,joint_angles,joint_vel_limits,False,True,None)
+    await plugin_jogJointSpace.async_jog_joints_to_angles(joint_angles,None)
 
     is_jogging = False
 # ---------------------------END: JOINT SPACE JOGGING --------------------------- #
@@ -312,13 +315,15 @@ def jog_cartesian(P_axis, R_axis):
 async def async_jog_cartesian(P_axis, R_axis):
     global plugin_jogCartesianSpace
     await plugin_jogCartesianSpace.async_prepare_jog(None)
-    await plugin_jogCartesianSpace.async_jog_cartesian(P_axis, R_axis, None)
+    # await plugin_jogCartesianSpace.async_jog_cartesian(P_axis, R_axis, None)
     
     global is_mousedown
     while (is_mousedown):
         # Call Jog Cartesian Space Service funtion to handle this jogging
-        await plugin_jogCartesianSpace.async_jog_cartesian(P_axis, R_axis, None)
+        # await plugin_jogCartesianSpace.async_jog_cartesian(P_axis, R_axis, None)
+        await plugin_jogCartesianSpace.async_jog_cartesian2(P_axis, R_axis, None)
 
+    await plugin_jogCartesianSpace.async_stop_joints(None)
     global is_jogging
     is_jogging = False
         
@@ -370,127 +375,66 @@ def tZ_pos_func(self):
 def tZ_neg_func(self):
     print_div('&theta;Z- button pressed<br>')
     jog_cartesian(np.array(([0.,0.,0.])), np.array(([0.,0.,-1.])))
-
-#########################################################
-# ZYX Euler angles calculation from rotation matrix
-def isclose(x, y, rtol=1.e-5, atol=1.e-8):
-    return abs(x-y) <= atol + rtol * abs(y)
-
-def euler_angles_from_rotation_matrix(R):
-    '''
-    From a paper by Gregory G. Slabaugh (undated),
-    "Computing Euler angles from a rotation matrix
-    '''
-    phi = 0.0
-    if isclose(R[2,0],-1.0):
-        theta = math.pi/2.0
-        psi = math.atan2(R[0,1],R[0,2])
-    elif isclose(R[2,0],1.0):
-        theta = -math.pi/2.0
-        psi = math.atan2(-R[0,1],-R[0,2])
-    else:
-        theta = -math.asin(R[2,0])
-        cos_theta = math.cos(theta)
-        psi = math.atan2(R[2,1]/cos_theta, R[2,2]/cos_theta)
-        phi = math.atan2(R[1,0]/cos_theta, R[0,0]/cos_theta)
-    return psi, theta, phi #  x y z for Rz * Ry * Rx
-#########################################################
-#########################################################
-
-async def update_end_info():
-    global robot
-    global d_q
-    
-    pose = rox.fwdkin(robot, d_q)
-       
-    print_div_end_info(str(pose))
-    # print_div_end_info( np.array_str(pose.R, precision=4, suppress_small=True).replace('\n', '\n' + ' '*4))
-    
-    # Calculate euler ZYX angles from pose and write them into:
-    x,y,z = euler_angles_from_rotation_matrix(pose.R)
-    str_rx = "%.2f" % (np.rad2deg(x))
-    str_ry = "%.2f" % (np.rad2deg(y))
-    str_rz = "%.2f" % (np.rad2deg(z))
-    str_px = "%.3f" % (pose.p[0])
-    str_py = "%.3f" % (pose.p[1])
-    str_pz = "%.3f" % (pose.p[2])
-    xyz_orient_str = "[" + str_rx + ", " + str_ry + ", " + str_rz + "]"
-    xyz_positi_str = "[" + str_px + ", " + str_py + ", " + str_pz + "]"
-    print_div_cur_pose(xyz_orient_str,xyz_positi_str)
-    return pose
 # ---------------------------END: CARTESIAN SPACE JOGGING --------------------------- #
 
 # ---------------------------BEGIN: SAVE PLAYBACK POSES --------------------------- #
 def save_cur_pose_func(self):
     print_div('Saving to "Saved Poses" list..<br>')
+    loop.call_soon(async_save_cur_pose_func())
     
-    global d_q # Get the current joint angles in rad ndarray
-    # Convert them into degrees for text view
-    joints_text=""
-    for i in d_q:
-        joints_text+= "%.2f," % (np.rad2deg(i))
-    joints_text = joints_text[:-1] # Delete the last comma
+async def async_save_cur_pose_func():
+    # Get the current joint angles as ndarray and str
+    # _, joints_text = await update_joint_info() # Current Joint angles in radian ndarray, N x 1 and str
+    joints_text = await update_joint_info() # Current Joint angles in radian ndarray, N x 1 and str
+    joints_text = joints_text[:-1] # Delete the last comma    
 
-    # Add the current joint angles to the saved poses list
+    # Add the current joint angles to the saved poses list on web browser UI
     element_id = "saved_poses_list"
     poses_list = document.getElementById(element_id)
     option = document.createElement("option")
     option.text = joints_text
     poses_list.add(option)
 
+    # Save the cur pose to plug in as well
+    global plugin_savePlayback
+    await plugin_savePlayback.async_save_cur_pose(None)
+
 def go_sel_pose_func(self):
     print_div("Moving to selected pose..<br>")
-
     global is_jogging
-
     if (not is_jogging): 
         is_jogging = True
         loop.call_soon(async_go_sel_pose_func())
     else:
         print_div("Jogging has not finished yet..<br>")
 
-
 async def async_go_sel_pose_func():
-    global d, num_joints, joint_lower_limits, joint_upper_limits, joint_vel_limits
-    global is_jogging
-
-    # Read the selected pose from the browser
+    # Read the selected pose index from the browser
     element_id = "saved_poses_list"
     poses_list = document.getElementById(element_id)
     index = poses_list.selectedIndex
-
     try:
         if index == -1:
             print_div("Please select a pose from Saved Poses.<br>")
-            raise
         else:
-            sel_pose = poses_list.options[index].value # angles as str
-            joint_angles = np.fromstring(sel_pose, dtype=float, sep=',')*np.deg2rad(1) # in rad
-
-            if not (joint_angles < joint_upper_limits).all() or not (joint_angles > joint_lower_limits).all():
-                print_div("Specified joints are out of range<br>")
-                raise
-            else:
-                try:
-                    await d.async_jog_joint(joint_angles, joint_vel_limits, False, True,None)
-                except:
-                    print_div("Specified joints might be out of range<br>")
-                    raise
+            global plugin_savePlayback
+            await plugin_savePlayback.async_go_sel_pose(index,None)
     except:
-        is_jogging = False
+        pass
+
+    global is_jogging
     is_jogging = False
 
 def playback_poses_func(self):
-    print_div("Playing Back Poses..")
-    loop.call_soon(async_playback_poses_func())
+    print_div("Playing Back Poses..<br>")
+    global is_jogging
+    if (not is_jogging): 
+        is_jogging = True
+        loop.call_soon(async_playback_poses_func())
+    else:
+        print_div("Jogging has not finished yet..<br>")
 
 async def async_playback_poses_func():
-    global d, num_joints, joint_lower_limits, joint_upper_limits, joint_vel_limits
-    global JointTrajectoryWaypoint, JointTrajectory
-    # Get Joint Names
-    robot_info = await d.async_get_robot_info(None)
-    joint_names = [j.joint_identifier.name for j in robot_info.joint_info]
-
     # Get elements, poses and paramaters from web interface
     poses_list = document.getElementById("saved_poses_list")
     num_loops_elem = document.getElementById("num_loops_in")
@@ -498,248 +442,179 @@ async def async_playback_poses_func():
     joint_vel_range = document.getElementById("joint_vel_range")
     joint_vel_ratio = float(joint_vel_range.value)/100.0
 
-    time_loops_elem = document.getElementById("time_loops_in")
-    time_loops = float(time_loops_elem.value)
-
     # Time to complete the playback
-    t_complete = time_loops #seconds
-    
-    # Create waypoints array 
-    waypoints = []
+    time_loops_elem = document.getElementById("time_loops_in")
+    t_complete = float(time_loops_elem.value) #seconds
+
     if poses_list.length >= 4:
-        index = 0 # index in saved poses list
-        while index < (poses_list.length):
-            sel_pose = poses_list.options[index].value # angles as str
-            joint_angles = np.fromstring(sel_pose, dtype=float, sep=',')*np.deg2rad(1) # in rad
-
-            if not (joint_angles < joint_upper_limits).all() or not (joint_angles > joint_lower_limits).all():
-                print_div("Specified joints are out of range<br>")
-                return
-            else:
-                # Go to initial waypoint
-                if index == 0:
-                    await d.async_jog_joint(joint_angles, joint_vel_limits, False, True,None)
-                    await RRN.AsyncSleep(2,None)
-
-                # Define the time to be at that waypoint
-                t = float(index)*(float(t_complete)/float(poses_list.length))
-                # Add the joint angles to waypoints array
-                wp = JointTrajectoryWaypoint()
-                wp.joint_position = joint_angles # (j_end - j_start)*(float(i)/10.0) + j_start
-                wp.time_from_start = t
-                waypoints.append(wp)
-
-            index += 1
-        # Complete the loop, Add the 1st joint angles to waypoints array again
-        t = float(index)*(float(t_complete)/float(poses_list.length))
-        # Add the joint angles to waypoints array
-        wp = JointTrajectoryWaypoint()
-        wp.joint_position = waypoints[0].joint_position
-        wp.time_from_start = t
-        waypoints.append(wp)
-
+        global plugin_savePlayback
+        await plugin_savePlayback.async_playback_poses(num_loops, joint_vel_ratio, t_complete, None)
     else:
         print_div("You need at least 4 different points. Add some poses to Saved Poses and try again<br>")
-        # # Put robot to jogging mode back
-        # await d.async_set_command_mode(halt_mode,None,5)
-        # await RRN.AsyncSleep(0.01,None)
-        # await d.async_set_command_mode(jog_mode,None,5)
-        # await RRN.AsyncSleep(0.01,None)
-        return
 
-    # Put robot to trajectory mode
-    await d.async_set_command_mode(halt_mode,None,5)
-    await RRN.AsyncSleep(0.01,None)
-    await d.async_set_command_mode(trajectory_mode,None,5)
-    await RRN.AsyncSleep(0.01,None)
+    global is_jogging
+    is_jogging = False
 
-    # Create the trajectory
-    traj = JointTrajectory()
-    traj.joint_names = joint_names
-    traj.waypoints = waypoints
-    d.async_set_speed_ratio(joint_vel_ratio,None,5)
+def del_sel_pose_func(self):
+    print_div("Deleting seleted Pose..<br>")
+    loop.call_soon(async_del_sel_pose_func())
 
+async def async_del_sel_pose_func():
+    # Read the selected pose index from the browser
+    element_id = "saved_poses_list"
+    poses_list = document.getElementById(element_id)
+    index = poses_list.selectedIndex
     try:
-        # Execute the trajectory number of loops times
-        i = 0 # loop
-        while i < num_loops:
-            traj_gen = await d.async_execute_trajectory(traj, None)
-        
-            while (True):
-                t = time.time()
-
-                # robot_state = state_w.InValue
-                try:
-                    # print_div("Here")
-                    res = await traj_gen.AsyncNext(None, None)        
-                    # print_div(res.action_status)
-                except RR.StopIterationException:
-                    break
-
-            i += 1
-            print_div("Loop:" + str(i) + "is done..<br>")
+        if index == -1:
+            print_div("Please select a pose from Saved Poses.<br>")
+        else:
+            global plugin_savePlayback
+            await plugin_savePlayback.async_del_sel_pose(index,None)
+            # Delete from UI too.
+            poses_list.remove(index); 
     except:
-        # import traceback
-        # print_div(traceback.format_exc())
-        print_div("Robot accelaration or velocity limits might be out of range. Increase the loop time or slow down the speed ratio<br>")
-        # return
-        # raise
+        pass
+        
+def up_sel_pose_func(self):
+    print_div("Move up seleted Pose..<br>")
+    loop.call_soon(async_up_sel_pose_func())
 
-    # Put robot to jogging mode back
-    await d.async_set_command_mode(halt_mode,None,5)
-    await RRN.AsyncSleep(0.01,None)
-    await d.async_set_command_mode(jog_mode,None,5)
-    await RRN.AsyncSleep(0.01,None)
+async def async_up_sel_pose_func():
+    # Read the selected pose index from the browser
+    element_id = "saved_poses_list"
+    poses_list = document.getElementById(element_id)
+    index = poses_list.selectedIndex
+    try:
+        if index == -1:
+            print_div("Please select a pose from Saved Poses.<br>")
+        else:
+            global plugin_savePlayback
+            await plugin_savePlayback.async_up_sel_pose(index,None)
+            # Up it from UI too.
+            if index > 0:
+                option = poses_list.options[index];
+                poses_list.remove(index);
+                poses_list.add(option,index-1)
 
-    # ##############################################################
-    # if poses_list.length > 0:
-    #     i = 0 # loop
-    #     while i < num_loops:
-    #         index = 0 # index in saved poses list
-    #         while index < (poses_list.length):
-    #             sel_pose = poses_list.options[index].value # angles as str
-    #             joint_angles = np.fromstring(sel_pose, dtype=float, sep=',')*np.deg2rad(1) # in rad
+    except:
+        pass
 
-    #             if not (joint_angles <= joint_upper_limits).all() or not (joint_angles >= joint_lower_limits).all():
-    #                 print_div("Specified joints are out of range<br>")
-    #                 return
-    #             else:
-    #                 try:
-    #                     await d.async_jog_joint(joint_angles, joint_vel_limits*joint_vel_ratio, False, True, None)
-    #                 except:
-    #                     print_div("Specified joints might be out of range<br>")
-    #                     return
+def down_sel_pose_func(self):
+    print_div("Move down seleted Pose..<br>")
+    loop.call_soon(async_down_sel_pose_func())
 
-    #             index += 1
-    #         # Complete the loop, go back the first pose
-    #         sel_pose = poses_list.options[0].value # angles as str
-    #         joint_angles = np.fromstring(sel_pose, dtype=float, sep=',')*np.deg2rad(1) # in rad
+async def async_down_sel_pose_func():
+    # Read the selected pose index from the browser
+    element_id = "saved_poses_list"
+    poses_list = document.getElementById(element_id)
+    index = poses_list.selectedIndex
+    try:
+        if index == -1:
+            print_div("Please select a pose from Saved Poses.<br>")
+        else:
+            global plugin_savePlayback
+            await plugin_savePlayback.async_down_sel_pose(index,None)
+            # Down it from UI too.
+            if index < poses_list.length-1:
+                option = poses_list.options[index];
+                poses_list.remove(index);
+                poses_list.add(option,index+1)
 
-    #         i += 1
+    except:
+        pass
 
-    # else:
-    #     print_div("Add some poses to Saved Poses and try again<br>")
-    #     return
 
-###############################################################
 # ---------------------------END: SAVE PLAYBACK POSES --------------------------- #
+
+# ---------------------------START: Select Robot --------------------------- #
+
+async def async_select_available_robot_url(robot_urls):
+    print_div("Selecting the robot URL.. <br>")
+    # Read the selected robot index from the browser  
+    element_id = "available_robots"
+    available_robots_list = document.getElementById(element_id)
+    index = available_robots_list.selectedIndex
+    return robot_urls[index]
+
+# ---------------------------END: Select Robot --------------------------- #
+
 
 async def update_state_flags():
     # For reading robot state flags
     #print_div_flag_info("State Flags Updating..")
-    
-    global d
-    d_state = await d.robot_state.AsyncPeekInValue(None,5)
-    
-    global robot_const
-    state_flags_enum = robot_const['RobotStateFlags']
-    # print_div(state_flags_enum.items())
-    
-    flags_text =""
-    for flag_name, flag_code in state_flags_enum.items():
-        if flag_code & d_state[0].robot_state_flags != 0:
-            flags_text += flag_name + " "
+    global plugin_updateInfo
+    flags_text = await plugin_updateInfo.async_state_flags_str(None)
     print_div_flag_info(flags_text)
   
   
 async def update_joint_info():
     # For reading Joint Angles
     # print_div_j_info("Joint info Updating..")
+    # global d
+    # d_state = await d.robot_state.AsyncPeekInValue(None,5)    
+    # d_q = d_state[0].joint_position
     
-    global d
-    d_state = await d.robot_state.AsyncPeekInValue(None,5)    
-    d_q = d_state[0].joint_position
-    
-    joints_text=""
-    for i in d_q:
-        # joints_text+= "%.2f, %.2f<br>" % (np.rad2deg(i), i)
-        joints_text+= "%.2f<br>" % (np.rad2deg(i))
-    # joints_text += ", shape = " + str(d_q.shape) + "<br>" # DEBUG
-    print_div_j_info(joints_text)
-    # print_div_j_info(type(d_q).__name__)
-    # print_div_j_info(d_q.tolist())
-    return d_q # in radian ndarray
+    global plugin_updateInfo
+    joints_text = await plugin_updateInfo.async_current_joint_angles_str(None)
+      
+    # return d_q, joints_text  # returns d_q in radian ndarray, joints_text str to print to browser.
+    return joints_text  # joints_text str to print to browser.
 
 async def update_num_info():
     # For reading about number of robot joints, joint types, joint limits etc
     # print_div_num_info("Number of Joints info updating")
- 
-    global d    
-    robot_info = await d.async_get_robot_info(None) 
-    joint_info = robot_info.joint_info # A list of jointInfo
     
-    joint_types = [] # A list or array of N numbers containing the joint type. 1 for rotary, 3 for prismatic
-    joint_lower_limits = [] # list or numpy.array
-    joint_upper_limits = [] # list or numpy.array
-    joint_vel_limits = [] # list or numpy.array
-    joint_acc_limits = [] # list or numpy.array
-    joint_names = [] # list of string
-    joint_uuids = [] 
-    for joint in joint_info:
-        joint_types.append(joint.joint_type)
-        joint_lower_limits.append(joint.joint_limits.lower)
-        joint_upper_limits.append(joint.joint_limits.upper)
-        joint_vel_limits.append(joint.joint_limits.velocity)
-        joint_acc_limits.append(joint.joint_limits.acceleration)
-        joint_names.append(joint.joint_identifier.name)
-        joint_uuids.append(joint.joint_identifier.uuid)
+    # global d    
+    # robot_info = await d.async_get_robot_info(None) 
+    # joint_info = robot_info.joint_info # A list of jointInfo
+    
+    # joint_types = [] # A list or array of N numbers containing the joint type. 1 for rotary, 3 for prismatic
+    # joint_lower_limits = [] # list or numpy.array
+    # joint_upper_limits = [] # list or numpy.array
+    # joint_vel_limits = [] # list or numpy.array
+    # joint_acc_limits = [] # list or numpy.array
+    # joint_names = [] # list of string
+    # joint_uuids = [] 
+    # for joint in joint_info:
+    #     joint_types.append(joint.joint_type)
+    #     joint_lower_limits.append(joint.joint_limits.lower)
+    #     joint_upper_limits.append(joint.joint_limits.upper)
+    #     joint_vel_limits.append(joint.joint_limits.velocity)
+    #     joint_acc_limits.append(joint.joint_limits.acceleration)
+    #     joint_names.append(joint.joint_identifier.name)
+    #     joint_uuids.append(joint.joint_identifier.uuid)
         
-    # convert them to numpy arrays
-    joint_types = np.asarray(joint_types)
-    joint_lower_limits = np.asarray(joint_lower_limits)
-    joint_upper_limits = np.asarray(joint_upper_limits)
-    joint_vel_limits = np.asarray(joint_vel_limits)
-    joint_acc_limits = np.asarray(joint_acc_limits)
+    # # convert them to numpy arrays
+    # joint_types = np.asarray(joint_types)
+    # joint_lower_limits = np.asarray(joint_lower_limits)
+    # joint_upper_limits = np.asarray(joint_upper_limits)
+    # joint_vel_limits = np.asarray(joint_vel_limits)
+    # joint_acc_limits = np.asarray(joint_acc_limits)
     
-    joint_lower_limits_text = ""    
-    for i in joint_lower_limits:
-        joint_lower_limits_text += "%.2f " % (np.rad2deg(i))
-        
-    joint_upper_limits_text = ""
-    for i in joint_upper_limits:
-        joint_upper_limits_text += "%.2f " % (np.rad2deg(i))
-    
-    print_div_j_limit_info(joint_lower_limits_text, joint_upper_limits_text)
-    
-    print_div_num_info( str(len(joint_info)) +"<br>"+ str(joint_types) +"<br>"+ str(joint_vel_limits) +"<br>"+ str(joint_acc_limits) +"<br>"+ str(joint_names) ) # +"<br>"+ str(joint_uuids))
-    
-    return len(joint_info), joint_types, joint_lower_limits, joint_upper_limits, joint_vel_limits, joint_acc_limits, joint_names
-     
-async def update_kin_info():
-    global d
-    global num_joints    
-    robot_info = await d.async_get_robot_info(None)
-    chains = robot_info.chains # Get RobotKinChainInfo
-    H = chains[0].H # Axes of the joints, 3xN 
-    P = chains[0].P # P vectors between joint centers (Product of Exponenetials Convention)
-    # print_div_kin_info(type(H).__name__)
-    
-    H_shaped = np.zeros((3, num_joints))
-    H_text = "H (axis):<br>"
-    itr = 0
-    for i in H:
-        H_shaped[:,itr] = (i[0],i[1],i[2])
-        H_text+= "|" + " %.1f " %i[0] + " %.1f " %i[1] + " %.1f " %i[2]  + "|<br> "
-        itr += 1
-    
-    itr = 0
-    P_shaped = np.zeros((3, num_joints+1))    
-    P_text = "P (in meters):<br>"
-    for i in P:
-        P_shaped[:,itr] = (i[0],i[1],i[2])
-        P_text+= "|" + " %.3f " %i[0] + " %.3f " %i[1] + " %.3f " %i[2]  + " |<br> "
-        itr += 1
-        
-    #print_div_j_info(joints_text)
-    print_div_kin_info(H_text + "<br>" + P_text)  
-    return H_shaped, P_shaped  
+    global plugin_updateInfo
+    joint_limits_text = await plugin_updateInfo.async_joint_limits_str_array(None)
+    print_div_j_limit_info(joint_limits_text[0], joint_limits_text[1])
 
+    joint_num_type_vel_acc_name_text = await plugin_updateInfo.async_joint_num_type_vel_acc_name_str(None)
+    print_div_num_info(joint_num_type_vel_acc_name_text) 
+    
+    # return len(joint_info), joint_types, joint_lower_limits, joint_upper_limits, joint_vel_limits, joint_acc_limits, joint_names
+     
+async def update_kin_info():        
+    global plugin_updateInfo
+    HnP_text = await plugin_updateInfo.async_kinematics_str(None)
+    print_div_kin_info(HnP_text)
+
+async def update_end_info():
+    global plugin_updateInfo
+    pose_str = await plugin_updateInfo.async_current_pose_str(None)
+    print_div_end_info(pose_str) 
+    print_div_cur_pose(pose_str)
 
 def mouseup_func(self):
     global is_mousedown
     is_mousedown = False
     # print_div("Mouse is up<br>")
-
 
 def gamepadbuttonup():
     global is_gamepadbuttondown
@@ -761,44 +636,103 @@ def gamepadaxisactive():
     is_gamepadaxisactive = True
     # print_div("Gamepadaxis is active<br>")
 
-
+def stop_robot_func(self):
+    global is_stop_robot
+    is_stop_robot = True
+    print_div("Robot stop is called <br>")
 
 async def client_drive():
     # rr+ws : WebSocket connection without encryption
-    ip = '192.168.50.152' # robot service ip
+    # ip = '192.168.50.152' # robot service ip
+    # ip = '192.168.50.40' # robot service ip
     # ip = 'localhost'
     
     ip_plugins = '192.168.50.152' # plugins ip
+    # ip_plugins = '128.113.224.154' # plugins ip lab
     # ip_plugins = 'localhost' # plugins ip
 
-    url ='rr+ws://'+ ip +':58653?service=sawyer'   
-    # url ='rr+ws://128.113.224.23:58654?service=sawyer' # sawyer in lab
+    # url ='rr+ws://'+ ip +':58653?service=robot'   # Sawyer simulation
+    # url ='rr+ws://128.113.224.23:58654?service=robot' # sawyer in lab
 
     # url ='rr+ws://'+ ip +':58655?service=robot' #ABB
 
-    # url = 'rr+ws://'+ ip +':23333?service=robot' # Dr.Wasons's Robot
+    # url = 'rr+ws://'+ ip +':23333?service=robot' # Dr.Wasons's Robot (rp260)
 
-    print_div('Program started, please wait..<br>')
+    # url = 'rr+ws://[fe80::7c64:bf9f:7c1d:5a9e]:58653/?nodeid=eb42bd99-6352-4784-9769-6a6ea260f558&service=robot'
+    # url = 'rr+ws:///?nodeid=b257c6ac-d0f0-444a-9971-e29718605924&service=robot'
+
+
+    # #_________________________ multiple robot urls _________________
+    # ip = '192.168.50.40' # robot service ip
+    # # ip = '128.113.224.64' # robot service ip in Lab
+    # url_sawyer = 'rr+ws://'+ ip +':58653?service=robot' # Sawyer simulation
+    # # url_sawyer = 'rr+ws://'+ ip +':58654?service=robot' # Sawyer simulation in Lab
+
+    # ip = '192.168.50.152' # robot service ip
+    # url_rp260 = 'rr+ws://'+ ip +':23333?service=robot'  # Dr.Wasons's Robot (rp260)
+
+    # ip = '192.168.50.152' # robot service ip
+    # # ip = '128.113.224.12' # robot service ip in Lab
+    # url_abb = 'rr+ws://'+ ip +':58655?service=robot'  # ABB
+    # # url_abb = 'rr+ws://'+ ip +':58651?service=robot'  # ABB in Lab
+
+    # ip = '192.168.50.152' # robot service ip
+    # # ip = '128.113.224.83' # robot service ip in Lab
+    # url_ur5 = 'rr+ws://'+ ip +':58653?service=robot'  # UR5
+    # # url_ur5 = 'rr+ws://'+ ip +':58653?service=robot'  # UR5 in Lab
+
+    # # robot_urls = [url_sawyer,url_rp260, url_abb]
+    # robot_urls = [url_sawyer,url_ur5, url_abb]
+
+    # url = await async_select_available_robot_url(robot_urls)
+    # # print_div('Selected Robot url: '+ url + '<br>')
+
+    # print_div('Program started, please wait..<br>')
+    # #_________________________ multiple robot urls _________________
+
+    
 
     try:
+        # Discover Available Robots
+        ## Discovery plugin
+        print_div('Discovery plugin is connecting..<br>')
+
+        url_plugin_discovery = 'rr+ws://' + ip_plugins + ':8896?service=Discovery'
+        global plugin_discovery
+        plugin_discovery = await RRN.AsyncConnectService(url_plugin_discovery,None,None,None,None)
+        print_div('discovery plugin is connected..<br>')
+
+        RobotConnectionURLs = await plugin_discovery.async_available_robot_ConnectionURLs(None)
+        # print_div(str(RobotConnectionURLs))
+        # RobotNames = await plugin_discovery.async_available_robot_Names(None)
+        # print_div("Available Robots:<br>"+str(RobotNames)+ "<br>" )
+        # RobotNodeNames = await plugin_discovery.async_available_robot_NodeNames(None)
+        # print_div("Available Robots:<br>"+str(RobotNodeNames)+ "<br>" )
+
+        # Trying -----
+        url = await async_select_available_robot_url(RobotConnectionURLs)
+        print_div('Selected Robot url: '+ url + '<br>')
+        # ------------
+
+        # Set the url of the robot
+        # url = RobotConnectionURLs[1]
+        # print_div(str(url) + "<br>")
+
+        # await RRN.AsyncSleep(2,None)
+
         #Connect to the service
-        global d # d is the robot object from RR
-        d = await RRN.AsyncConnectService(url,None,None,None,None)
-        d.async_reset_errors(None)
-        d.async_enable(None)
+        # global d # d is the robot object from RR
+        # d = await RRN.AsyncConnectService(url,None,None,None,None)
+        # d.async_reset_errors(None)
+        # d.async_enable(None)
         
-        # Define Robot modes
-        global robot_const, halt_mode, jog_mode, position_mode, trajectory_mode
-        robot_const = RRN.GetConstants("com.robotraconteur.robotics.robot", d)
-        halt_mode = robot_const["RobotCommandMode"]["halt"]
-        jog_mode = robot_const["RobotCommandMode"]["jog"]
-        position_mode = robot_const["RobotCommandMode"]["velocity_command"]
-        trajectory_mode = robot_const["RobotCommandMode"]["trajectory"]
-        
-        # Import Necessary Structures
-        global JointTrajectoryWaypoint, JointTrajectory
-        JointTrajectoryWaypoint = RRN.GetStructureType("com.robotraconteur.robotics.trajectory.JointTrajectoryWaypoint",d)
-        JointTrajectory = RRN.GetStructureType("com.robotraconteur.robotics.trajectory.JointTrajectory",d)
+        # # Define Robot modes
+        # global robot_const, halt_mode, jog_mode, position_mode, trajectory_mode
+        # robot_const = RRN.GetConstants("com.robotraconteur.robotics.robot", d)
+        # halt_mode = robot_const["RobotCommandMode"]["halt"]
+        # jog_mode = robot_const["RobotCommandMode"]["jog"]
+        # position_mode = robot_const["RobotCommandMode"]["velocity_command"]
+        # trajectory_mode = robot_const["RobotCommandMode"]["trajectory"]
 
         # Put robot to jogging mode
         # await d.async_set_command_mode(halt_mode,None,5)
@@ -820,6 +754,16 @@ async def client_drive():
 
         # PLUGIN SERVICE CONNECTIONS BEGIN________________________________
 
+        ## UpdateInfo plugin
+        print_div('UpdateInfo plugin is connecting..<br>')
+
+        # url_plugin_updateInfo = 'rr+ws://localhost:8895?service=UpdateInfo'
+        url_plugin_updateInfo = 'rr+ws://' + ip_plugins + ':8895?service=UpdateInfo'
+        global plugin_updateInfo
+        plugin_updateInfo = await RRN.AsyncConnectService(url_plugin_updateInfo,None,None,None,None)
+        await plugin_updateInfo.async_connect2robot(url,None)
+        print_div('UpdateInfo plugin is connected..<br>')
+
         ## JogJointSpace plugin
         print_div('JogJointSpace plugin is connecting..<br>')
 
@@ -830,7 +774,6 @@ async def client_drive():
         await plugin_jogJointSpace.async_connect2robot(url,None)
         print_div('JogJointSpace plugin is connected..<br>')
 
-
         ## JogCartesianSpace plugin
         print_div('JogCartesianSpace plugin is connecting..<br>')
 
@@ -840,32 +783,37 @@ async def client_drive():
         plugin_jogCartesianSpace = await RRN.AsyncConnectService(url_plugin_jogCartesianSpace,None,None,None,None)
         await plugin_jogCartesianSpace.async_connect2robot(url,None)
         print_div('JogJointSpace plugin is connected..<br>')
+
+        ## SavePlayback plugin
+        print_div('SavePlayback plugin is connecting..<br>')
+
+        # url_plugin_savePlayback = 'rr+ws://localhost:8894?service=SavePlayback'
+        url_plugin_savePlayback = 'rr+ws://' + ip_plugins + ':8894?service=SavePlayback'
+        global plugin_savePlayback
+        plugin_savePlayback = await RRN.AsyncConnectService(url_plugin_savePlayback,None,None,None,None)
+        await plugin_savePlayback.async_connect2robot(url,None)
+        print_div('SavePlayback plugin is connected..<br>')
         
 
         # PLUGIN SERVICE CONNECTIONS END__________________________________
          
         print_div('READY!<br>')
         
-        global d_q
         # Get the current joint positions
-        d_q = await update_joint_info() # Joint angles in radian ndarray, N x 1
+        # _, joints_text = await update_joint_info() # Joint angles in radian ndarray, N x 1 and str
+        joints_text = await update_joint_info() # Joint angles in radian ndarray, N x 1 and str
+        print_div_j_info(joints_text)
                   
-        global num_joints, joint_types, joint_lower_limits, joint_upper_limits, joint_vel_limits, joint_acc_limits, joint_names
-        # Get the number of Joints, Joint Types, Limits etc in the robot.
-        num_joints, joint_types, joint_lower_limits, joint_upper_limits, joint_vel_limits, joint_acc_limits, joint_names  = await update_num_info()
+        # global num_joints, joint_types, joint_lower_limits, joint_upper_limits, joint_vel_limits, joint_acc_limits, joint_names
+        # # Get the number of Joints, Joint Types, Limits etc in the robot.
+        # num_joints, joint_types, joint_lower_limits, joint_upper_limits, joint_vel_limits, joint_acc_limits, joint_names  = await update_num_info()
+        await update_num_info()
         
         # Get the kinematics info, P and H in product of exponentials convention
-        H, P = await update_kin_info()
-        
-        # print_div_end_info(str(H))
-        
-        global robot # Robotics Toolbox Robot Object (NOT THE RR ROBOT OBJECT, IT IS d)
-        # Now we are ready to create the robot from toolbox
-        # robot = rox.Robot(H,P,joint_types-1,joint_lower_limits,joint_upper_limits,joint_vel_limits,joint_acc_limits)
-        robot = rox.Robot(H,P,joint_types-1)
+        await update_kin_info()
         
         # UPdate the end effector pose info
-        pose = await update_end_info() # Current pose object from Robotics Toolbox of the end effector
+        await update_end_info()
             
         # Element references
         # Joint Space Control Buttons
@@ -913,13 +861,14 @@ async def client_drive():
         button_theta_Z_pos = document.getElementById("theta_Z_pos_btn")
         button_theta_Z_neg = document.getElementById("theta_Z_neg_btn")
         
-        # Move robot to a certain default position
-        # move_to_angles_func(None)
-
         # Playback Poses Buttons
         button_save_cur_pose = document.getElementById("save_pose_btn")
         button_go_sel_pose = document.getElementById("go_sel_pose_btn")
         button_playback_poses = document.getElementById("playback_poses_btn")
+        button_del_sel_pose = document.getElementById("del_sel_pose_btn")
+        button_up_sel_pose = document.getElementById("up_sel_pose_btn")
+        button_down_sel_pose = document.getElementById("down_sel_pose_btn")
+
 
 
         button_stop.addEventListener("click", stop_func)
@@ -964,13 +913,17 @@ async def client_drive():
         button_theta_Z_pos.addEventListener("mousedown", tZ_pos_func)
         button_theta_Z_neg.addEventListener("mousedown", tZ_neg_func)
         
+        # Playback Poses Buttons event listeners
         button_save_cur_pose.addEventListener("click", save_cur_pose_func)
         button_go_sel_pose.addEventListener("click", go_sel_pose_func)
         button_playback_poses.addEventListener("click", playback_poses_func)
+        button_del_sel_pose.addEventListener("click", del_sel_pose_func)
+        button_up_sel_pose.addEventListener("click", up_sel_pose_func)
+        button_down_sel_pose.addEventListener("click", down_sel_pose_func)
+
 
         global is_jogging
         is_jogging = False
-
         global is_mousedown
         is_mousedown = False        
 
@@ -978,20 +931,71 @@ async def client_drive():
 
         global is_gamepadbuttondown
         is_gamepadbuttondown = False
-
         global is_gamepadaxisactive
         is_gamepadaxisactive = False
-        
 
-        while True:
-            
+        # ---------------------------
+        # Element reference for start robot button
+        button_start_robot = document.getElementById("start_robot_btn")
+        # Event listener for stop robot func
+        button_start_robot.addEventListener("mousedown", stop_robot_func)
+
+        global is_stop_robot 
+        is_stop_robot = False
+        # ---------------------------
+
+
+        while not is_stop_robot:
             # Update joint angles
-            d_q = await update_joint_info() # Joint angles in radian ndarray
+            # _, joints_text = await update_joint_info() # Joint angles in radian ndarray, N x 1 and str
+            joints_text = await update_joint_info() # Joint angles as str
+            print_div_j_info(joints_text)
             
             # UPdate the end effector pose info
-            pose = await update_end_info()
+            await update_end_info()
             
             await update_state_flags()
+
+
+        # Remove all event listeners before return
+        button_stop.removeEventListener("click", stop_func)
+        button_j1_pos.removeEventListener("mousedown", j1_pos_func)
+        button_j1_neg.removeEventListener("mousedown", j1_neg_func)
+        button_j2_pos.removeEventListener("mousedown", j2_pos_func)
+        button_j2_neg.removeEventListener("mousedown", j2_neg_func)
+        button_j3_pos.removeEventListener("mousedown", j3_pos_func)
+        button_j3_neg.removeEventListener("mousedown", j3_neg_func)
+        button_j4_pos.removeEventListener("mousedown", j4_pos_func)
+        button_j4_neg.removeEventListener("mousedown", j4_neg_func)
+        button_j5_pos.removeEventListener("mousedown", j5_pos_func)
+        button_j5_neg.removeEventListener("mousedown", j5_neg_func)
+        button_j6_pos.removeEventListener("mousedown", j6_pos_func)
+        button_j6_neg.removeEventListener("mousedown", j6_neg_func)
+        button_j7_pos.removeEventListener("mousedown", j7_pos_func) 
+        button_j7_neg.removeEventListener("mousedown", j7_neg_func)
+        button_angles_submit.removeEventListener("click", move_to_angles_func)
+        button_X_pos.removeEventListener("mousedown", X_pos_func)
+        button_X_neg.removeEventListener("mousedown", X_neg_func)
+        button_Y_pos.removeEventListener("mousedown", Y_pos_func)
+        button_Y_neg.removeEventListener("mousedown", Y_neg_func)
+        button_Z_pos.removeEventListener("mousedown", Z_pos_func)
+        button_Z_neg.removeEventListener("mousedown", Z_neg_func)
+        button_theta_X_pos.removeEventListener("mousedown", tX_pos_func)
+        button_theta_X_neg.removeEventListener("mousedown", tX_neg_func)
+        button_theta_Y_pos.removeEventListener("mousedown", tY_pos_func)
+        button_theta_Y_neg.removeEventListener("mousedown", tY_neg_func)
+        button_theta_Z_pos.removeEventListener("mousedown", tZ_pos_func)
+        button_theta_Z_neg.removeEventListener("mousedown", tZ_neg_func)
+        button_save_cur_pose.removeEventListener("click", save_cur_pose_func)
+        button_go_sel_pose.removeEventListener("click", go_sel_pose_func)
+        button_playback_poses.removeEventListener("click", playback_poses_func)
+        document.removeEventListener("mouseup", mouseup_func)
+        button_start_robot.removeEventListener("mousedown", stop_robot_func)
+        button_del_sel_pose.removeEventListener("click", del_sel_pose_func)
+        button_up_sel_pose.removeEventListener("click", up_sel_pose_func)
+        button_down_sel_pose.removeEventListener("click", down_sel_pose_func)
+
+        return
             
     except:
         import traceback

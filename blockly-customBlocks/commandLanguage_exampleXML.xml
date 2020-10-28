@@ -1,0 +1,341 @@
+<CommandLanguage version="1.0.0">
+    <Instruction type="30">
+        <CompositeInstruction order="0">
+            <Description>Tesseract Composite Instruction</Description>
+            <Profile>DEFAULT</Profile>
+            <ManipulatorInfo>
+                <Manipulator>gantry_manipulator</Manipulator>
+                <ManipulatorIKSolver></ManipulatorIKSolver>
+                <WorkingFrame></WorkingFrame>
+                <TCP xyz="0 0 0" wxyz="1 0 0 0"/>
+            </ManipulatorInfo>
+            <StartInstruction>
+                <Instruction type="20">
+                    <MoveInstruction type="3">
+                        <Description></Description>
+                        <Profile>DEFAULT</Profile>
+                        <Waypoint type="3">
+                            <StateWaypoint>
+                                <Names>gantry_x_actuation_joint gantry_y_actuation_joint robot_joint_1 robot_joint_2 robot_joint_3 robot_joint_4 robot_joint_5 robot_joint_6</Names>
+                                <Position>0.001 0.001 0 0 0 0 0 0</Position>
+                                <TimeFromStart>0.000000</TimeFromStart>
+                            </StateWaypoint>
+                        </Waypoint>
+                    </MoveInstruction>
+                </Instruction>
+            </StartInstruction>
+            <Instruction type="30">
+                <CompositeInstruction order="0">
+                    <Description>Tesseract Composite Instruction</Description>
+                    <Profile>DEFAULT</Profile>
+                    <ManipulatorInfo>
+                        <Manipulator>gantry_manipulator</Manipulator>
+                        <ManipulatorIKSolver></ManipulatorIKSolver>
+                        <WorkingFrame></WorkingFrame>
+                        <TCP xyz="0 0 0" wxyz="1 0 0 0"/>
+                    </ManipulatorInfo>
+                    <Instruction type="20">
+                        <MoveInstruction type="1">
+                            <Description>Tesseract Plan Instruction</Description>
+                            <Profile>DEFAULT</Profile>
+                            <Waypoint type="3">
+                                <StateWaypoint>
+                                    <Names>gantry_x_actuation_joint gantry_y_actuation_joint robot_joint_1 robot_joint_2 robot_joint_3 robot_joint_4 robot_joint_5 robot_joint_6</Names>
+                                    <Position>0.0796399 0.03964 0.0335638 0.0570781 0.0527218 -0.078527 0.0959448 0.0278475</Position>
+                                    <Velocity>0.267528 0.13145 0.111372 0.193511 0.179356 -0.267143 0.326398 0.0947354</Velocity>
+                                    <Acceleration>0.433661 0.21308 0.165458 0.310116 0.290735 -0.433038 0.529089 0.153565</Acceleration>
+                                    <TimeFromStart>0.604360</TimeFromStart>
+                                </StateWaypoint>
+                            </Waypoint>
+                        </MoveInstruction>
+                    </Instruction>
+                    <Instruction type="20">
+                        <MoveInstruction type="1">
+                            <Description>Tesseract Plan Instruction</Description>
+                            <Profile>DEFAULT</Profile>
+                            <Waypoint type="3">
+                                <StateWaypoint>
+                                    <Names>gantry_x_actuation_joint gantry_y_actuation_joint robot_joint_1 robot_joint_2 robot_joint_3 robot_joint_4 robot_joint_5 robot_joint_6</Names>
+                                    <Position>0.15828 0.0782799 0.0649171 0.113633 0.105444 -0.157054 0.19189 0.0556951</Position>
+                                    <Velocity>0.38099 0.187201 0.143383 0.271982 0.255424 -0.380443 0.464828 0.134914</Velocity>
+                                    <Acceleration>0.498247 0.244815 0.0974573 0.334395 0.334035 -0.497531 0.607887 0.176436</Acceleration>
+                                    <TimeFromStart>0.847866</TimeFromStart>
+                                </StateWaypoint>
+                            </Waypoint>
+                        </MoveInstruction>
+                    </Instruction>
+                    <Instruction type="20">
+                        <MoveInstruction type="1">
+                            <Description>Tesseract Plan Instruction</Description>
+                            <Profile>DEFAULT</Profile>
+                            <Waypoint type="3">
+                                <StateWaypoint>
+                                    <Names>gantry_x_actuation_joint gantry_y_actuation_joint robot_joint_1 robot_joint_2 robot_joint_3 robot_joint_4 robot_joint_5 robot_joint_6</Names>
+                                    <Position>0.23692 0.11692 0.0927834 0.169364 0.158165 -0.235581 0.287835 0.0835426</Position>
+                                    <Velocity>0.41734 0.205061 0.138733 0.293597 0.279793 -0.41674 0.509176 0.147786</Velocity>
+                                    <Acceleration>-0.120079 -0.059001 -0.145832 -0.10952 -0.0805032 0.119906 -0.146502 -0.0425216</Acceleration>
+                                    <TimeFromStart>1.040106</TimeFromStart>
+                                </StateWaypoint>
+                            </Waypoint>
+                        </MoveInstruction>
+                    </Instruction>
+                    <Instruction type="20">
+                        <MoveInstruction type="1">
+                            <Description>Tesseract Plan Instruction</Description>
+                            <Profile>DEFAULT</Profile>
+                            <Waypoint type="3">
+                                <StateWaypoint>
+                                    <Names>gantry_x_actuation_joint gantry_y_actuation_joint robot_joint_1 robot_joint_2 robot_joint_3 robot_joint_4 robot_joint_5 robot_joint_6</Names>
+                                    <Position>0.31556 0.15556 0.11657 0.22413 0.210887 -0.314108 0.383779 0.11139</Position>
+                                    <Velocity>0.452435 0.222305 0.121984 0.311567 0.303322 -0.451785 0.551994 0.160214</Velocity>
+                                    <Acceleration>0.499713 0.245535 -0.0353436 0.303908 0.335017 -0.498995 0.609675 0.176955</Acceleration>
+                                    <TimeFromStart>1.224995</TimeFromStart>
+                                </StateWaypoint>
+                            </Waypoint>
+                        </MoveInstruction>
+                    </Instruction>
+                    <Instruction type="20">
+                        <MoveInstruction type="1">
+                            <Description>Tesseract Plan Instruction</Description>
+                            <Profile>DEFAULT</Profile>
+                            <Waypoint type="3">
+                                <StateWaypoint>
+                                    <Names>gantry_x_actuation_joint gantry_y_actuation_joint robot_joint_1 robot_joint_2 robot_joint_3 robot_joint_4 robot_joint_5 robot_joint_6</Names>
+                                    <Position>0.3942 0.1942 0.135002 0.27763 0.263609 -0.392635 0.479724 0.139238</Position>
+                                    <Velocity>0.520349 0.255675 0.102345 0.349362 0.348852 -0.519601 0.634853 0.184263</Velocity>
+                                    <Acceleration>0.343998 0.169025 -0.208643 0.165624 0.230623 -0.343504 0.419696 0.121815</Acceleration>
+                                    <TimeFromStart>1.385983</TimeFromStart>
+                                </StateWaypoint>
+                            </Waypoint>
+                        </MoveInstruction>
+                    </Instruction>
+                    <Instruction type="20">
+                        <MoveInstruction type="1">
+                            <Description>Tesseract Plan Instruction</Description>
+                            <Profile>DEFAULT</Profile>
+                            <Waypoint type="3">
+                                <StateWaypoint>
+                                    <Names>gantry_x_actuation_joint gantry_y_actuation_joint robot_joint_1 robot_joint_2 robot_joint_3 robot_joint_4 robot_joint_5 robot_joint_6</Names>
+                                    <Position>0.47284 0.23284 0.146985 0.329605 0.316331 -0.471162 0.575669 0.167085</Position>
+                                    <Velocity>0.580655 0.285307 0.0610777 0.377288 0.389283 -0.579821 0.708429 0.205618</Velocity>
+                                    <Acceleration>0.497512 0.244454 -0.367198 0.224059 0.333542 -0.496796 0.606989 0.176176</Acceleration>
+                                    <TimeFromStart>1.529312</TimeFromStart>
+                                </StateWaypoint>
+                            </Waypoint>
+                        </MoveInstruction>
+                    </Instruction>
+                    <Instruction type="20">
+                        <MoveInstruction type="1">
+                            <Description>Tesseract Plan Instruction</Description>
+                            <Profile>DEFAULT</Profile>
+                            <Waypoint type="3">
+                                <StateWaypoint>
+                                    <Names>gantry_x_actuation_joint gantry_y_actuation_joint robot_joint_1 robot_joint_2 robot_joint_3 robot_joint_4 robot_joint_5 robot_joint_6</Names>
+                                    <Position>0.55148 0.27148 0.151243 0.379753 0.369053 -0.549689 0.671614 0.194933</Position>
+                                    <Velocity>0.610932 0.300183 -0.000425753 0.381665 0.409581 -0.610055 0.745369 0.21634</Velocity>
+                                    <Acceleration>-0.0342746 -0.0168409 -0.57379 -0.157101 -0.0229787 0.0342259 -0.0418174 -0.0121373</Acceleration>
+                                    <TimeFromStart>1.660033</TimeFromStart>
+                                </StateWaypoint>
+                            </Waypoint>
+                        </MoveInstruction>
+                    </Instruction>
+                    <Instruction type="20">
+                        <MoveInstruction type="1">
+                            <Description>Tesseract Plan Instruction</Description>
+                            <Profile>DEFAULT</Profile>
+                            <Waypoint type="3">
+                                <StateWaypoint>
+                                    <Names>gantry_x_actuation_joint gantry_y_actuation_joint robot_joint_1 robot_joint_2 robot_joint_3 robot_joint_4 robot_joint_5 robot_joint_6</Names>
+                                    <Position>0.63012 0.31012 0.14655 0.427785 0.421775 -0.628216 0.767559 0.22278</Position>
+                                    <Velocity>0.575913 0.282976 -0.0686125 0.343657 0.386103 -0.575085 0.702643 0.203939</Velocity>
+                                    <Acceleration>-0.49878 -0.245077 -0.464114 -0.421431 -0.334392 0.498063 -0.608537 -0.176625</Acceleration>
+                                    <TimeFromStart>1.791426</TimeFromStart>
+                                </StateWaypoint>
+                            </Waypoint>
+                        </MoveInstruction>
+                    </Instruction>
+                    <Instruction type="20">
+                        <MoveInstruction type="1">
+                            <Description>Tesseract Plan Instruction</Description>
+                            <Profile>DEFAULT</Profile>
+                            <Waypoint type="3">
+                                <StateWaypoint>
+                                    <Names>gantry_x_actuation_joint gantry_y_actuation_joint robot_joint_1 robot_joint_2 robot_joint_3 robot_joint_4 robot_joint_5 robot_joint_6</Names>
+                                    <Position>0.70876 0.34876 0.13163 0.473398 0.474496 -0.706743 0.863504 0.250628</Position>
+                                    <Velocity>0.575938 0.282989 -0.151657 0.324036 0.38612 -0.57511 0.702674 0.203948</Velocity>
+                                    <Acceleration>0.499143 0.245256 -0.727768 0.139815 0.334635 -0.498425 0.60898 0.176754</Acceleration>
+                                    <TimeFromStart>1.930776</TimeFromStart>
+                                </StateWaypoint>
+                            </Waypoint>
+                        </MoveInstruction>
+                    </Instruction>
+                    <Instruction type="20">
+                        <MoveInstruction type="1">
+                            <Description>Tesseract Plan Instruction</Description>
+                            <Profile>DEFAULT</Profile>
+                            <Waypoint type="3">
+                                <StateWaypoint>
+                                    <Names>gantry_x_actuation_joint gantry_y_actuation_joint robot_joint_1 robot_joint_2 robot_joint_3 robot_joint_4 robot_joint_5 robot_joint_6</Names>
+                                    <Position>0.7874 0.3874 0.105219 0.516294 0.527218 -0.78527 0.959448 0.278475</Position>
+                                    <Velocity>0.595829 0.292762 -0.246541 0.314028 0.399456 -0.594973 0.726942 0.210992</Velocity>
+                                    <Acceleration>-0.198856 -0.0977085 -0.704645 -0.290889 -0.133317 0.198571 -0.242615 -0.070418</Acceleration>
+                                    <TimeFromStart>2.063258</TimeFromStart>
+                                </StateWaypoint>
+                            </Waypoint>
+                        </MoveInstruction>
+                    </Instruction>
+                    <Instruction type="20">
+                        <MoveInstruction type="1">
+                            <Description>Tesseract Plan Instruction</Description>
+                            <Profile>DEFAULT</Profile>
+                            <Waypoint type="3">
+                                <StateWaypoint>
+                                    <Names>gantry_x_actuation_joint gantry_y_actuation_joint robot_joint_1 robot_joint_2 robot_joint_3 robot_joint_4 robot_joint_5 robot_joint_6</Names>
+                                    <Position>0.86604 0.42604 0.0660447 0.556172 0.57994 -0.863797 1.05539 0.306323</Position>
+                                    <Velocity>0.548108 0.269314 -0.318648 0.267157 0.367462 -0.54732 0.66872 0.194093</Velocity>
+                                    <Acceleration>-0.499479 -0.24542 -0.350536 -0.39501 -0.334861 0.498761 -0.60939 -0.176873</Acceleration>
+                                    <TimeFromStart>2.199930</TimeFromStart>
+                                </StateWaypoint>
+                            </Waypoint>
+                        </MoveInstruction>
+                    </Instruction>
+                    <Instruction type="20">
+                        <MoveInstruction type="1">
+                            <Description>Tesseract Plan Instruction</Description>
+                            <Profile>DEFAULT</Profile>
+                            <Waypoint type="3">
+                                <StateWaypoint>
+                                    <Names>gantry_x_actuation_joint gantry_y_actuation_joint robot_joint_1 robot_joint_2 robot_joint_3 robot_joint_4 robot_joint_5 robot_joint_6</Names>
+                                    <Position>0.94468 0.46468 0.0128349 0.592731 0.632662 -0.942324 1.15134 0.33417</Position>
+                                    <Velocity>0.548123 0.269322 -0.424789 0.242067 0.367473 -0.547335 0.668738 0.194098</Velocity>
+                                    <Acceleration>0.499686 0.245522 -1.09607 0.0530619 0.334999 -0.498967 0.609642 0.176946</Acceleration>
+                                    <TimeFromStart>2.346674</TimeFromStart>
+                                </StateWaypoint>
+                            </Waypoint>
+                        </MoveInstruction>
+                    </Instruction>
+                    <Instruction type="20">
+                        <MoveInstruction type="1">
+                            <Description>Tesseract Plan Instruction</Description>
+                            <Profile>DEFAULT</Profile>
+                            <Waypoint type="3">
+                                <StateWaypoint>
+                                    <Names>gantry_x_actuation_joint gantry_y_actuation_joint robot_joint_1 robot_joint_2 robot_joint_3 robot_joint_4 robot_joint_5 robot_joint_6</Names>
+                                    <Position>1.02332 0.50332 -0.055674 0.625672 0.685384 -1.02085 1.24728 0.362018</Position>
+                                    <Velocity>0.581799 0.285869 -0.56677 0.229537 0.39005 -0.580963 0.709825 0.206023</Velocity>
+                                    <Acceleration>-0.0108008 -0.00530702 -0.96511 -0.234967 -0.0072414 0.0107858 -0.0131781 -0.00382489</Acceleration>
+                                    <TimeFromStart>2.484441</TimeFromStart>
+                                </StateWaypoint>
+                            </Waypoint>
+                        </MoveInstruction>
+                    </Instruction>
+                    <Instruction type="20">
+                        <MoveInstruction type="1">
+                            <Description>Tesseract Plan Instruction</Description>
+                            <Profile>DEFAULT</Profile>
+                            <Waypoint type="3">
+                                <StateWaypoint>
+                                    <Names>gantry_x_actuation_joint gantry_y_actuation_joint robot_joint_1 robot_joint_2 robot_joint_3 robot_joint_4 robot_joint_5 robot_joint_6</Names>
+                                    <Position>1.10196 0.54196 -0.140757 0.654694 0.738106 -1.09938 1.34323 0.389866</Position>
+                                    <Velocity>0.54655 0.268549 -0.649321 0.18799 0.366418 -0.545765 0.666819 0.193541</Velocity>
+                                    <Acceleration>-0.5 -0.245677 -0.231171 -0.367109 -0.33521 0.499282 -0.610026 -0.177057</Acceleration>
+                                    <TimeFromStart>2.622454</TimeFromStart>
+                                </StateWaypoint>
+                            </Waypoint>
+                        </MoveInstruction>
+                    </Instruction>
+                    <Instruction type="20">
+                        <MoveInstruction type="1">
+                            <Description>Tesseract Plan Instruction</Description>
+                            <Profile>DEFAULT</Profile>
+                            <Waypoint type="3">
+                                <StateWaypoint>
+                                    <Names>gantry_x_actuation_joint gantry_y_actuation_joint robot_joint_1 robot_joint_2 robot_joint_3 robot_joint_4 robot_joint_5 robot_joint_6</Names>
+                                    <Position>1.1806 0.5806 -0.243642 0.679506 0.790827 -1.1779 1.43917 0.417713</Position>
+                                    <Velocity>0.528774 0.259815 -0.757356 0.151335 0.3545 -0.528014 0.645131 0.187246</Velocity>
+                                    <Acceleration>0.261191 0.128337 -1.22015 -0.12531 0.175108 -0.260816 0.318666 0.0924914</Acceleration>
+                                    <TimeFromStart>2.771332</TimeFromStart>
+                                </StateWaypoint>
+                            </Waypoint>
+                        </MoveInstruction>
+                    </Instruction>
+                    <Instruction type="20">
+                        <MoveInstruction type="1">
+                            <Description>Tesseract Plan Instruction</Description>
+                            <Profile>DEFAULT</Profile>
+                            <Waypoint type="3">
+                                <StateWaypoint>
+                                    <Names>gantry_x_actuation_joint gantry_y_actuation_joint robot_joint_1 robot_joint_2 robot_joint_3 robot_joint_4 robot_joint_5 robot_joint_6</Names>
+                                    <Position>1.25924 0.61924 -0.365605 0.699807 0.843549 -1.25643 1.53512 0.445561</Position>
+                                    <Velocity>0.529364 0.260105 -0.886561 0.121151 0.354896 -0.528603 0.645852 0.187455</Velocity>
+                                    <Acceleration>-0.253148 -0.124385 -0.539058 -0.285659 -0.169715 0.252784 -0.308853 -0.0896433</Acceleration>
+                                    <TimeFromStart>2.918222</TimeFromStart>
+                                </StateWaypoint>
+                            </Waypoint>
+                        </MoveInstruction>
+                    </Instruction>
+                    <Instruction type="20">
+                        <MoveInstruction type="1">
+                            <Description>Tesseract Plan Instruction</Description>
+                            <Profile>DEFAULT</Profile>
+                            <Waypoint type="3">
+                                <StateWaypoint>
+                                    <Names>gantry_x_actuation_joint gantry_y_actuation_joint robot_joint_1 robot_joint_2 robot_joint_3 robot_joint_4 robot_joint_5 robot_joint_6</Names>
+                                    <Position>1.33788 0.65788 -0.507738 0.715339 0.896271 -1.33496 1.63106 0.473408</Position>
+                                    <Velocity>0.470575 0.231219 -0.913049 0.0781507 0.315483 -0.469899 0.574126 0.166637</Velocity>
+                                    <Acceleration>-0.499168 -0.245268 0.20009 -0.26461 -0.334652 0.498451 -0.609011 -0.176763</Acceleration>
+                                    <TimeFromStart>3.074510</TimeFromStart>
+                                </StateWaypoint>
+                            </Waypoint>
+                        </MoveInstruction>
+                    </Instruction>
+                    <Instruction type="20">
+                        <MoveInstruction type="1">
+                            <Description>Tesseract Plan Instruction</Description>
+                            <Profile>DEFAULT</Profile>
+                            <Waypoint type="3">
+                                <StateWaypoint>
+                                    <Names>gantry_x_actuation_joint gantry_y_actuation_joint robot_joint_1 robot_joint_2 robot_joint_3 robot_joint_4 robot_joint_5 robot_joint_6</Names>
+                                    <Position>1.41652 0.69652 -0.671318 0.725799 0.948993 -1.41349 1.72701 0.501256</Position>
+                                    <Velocity>0.382932 0.188155 -0.850774 0.0381094 0.256725 -0.382381 0.467197 0.135602</Velocity>
+                                    <Acceleration>-0.450383 -0.221297 0.474618 -0.169208 -0.301946 0.449736 -0.54949 -0.159487</Acceleration>
+                                    <TimeFromStart>3.259110</TimeFromStart>
+                                </StateWaypoint>
+                            </Waypoint>
+                        </MoveInstruction>
+                    </Instruction>
+                    <Instruction type="20">
+                        <MoveInstruction type="1">
+                            <Description>Tesseract Plan Instruction</Description>
+                            <Profile>DEFAULT</Profile>
+                            <Waypoint type="3">
+                                <StateWaypoint>
+                                    <Names>gantry_x_actuation_joint gantry_y_actuation_joint robot_joint_1 robot_joint_2 robot_joint_3 robot_joint_4 robot_joint_5 robot_joint_6</Names>
+                                    <Position>1.49516 0.73516 -0.856937 0.731047 1.00171 -1.49201 1.82295 0.529103</Position>
+                                    <Velocity>0.26935 0.132346 -0.671183 0.00960038 0.180577 -0.268962 0.32862 0.0953804</Velocity>
+                                    <Acceleration>-0.494269 -0.242861 1.01902 -0.0678984 -0.331368 0.493559 -0.603034 -0.175028</Acceleration>
+                                    <TimeFromStart>3.499585</TimeFromStart>
+                                </StateWaypoint>
+                            </Waypoint>
+                        </MoveInstruction>
+                    </Instruction>
+                    <Instruction type="20">
+                        <MoveInstruction type="1">
+                            <Description>Tesseract Plan Instruction</Description>
+                            <Profile>DEFAULT</Profile>
+                            <Waypoint type="3">
+                                <StateWaypoint>
+                                    <Names>gantry_x_actuation_joint gantry_y_actuation_joint robot_joint_1 robot_joint_2 robot_joint_3 robot_joint_4 robot_joint_5 robot_joint_6</Names>
+                                    <Position>1.5738 0.7738 -1.06587 0.730782 1.05444 -1.57054 1.9189 0.556951</Position>
+                                    <Velocity>0 0 0 0 0 0 0 0</Velocity>
+                                    <Acceleration>-3.83888e-11 -1.88083e-11 -1.63687e-11 -2.56703e-11 -2.5745e-11 3.82649e-11 -4.68361e-11 -1.3542e-11</Acceleration>
+                                    <TimeFromStart>4.137234</TimeFromStart>
+                                </StateWaypoint>
+                            </Waypoint>
+                        </MoveInstruction>
+                    </Instruction>
+                </CompositeInstruction>
+            </Instruction>
+        </CompositeInstruction>
+    </Instruction>
+</CommandLanguage>
