@@ -199,6 +199,50 @@ class JogJointSpace_impl(object):
             # Give an error message to show that the robot is not connected
             print("Robot is not connected to JogJointSpace service yet!")
 
+    # For blockly
+    def jog_joints_to_angles_relative(self,diff_joint_position):
+        print("Jog Joints to Angles relatively is called")
+        if self.robot is not None:
+            # Put the robot to jogging mode
+            self.robot.command_mode = self.halt_mode
+            # time.sleep(0.1)
+            self.robot.command_mode = self.jog_mode
+            # time.sleep(0.1)
+            # print(joint_position[:self.num_joints])
+            # print(joint_position)
+
+            # # get the current joint angles
+            cur_q = self.get_current_joint_positions()
+            diff_joint_position = diff_joint_position[:self.num_joints]
+
+
+            self.jog_joints_with_limits((diff_joint_position+cur_q), self.joint_vel_limits,True)
+
+        else:
+            # Give an error message to show that the robot is not connected
+            print("Robot is not connected to JogJointSpace service yet!")
+
+    def jog_joint_to_angle(self, joint, position):
+        print("Jog Joint to Angle is called")
+        if self.robot is not None:
+            # Put the robot to jogging mode
+            self.robot.command_mode = self.halt_mode
+            # time.sleep(0.1)
+            self.robot.command_mode = self.jog_mode
+            # time.sleep(0.1)
+
+            # # get the current joint angles
+            cur_q = self.get_current_joint_positions()
+            cur_q[joint] = position
+
+
+            self.jog_joints_with_limits(cur_q, self.joint_vel_limits,True)
+
+        else:
+            # Give an error message to show that the robot is not connected
+            print("Robot is not connected to JogJointSpace service yet!")
+
+
     def connect2robot(self, url_robot):
         if self.robot is None:
             self.url_robot = url_robot
@@ -277,6 +321,7 @@ class JogJointSpace_impl(object):
         cur_robot_state = self.robot.robot_state.PeekInValue()    
         cur_q = cur_robot_state[0].joint_position
         return cur_q # in radian ndarray
+
 
 def main():
     # RR.ServerNodeSetup("NodeName", TCP listen port, optional set of flags as parameters)

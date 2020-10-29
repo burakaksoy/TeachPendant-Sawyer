@@ -6,5 +6,8 @@ gnome-terminal --tab --title="RR plugin_savePlayback service" --command "bash -c
 gnome-terminal --tab --title="RR plugin_cameraFeedback service" --command "bash -c \"cd ./RR-plugins/src/plugin-cameraFeedback; python3 plugin-cameraFeedback-service.py; exec bash\"";
 gnome-terminal --tab --title="RR plugin_cameraTraining service" --command "bash -c \"cd ./RR-plugins/src/plugin-cameraTraining; python3 plugin-cameraTraining-service.py; exec bash\"";
 gnome-terminal --tab --title="RR plugin_cameraCalibration service" --command "bash -c \"cd ./RR-plugins/src/plugin-cameraCalibration; python3 plugin-cameraCalibration-service.py; exec bash\"";
+
 gnome-terminal --tab --title="RR plugin_updateInfo service" --command "bash -c \"cd ./RR-plugins/src/plugin-updateInfo; python3 plugin-updateInfo-service.py; exec bash\"";
 gnome-terminal --tab --title="RR plugin_discovery service" --command "bash -c \"cd ./RR-plugins/src/plugin-discovery; python3 plugin-discovery-service.py; exec bash\"";
+
+gnome-terminal --tab --title="RR plugin_blockly service" --command "bash -c \"cd ./RR-plugins/src/plugin-blockly; python3 plugin-blockly-service.py; exec bash\"";

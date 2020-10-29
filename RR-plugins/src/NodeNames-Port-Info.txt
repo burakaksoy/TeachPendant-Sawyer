@@ -7,4 +7,5 @@
 ("experimental.plugin-savePlayback-service", 8894)
 ("experimental.plugin-updateInfo-service", 8895)
 ("experimental.plugin-discovery-service", 8896)
+("experimental.plugin-blockly-service", 8897)
 

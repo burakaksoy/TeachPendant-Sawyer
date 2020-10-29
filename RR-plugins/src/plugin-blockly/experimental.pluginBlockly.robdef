@@ -1,0 +1,9 @@
+#Service to provide interface to RR-webBrowser-plugin-blockly
+service experimental.pluginBlockly
+
+stdver 0.10
+
+object Blockly
+    function void connect2plugins(string{list} url_plugins_lst)
+    function string execute_blockly(string code_text)
+end

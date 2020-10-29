@@ -11,6 +11,10 @@ from js import print_div_end_info
 from js import print_div_ik_info
 from js import print_div_cur_pose
 
+from js import Blockly
+# from js import workspace
+
+
 from RobotRaconteur.Client import *
 # import time
 import numpy as np
@@ -63,6 +67,31 @@ import sys
 
 #     global is_jogging
 #     is_jogging = False
+
+
+def execute_blockly_func(self):
+    print_div("Blockly Execute button is clicked!<br><br>")
+    workspace = Blockly.getMainWorkspace()
+    code_text = Blockly.Python.workspaceToCode(workspace)
+
+    # print_div(code_text)
+
+    global is_jogging
+    if (not is_jogging): 
+        is_jogging = True
+        loop.call_soon(async_execute_blockly(code_text))
+    else:
+        print_div("Jogging has not finished yet..<br>")
+
+    
+async def async_execute_blockly(code_text):
+    global plugin_blockly
+    output = await plugin_blockly.async_execute_blockly(code_text, None)
+    print_div(output) # print the output of the execution
+    
+    print_div("<br>Blockly execution is completed.<br>") # Print a blank space after ecexution
+    global is_jogging
+    is_jogging = False
 
 # # ---------------------------END: BLOCKLY FUNCTIONS --------------------------- #
 
@@ -793,6 +822,17 @@ async def client_drive():
         plugin_savePlayback = await RRN.AsyncConnectService(url_plugin_savePlayback,None,None,None,None)
         await plugin_savePlayback.async_connect2robot(url,None)
         print_div('SavePlayback plugin is connected..<br>')
+
+        ## Blockly plugin
+        print_div('Blockly plugin is connecting..<br>')
+
+        url_plugin_blockly = 'rr+ws://' + ip_plugins + ':8897?service=Blockly'
+        global plugin_blockly
+        plugin_blockly = await RRN.AsyncConnectService(url_plugin_blockly,None,None,None,None)
+        url_plugins_lst = [url_plugin_jogJointSpace, url_plugin_jogCartesianSpace, url_plugin_savePlayback]
+        await plugin_blockly.async_connect2plugins(url_plugins_lst,None)
+        print_div('Blockly plugin is connected..<br>')
+
         
 
         # PLUGIN SERVICE CONNECTIONS END__________________________________
@@ -869,7 +909,8 @@ async def client_drive():
         button_up_sel_pose = document.getElementById("up_sel_pose_btn")
         button_down_sel_pose = document.getElementById("down_sel_pose_btn")
 
-
+        # Blockly Execute buttons
+        button_execute_blockly = document.getElementById("execute_blockly_btn") 
 
         button_stop.addEventListener("click", stop_func)
         button_j1_pos.addEventListener("mousedown", j1_pos_func)
@@ -921,6 +962,7 @@ async def client_drive():
         button_up_sel_pose.addEventListener("click", up_sel_pose_func)
         button_down_sel_pose.addEventListener("click", down_sel_pose_func)
 
+        button_execute_blockly.addEventListener("click", execute_blockly_func)
 
         global is_jogging
         is_jogging = False
@@ -994,6 +1036,7 @@ async def client_drive():
         button_del_sel_pose.removeEventListener("click", del_sel_pose_func)
         button_up_sel_pose.removeEventListener("click", up_sel_pose_func)
         button_down_sel_pose.removeEventListener("click", down_sel_pose_func)
+        button_execute_blockly.removeEventListener("click", execute_blockly_func)
 
         return
             
