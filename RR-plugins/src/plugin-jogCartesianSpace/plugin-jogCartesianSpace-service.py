@@ -105,6 +105,143 @@ class JogCartesianSpace_impl(object):
             # Give an error message to show that the robot is not connected
             print("Robot is not connected to JogCartesianSpace service yet!")
 
+    def jog_cartesian_with_speed(self,P_axis,R_axis_angles, speed_perc):
+        print("Jog Cartesian with speed percentage is called")
+
+        if self.pose_at_command is None:
+            print("You need to call prepare_jog() function before calling jog_cartesian(P_axis,R_axis) function")
+            return
+        else:
+            self.num_jog_command += 1
+            print("num: " + str(self.num_jog_command))
+
+        if self.robot is not None:
+            print("Jog in Cartesian Space with command P_axis" + str(P_axis) + "and R_axis_angles"+ str(R_axis_angles)) 
+
+            ## Put the robot to jogging mode
+            self.robot.command_mode = self.halt_mode
+            # time.sleep(0.1)
+            self.robot.command_mode = self.jog_mode
+            # time.sleep(0.1)
+
+            ## Jog the robot in cartesian space
+            # Update the end effector pose info
+            # pose = self.get_current_pose()
+            pose = self.pose_at_command 
+            
+            Rd = pose.R
+            pd = pose.p
+                
+            # if P_axis is not None:
+            zero_vec = np.array(([0.,0.,0.]))
+            # if not np.array_equal(P_axis, zero_vec):
+            #     # Desired Position
+            #     # pd = pd + Rd.dot(P_axis)
+            pd = P_axis # Given P input is directly the desired end effector position
+            
+            # if not np.array_equal(R_axis_angles, zero_vec):
+            # R = rox.rot(np.array(([1.],[0.],[0.])), 0.261799)
+            # Calculate desired rotation from the euler angles (R_axis_angles)
+            Rx = rox.rot(np.array(([1.],[0.],[0.])), R_axis_angles[0])
+            Ry = rox.rot(np.array(([0.],[1.],[0.])), R_axis_angles[1])
+            Rz = rox.rot(np.array(([0.],[0.],[1.])), R_axis_angles[2])
+
+            R = Rz @ Ry @ Rx
+            # Desired Orientation
+            # Rd = Rd.dot(R) # Rotate
+            Rd = R # calculated orientation is directly the desired orientation
+
+            try:
+                # Update desired inverse kineamtics info
+                # joint_angles, converged = self.update_ik_info(Rd,pd)
+                joint_angles, converged = self.update_ik_info2(Rd,pd)
+
+                if not converged:
+                    print("Inverse Kinematics Algo. Could not Converge")
+                    # raise
+                elif not (joint_angles < self.joint_upper_limits).all() or not (joint_angles > self.joint_lower_limits).all():
+                    print("Specified joints are out of range")
+                    # raise
+                else:
+                    wait = True
+                    self.robot.jog_freespace(joint_angles, float(speed_perc)*0.01*self.joint_vel_limits, wait)
+            except:
+                print("Specified joints might be out of range")
+                import traceback
+                print(traceback.format_exc())
+                # raise
+
+        else:
+            # Give an error message to show that the robot is not connected
+            print("Robot is not connected to JogCartesianSpace service yet!")
+
+
+    def jog_cartesian_relative_with_speed(self,P_axis,R_axis_angles, speed_perc):
+        print("Jog Cartesian relatively with speed percentage is called")
+
+        if self.pose_at_command is None:
+            print("You need to call prepare_jog() function before calling jog_cartesian(P_axis,R_axis) function")
+            return
+        else:
+            self.num_jog_command += 1
+            print("num: " + str(self.num_jog_command))
+
+        if self.robot is not None:
+            print("Jog in Cartesian Space with command P_axis" + str(P_axis) + "and R_axis_angles"+ str(R_axis_angles)) 
+
+            ## Put the robot to jogging mode
+            self.robot.command_mode = self.halt_mode
+            # time.sleep(0.1)
+            self.robot.command_mode = self.jog_mode
+            # time.sleep(0.1)
+
+            ## Jog the robot in cartesian space
+            # Update the end effector pose info
+            # pose = self.get_current_pose()
+            pose = self.pose_at_command 
+            
+            Rd = pose.R
+            pd = pose.p
+                
+            # if P_axis is not None:
+            zero_vec = np.array(([0.,0.,0.]))
+            if not np.array_equal(P_axis, zero_vec):
+                # Desired Position
+                pd = pd + Rd.dot(P_axis)
+            if not np.array_equal(R_axis_angles, zero_vec):
+                # R = rox.rot(np.array(([1.],[0.],[0.])), 0.261799)
+                # Calculate desired rotation from the euler angles (R_axis_angles)
+                Rx = rox.rot(np.array(([1.],[0.],[0.])), R_axis_angles[0])
+                Ry = rox.rot(np.array(([0.],[1.],[0.])), R_axis_angles[1])
+                Rz = rox.rot(np.array(([0.],[0.],[1.])), R_axis_angles[2])
+
+                R = Rz @ Ry @ Rx
+                # Desired Orientation
+                Rd = Rd.dot(R) # Rotate
+
+            try:
+                # Update desired inverse kineamtics info
+                # joint_angles, converged = self.update_ik_info(Rd,pd)
+                joint_angles, converged = self.update_ik_info2(Rd,pd)
+
+                if not converged:
+                    print("Inverse Kinematics Algo. Could not Converge")
+                    # raise
+                elif not (joint_angles < self.joint_upper_limits).all() or not (joint_angles > self.joint_lower_limits).all():
+                    print("Specified joints are out of range")
+                    # raise
+                else:
+                    wait = True
+                    self.robot.jog_freespace(joint_angles, float(speed_perc)*0.01*self.joint_vel_limits, wait)
+            except:
+                print("Specified joints might be out of range")
+                import traceback
+                print(traceback.format_exc())
+                # raise
+
+        else:
+            # Give an error message to show that the robot is not connected
+            print("Robot is not connected to JogCartesianSpace service yet!")
 
     def stop_joints(self):
         print("stop_joints is called")
@@ -132,7 +269,7 @@ class JogCartesianSpace_impl(object):
             print("Robot is not connected to JogCartesianSpace service yet!")        
 
     def jog_cartesian(self, P_axis, R_axis):
-        print("Jog Joints is called")
+        print("Jog cartesian is called")
 
         if self.pose_at_command is None:
             print("You need to call prepare_jog() function before calling jog_cartesian(P_axis,R_axis) function")

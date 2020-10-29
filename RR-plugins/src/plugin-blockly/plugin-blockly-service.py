@@ -3,6 +3,7 @@ import RobotRaconteur as RR
 RRN=RR.RobotRaconteurNode.s
 from RobotRaconteur.Client import *     #import RR client library to connect 
 import numpy as np
+import time
 
 class Blockly_impl(object):
     def __init__(self):
@@ -80,6 +81,32 @@ class Blockly_impl(object):
         except:
             import traceback
             print(traceback.format_exc())
+
+    def jog_cartesian(self, P_lst, R_angles_lst, speed_perc):
+        try:
+            self.plugin_jogCartesianSpace.prepare_jog()
+            
+            P = np.asarray(P_lst, dtype=np.float)
+            R_angles = np.asarray(R_angles_lst, dtype=np.float)
+            R_angles = np.deg2rad(R_angles) # Convert deg to rad 
+
+            self.plugin_jogCartesianSpace.jog_cartesian_with_speed(P,R_angles,speed_perc)
+        except:
+            import traceback
+            print(traceback.format_exc())    
+
+    def jog_cartesian_relative(self, P_lst, R_angles_lst, speed_perc):
+        try:
+            self.plugin_jogCartesianSpace.prepare_jog()
+            
+            P = np.asarray(P_lst, dtype=np.float)
+            R_angles = np.asarray(R_angles_lst, dtype=np.float)
+            R_angles = np.deg2rad(R_angles) # Convert deg to rad 
+
+            self.plugin_jogCartesianSpace.jog_cartesian_relative_with_speed(P,R_angles,speed_perc)
+        except:
+            import traceback
+            print(traceback.format_exc())      
 
 
         
