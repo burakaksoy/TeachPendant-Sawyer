@@ -200,7 +200,7 @@ class JogJointSpace_impl(object):
             print("Robot is not connected to JogJointSpace service yet!")
 
     # For blockly
-    def jog_joints_to_angles_relative(self,diff_joint_position):
+    def jog_joints_to_angles_relative(self,diff_joint_position, speed_perc):
         print("Jog Joints to Angles relatively is called")
         if self.robot is not None:
             # Put the robot to jogging mode
@@ -215,14 +215,13 @@ class JogJointSpace_impl(object):
             cur_q = self.get_current_joint_positions()
             diff_joint_position = diff_joint_position[:self.num_joints]
 
-
-            self.jog_joints_with_limits((diff_joint_position+cur_q), self.joint_vel_limits,True)
+            self.jog_joints_with_limits((diff_joint_position+cur_q), float(speed_perc)*0.01*self.joint_vel_limits,True)
 
         else:
             # Give an error message to show that the robot is not connected
             print("Robot is not connected to JogJointSpace service yet!")
 
-    def jog_joint_to_angle(self, joint, position):
+    def jog_joint_to_angle(self, joint, position, speed_perc):
         print("Jog Joint to Angle is called")
         if self.robot is not None:
             # Put the robot to jogging mode
@@ -235,8 +234,24 @@ class JogJointSpace_impl(object):
             cur_q = self.get_current_joint_positions()
             cur_q[joint] = position
 
+            self.jog_joints_with_limits(cur_q, float(speed_perc)*0.01*self.joint_vel_limits,True)
 
-            self.jog_joints_with_limits(cur_q, self.joint_vel_limits,True)
+        else:
+            # Give an error message to show that the robot is not connected
+            print("Robot is not connected to JogJointSpace service yet!")
+
+    def jog_joints_to_angles2(self, joint_position, speed_perc):
+        print("Jog Joints to Angles2 (2 = with speed) is called")
+        # Similar to jog_joints_with_limits. But,
+        # Moves the robot to the specified joint angles with max speed percentage
+        if self.robot is not None:
+            # Put the robot to jogging mode
+            self.robot.command_mode = self.halt_mode
+            # time.sleep(0.1)
+            self.robot.command_mode = self.jog_mode
+            # time.sleep(0.1)
+
+            self.jog_joints_with_limits(joint_position[:self.num_joints], float(speed_perc)*0.01*self.joint_vel_limits,True)
 
         else:
             # Give an error message to show that the robot is not connected

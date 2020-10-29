@@ -46,22 +46,41 @@ class Blockly_impl(object):
         return output
 
     # implementations of blockly functions
-    def jog_joint(self, dropdown_joint_selected ,value_degree):
+    def jog_joint(self, dropdown_joint_selected ,value_degree, speed_perc):
         try:
-            self.plugin_jogJointSpace.jog_joint_to_angle(dropdown_joint_selected-1, np.deg2rad(float(value_degree)))
+            self.plugin_jogJointSpace.jog_joint_to_angle(dropdown_joint_selected-1, np.deg2rad(float(value_degree)), float(speed_perc))
         except:
             import traceback
             print(traceback.format_exc())
 
         
-    def jog_joint_relative(self, dropdown_joint_selected ,value_degree):
+    def jog_joint_relative(self, dropdown_joint_selected ,value_degree, speed_perc):
         try:
             joint_angles = np.zeros((7,))
             joint_angles[dropdown_joint_selected-1] = np.deg2rad(float(value_degree))
-            self.plugin_jogJointSpace.jog_joints_to_angles_relative(joint_angles)
+            self.plugin_jogJointSpace.jog_joints_to_angles_relative(joint_angles, float(speed_perc))
         except:
             import traceback
             print(traceback.format_exc())
+
+
+    def jog_joints(self, degrees_lst, speed_perc):
+        try:
+            joint_angles = np.deg2rad(np.asarray(degrees_lst, dtype=np.float))
+            self.plugin_jogJointSpace.jog_joints_to_angles2(joint_angles, float(speed_perc))
+        except:
+            import traceback
+            print(traceback.format_exc())
+
+        
+    def jog_joints_relative(self, degrees_lst, speed_perc):
+        try:
+            joint_angles = np.deg2rad(np.asarray(degrees_lst, dtype=np.float))
+            self.plugin_jogJointSpace.jog_joints_to_angles_relative(joint_angles, float(speed_perc))
+        except:
+            import traceback
+            print(traceback.format_exc())
+
 
         
 

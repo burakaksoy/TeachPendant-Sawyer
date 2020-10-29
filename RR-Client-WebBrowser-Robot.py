@@ -25,50 +25,6 @@ import sys
 # import general_robotics_toolbox as rox
 
 # # ---------------------------BEGIN: BLOCKLY FUNCTIONS  --------------------------- #
-# def jog_joints2(q_i, degree_diff, is_relative):
-#     global is_jogging
-#     if (not is_jogging): 
-#         is_jogging = True
-#         loop.call_soon(async_jog_joints2(q_i, degree_diff, is_relative))
-#     else:
-#         print_div("Jogging has not finished yet..<br>")
-
-
-# async def async_jog_joints2(q_i, degree_diff, is_relative):
-#     global d, num_joints, joint_lower_limits, joint_upper_limits, joint_vel_limits
-
-#     # Update joint angles
-#     d_q, _ = await update_joint_info() # Joint angles in radian ndarray, N x 1
-    
-#     await update_state_flags()
-
-#     if (num_joints < q_i):
-#         print_div("Currently Controlled Robot only have " + str(num_joints) + " joints..<br>")
-#     else:
-        
-#         if (is_relative):
-#             joint_diff = np.zeros((num_joints,))
-#             joint_diff[q_i-1] = np.deg2rad(degree_diff)
-#         else:
-#             joint_diff = d_q
-#             joint_diff[q_i-1] = np.deg2rad(degree_diff)
-        
-#         if not ((d_q + joint_diff) < joint_upper_limits).all() or not ((d_q + joint_diff) > joint_lower_limits).all():
-#             print_div("Specified joints might be out of range<br>")
-#         else:
-#             try:
-#                 await d.async_jog_joint(joint_diff, joint_vel_limits, is_relative, True,None)
-#                 # await RRN.AsyncSleep(2,None)
-#             except:
-#                 print_div("Specified joints might be out of range2<br>")
-#                 # import traceback
-#                 # print_div(traceback.format_exc())
-#                 # raise
-
-#     global is_jogging
-#     is_jogging = False
-
-
 def execute_blockly_func(self):
     print_div("Blockly Execute button is clicked!<br><br>")
     workspace = Blockly.getMainWorkspace()
@@ -551,12 +507,9 @@ async def async_down_sel_pose_func():
 
     except:
         pass
-
-
 # ---------------------------END: SAVE PLAYBACK POSES --------------------------- #
 
 # ---------------------------START: Select Robot --------------------------- #
-
 async def async_select_available_robot_url(robot_urls):
     print_div("Selecting the robot URL.. <br>")
     # Read the selected robot index from the browser  
@@ -564,9 +517,7 @@ async def async_select_available_robot_url(robot_urls):
     available_robots_list = document.getElementById(element_id)
     index = available_robots_list.selectedIndex
     return robot_urls[index]
-
 # ---------------------------END: Select Robot --------------------------- #
-
 
 async def update_state_flags():
     # For reading robot state flags
@@ -591,43 +542,12 @@ async def update_joint_info():
 
 async def update_num_info():
     # For reading about number of robot joints, joint types, joint limits etc
-    # print_div_num_info("Number of Joints info updating")
-    
-    # global d    
-    # robot_info = await d.async_get_robot_info(None) 
-    # joint_info = robot_info.joint_info # A list of jointInfo
-    
-    # joint_types = [] # A list or array of N numbers containing the joint type. 1 for rotary, 3 for prismatic
-    # joint_lower_limits = [] # list or numpy.array
-    # joint_upper_limits = [] # list or numpy.array
-    # joint_vel_limits = [] # list or numpy.array
-    # joint_acc_limits = [] # list or numpy.array
-    # joint_names = [] # list of string
-    # joint_uuids = [] 
-    # for joint in joint_info:
-    #     joint_types.append(joint.joint_type)
-    #     joint_lower_limits.append(joint.joint_limits.lower)
-    #     joint_upper_limits.append(joint.joint_limits.upper)
-    #     joint_vel_limits.append(joint.joint_limits.velocity)
-    #     joint_acc_limits.append(joint.joint_limits.acceleration)
-    #     joint_names.append(joint.joint_identifier.name)
-    #     joint_uuids.append(joint.joint_identifier.uuid)
-        
-    # # convert them to numpy arrays
-    # joint_types = np.asarray(joint_types)
-    # joint_lower_limits = np.asarray(joint_lower_limits)
-    # joint_upper_limits = np.asarray(joint_upper_limits)
-    # joint_vel_limits = np.asarray(joint_vel_limits)
-    # joint_acc_limits = np.asarray(joint_acc_limits)
-    
     global plugin_updateInfo
     joint_limits_text = await plugin_updateInfo.async_joint_limits_str_array(None)
     print_div_j_limit_info(joint_limits_text[0], joint_limits_text[1])
 
     joint_num_type_vel_acc_name_text = await plugin_updateInfo.async_joint_num_type_vel_acc_name_str(None)
     print_div_num_info(joint_num_type_vel_acc_name_text) 
-    
-    # return len(joint_info), joint_types, joint_lower_limits, joint_upper_limits, joint_vel_limits, joint_acc_limits, joint_names
      
 async def update_kin_info():        
     global plugin_updateInfo
