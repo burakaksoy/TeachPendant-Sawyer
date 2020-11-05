@@ -12,7 +12,6 @@ from js import print_div_ik_info
 from js import print_div_cur_pose
 
 from js import Blockly
-# from js import workspace
 
 
 from RobotRaconteur.Client import *
@@ -29,6 +28,21 @@ def execute_blockly_func(self):
     print_div("Blockly Execute button is clicked!<br><br>")
     workspace = Blockly.getMainWorkspace()
     code_text = Blockly.Python.workspaceToCode(workspace)
+
+    # # Encode the block tree as XML Dom
+    # workspace_xml = Blockly.Xml.workspaceToDom(workspace)
+    # # Convert XML Dom to string representation (ugly)
+    # workspace_xml_str = Blockly.Xml.domToText(workspace_xml)
+    # # Convert XML Dom to string representation (pretty)
+    # workspace_xml_pretty_str = Blockly.Xml.domToPrettyText(workspace_xml)
+
+    # print_div("<br>workspace_xml:<br>")
+    # print_div(workspace_xml)
+    # print_div("<br>workspace_xml_str:<br>")
+    # print_div(workspace_xml_str)
+    # print_div("<br>workspace_xml_pretty_str:<br>")
+    # print_div(workspace_xml_pretty_str)
+    
 
     # print_div(code_text)
 
@@ -48,6 +62,210 @@ async def async_execute_blockly(code_text):
     print_div("<br>Blockly execution is completed.<br>") # Print a blank space after ecexution
     global is_jogging
     is_jogging = False
+
+async def async_update_blockly_saved_workspaces():
+    global plugin_blockly
+    workspace_files_lst = await plugin_blockly.async_blockly_saved_workspaces(None)
+
+    # Add the current joint angles to the saved poses list on web browser UI
+    element_id = "saved_blocks_list"
+    blocks_list = document.getElementById(element_id)
+    
+    # Clear the UI saved workspaces list before the update
+    length = blocks_list.options.length
+    i = length - 1
+    while i >= 0:
+        blocks_list.remove(i)
+        i -= 1
+
+    # Update the UI list with the new elements
+    for file_name in workspace_files_lst:
+        option = document.createElement("option")
+        option.text = file_name
+        blocks_list.add(option)
+
+def load_blocks_func(self):
+    print_div("Load Blocks button is clicked!<br>")
+    loop.call_soon(async_load_blocks())
+
+async def async_load_blocks():
+    workspace = Blockly.getMainWorkspace() # get the Blockly workspace
+
+    # Read the selected pose index from the browser
+    element_id = "saved_blocks_list"
+    blocks_list = document.getElementById(element_id)
+    index = blocks_list.selectedIndex
+    try:
+        if index == -1:
+            print_div("Please select a file from Saved Blocks.<br>")
+        else:
+            file_name = blocks_list.options[index].value
+            global plugin_blockly
+            xml_text = await plugin_blockly.async_blockly_load_workspace(file_name,None)
+            xml = Blockly.Xml.textToDom(xml_text)
+            Blockly.Xml.domToWorkspace(xml, workspace)
+    except:
+        import traceback
+        print_div(traceback.format_exc())
+        # raise
+        pass
+
+    # Update the available saved workspaces list
+    await async_update_blockly_saved_workspaces()
+
+def delete_blocks_func(self):
+    print_div("Delete Blocks button is clicked!<br>")
+    loop.call_soon(async_delete_blocks())
+
+async def async_delete_blocks():
+    # Read the selected pose index from the browser
+    element_id = "saved_blocks_list"
+    blocks_list = document.getElementById(element_id)
+    index = blocks_list.selectedIndex
+    try:
+        if index == -1:
+            print_div("Please select a file from Saved Blocks.<br>")
+        else:
+            file_name = blocks_list.options[index].value
+            # Ask user: are you sure you want to delete 'file_name'
+            resp = window.confirm("Sure you want to delete '" + file_name + "'?")
+            # if sure delete, else ignore and return
+            if resp:
+                global plugin_blockly
+                await plugin_blockly.async_blockly_delete_workspace(file_name,None)
+    except:
+        import traceback
+        print_div(traceback.format_exc())
+        # raise
+        pass
+
+    # Update the available saved workspaces list
+    await async_update_blockly_saved_workspaces()
+
+
+def edit_blocks_name_func(self):
+        print_div("Edit Blocks' Name button is clicked!<br>")
+        loop.call_soon(async_edit_blocks_name())
+
+async def async_edit_blocks_name():
+    # Read the selected pose index from the browser
+    element_id = "saved_blocks_list"
+    blocks_list = document.getElementById(element_id)
+    index = blocks_list.selectedIndex
+    try:
+        if index == -1:
+            print_div("Please select a file from Saved Blocks.<br>")
+        else:
+            file_name = blocks_list.options[index].value
+            # Ask user: New name for 'file_name'
+            file_name_new = window.prompt("Please enter the new file name (Don't forget .xml file extension)", file_name);
+            if (file_name_new != None and file_name_new != ""):
+                global plugin_blockly
+                await plugin_blockly.async_blockly_edit_workspace_name(file_name, file_name_new, None)
+    except:
+        import traceback
+        print_div(traceback.format_exc())
+        # raise
+        pass
+
+    # Update the available saved workspaces list
+    await async_update_blockly_saved_workspaces()
+
+def save_blocks_func(self):
+        print_div("Save Blocks button is clicked!<br>")
+        loop.call_soon(async_save_blocks())
+
+async def async_save_blocks():
+    # Read the selected pose index from the browser
+    element_id = "saved_blocks_list"
+    blocks_list = document.getElementById(element_id)
+    index = blocks_list.selectedIndex
+    try:
+        if index == -1:
+            print_div("Please select a file from Saved Blocks.<br>")
+        else:
+            file_name = blocks_list.options[index].value
+            # Ask user: Sure you want to overwrite "file_name"
+            resp = window.confirm("Sure you want to overwrite '" + file_name + "'?")
+            # if sure overwrite, else ignore and return
+            if resp:
+                workspace = Blockly.getMainWorkspace() # get the Blockly workspace
+                # Encode the block tree as XML Dom
+                workspace_xml = Blockly.Xml.workspaceToDom(workspace)
+                # Convert XML Dom to string representation (pretty)
+                workspace_xml_pretty_str = Blockly.Xml.domToPrettyText(workspace_xml)
+
+                global plugin_blockly
+                await plugin_blockly.async_blockly_save_workspace(file_name,workspace_xml_pretty_str,None)
+    except:
+        import traceback
+        print_div(traceback.format_exc())
+        # raise
+        pass
+
+    # Update the available saved workspaces list
+    await async_update_blockly_saved_workspaces()
+
+
+def save_as_blocks_func(self):
+    print_div("Save Blocks As button is clicked!<br>")
+    loop.call_soon(async_save_as_blocks())
+
+async def async_search_blockly_saved_workspaces(filename):
+    element_id = "saved_blocks_list"
+    blocks_list = document.getElementById(element_id)
+    length = blocks_list.options.length  # Number of existing files
+    i = length - 1
+    while i >= 0:
+        if blocks_list.options[i].value == filename:
+            return True # filename is found in the options
+        i -= 1
+
+    return False
+
+async def async_save_as_blocks():
+    try:
+        # Ask user: New name for 'file_name'
+        file_name_new = window.prompt("Please enter the new file name to save workspace (Don't forget .xml file extension)", "new_workspace.xml");
+        if (file_name_new != None and file_name_new != ""):
+            # Search the existing filenames to check for coincidence
+            is_found = await async_search_blockly_saved_workspaces(file_name_new)
+
+            if not is_found:
+                workspace = Blockly.getMainWorkspace() # get the Blockly workspace
+                # Encode the block tree as XML Dom
+                workspace_xml = Blockly.Xml.workspaceToDom(workspace)
+                # Convert XML Dom to string representation (pretty)
+                workspace_xml_pretty_str = Blockly.Xml.domToPrettyText(workspace_xml)
+
+                global plugin_blockly
+                await plugin_blockly.async_blockly_save_workspace_as(file_name_new, workspace_xml_pretty_str, None)
+            else:
+                # print_div("The file already exists! Try another file name or use Save button to save on an existing file<br>")
+                window.alert("The file already exists! Try another file name or use SAVE button to save on an existing file")
+    except:
+        import traceback
+        print_div(traceback.format_exc())
+        # raise
+        pass
+
+    # Update the available saved workspaces list
+    await async_update_blockly_saved_workspaces()
+
+def clear_blocks_func(self):
+        print_div("Clear Blocks button is clicked!<br>")
+        loop.call_soon(async_clear_blocks())
+
+async def async_clear_blocks():
+    # Ask user: Sure you want to clear the workspace 
+    resp = window.confirm("Sure you want to clear the current workspace?")
+    # if sure overwrite, else ignore and return
+    if resp:
+        workspace = Blockly.getMainWorkspace() # get the Blockly workspace
+        workspace.clear() # Dispose of all blocks and comments in workspace.
+
+    # Update the available saved workspaces list
+    await async_update_blockly_saved_workspaces()
 
 # # ---------------------------END: BLOCKLY FUNCTIONS --------------------------- #
 
@@ -751,6 +969,8 @@ async def client_drive():
         plugin_blockly = await RRN.AsyncConnectService(url_plugin_blockly,None,None,None,None)
         url_plugins_lst = [url_plugin_jogJointSpace, url_plugin_jogCartesianSpace, url_plugin_savePlayback]
         await plugin_blockly.async_connect2plugins(url_plugins_lst,None)
+        # Update blockly saved workspaces both on UI and RunTime
+        await async_update_blockly_saved_workspaces() 
         print_div('Blockly plugin is connected..<br>')
 
         
@@ -831,6 +1051,12 @@ async def client_drive():
 
         # Blockly Execute buttons
         button_execute_blockly = document.getElementById("execute_blockly_btn") 
+        button_load_blocks = document.getElementById("load_blocks_btn") 
+        button_delete_blocks = document.getElementById("delete_blocks_btn")
+        button_edit_blocks_name = document.getElementById("edit_blocks_name_btn")
+        button_save_blocks = document.getElementById("save_blocks_btn")
+        button_save_as_blocks = document.getElementById("save_as_blocks_btn")
+        button_clear_blocks = document.getElementById("clear_blocks_btn")
 
         button_stop.addEventListener("click", stop_func)
         button_j1_pos.addEventListener("mousedown", j1_pos_func)
@@ -883,6 +1109,12 @@ async def client_drive():
         button_down_sel_pose.addEventListener("click", down_sel_pose_func)
 
         button_execute_blockly.addEventListener("click", execute_blockly_func)
+        button_load_blocks.addEventListener("click", load_blocks_func)
+        button_delete_blocks.addEventListener("click", delete_blocks_func)
+        button_edit_blocks_name.addEventListener("click", edit_blocks_name_func)
+        button_save_blocks.addEventListener("click", save_blocks_func)
+        button_save_as_blocks.addEventListener("click", save_as_blocks_func)
+        button_clear_blocks.addEventListener("click", clear_blocks_func)
 
         global is_jogging
         is_jogging = False
@@ -917,6 +1149,8 @@ async def client_drive():
             await update_end_info()
             
             await update_state_flags()
+
+            
 
 
         # Remove all event listeners before return
@@ -957,6 +1191,12 @@ async def client_drive():
         button_up_sel_pose.removeEventListener("click", up_sel_pose_func)
         button_down_sel_pose.removeEventListener("click", down_sel_pose_func)
         button_execute_blockly.removeEventListener("click", execute_blockly_func)
+        button_load_blocks.removeEventListener("click", load_blocks_func)
+        button_delete_blocks.removeEventListener("click", delete_blocks_func)
+        button_edit_blocks_name.removeEventListener("click", edit_blocks_name_func)
+        button_save_blocks.removeEventListener("click", save_blocks_func)
+        button_save_as_blocks.removeEventListener("click", save_as_blocks_func)
+        button_clear_blocks.removeEventListener("click", clear_blocks_func)
 
         return
             

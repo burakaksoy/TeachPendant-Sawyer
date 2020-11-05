@@ -281,6 +281,12 @@ textarea{
   /*display: block;  Make the buttons appear below each other */
 }
 
+#table_BlocklyBrowser button {
+  /*font: 12px Arial, sans-serif;*/
+  /*height: 33.333333% ;*/
+  padding: 0;
+}
+
 
 #layoutContainer{
   width: 85%;

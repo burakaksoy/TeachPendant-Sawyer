@@ -6,4 +6,22 @@ stdver 0.10
 object Blockly
     function void connect2plugins(string{list} url_plugins_lst)
     function string execute_blockly(string code_text)
+
+    # returns the list of str as saved workspace names
+    function string{list} blockly_saved_workspaces()
+
+    # Returns the xml string of the specified file
+    function string blockly_load_workspace(string filename)
+    
+    # Delete the specified file
+    function void blockly_delete_workspace(string filename)
+    
+    # Edit the specified file name (string filename, string filename_new)
+    function void blockly_edit_workspace_name(string filename, string file_name_new)
+    
+    # Save current blockly workspace over an existing file
+    function void blockly_save_workspace(string filename, string workspace_xml)
+    
+    # Save current blockly workspace to a new file
+    function void blockly_save_workspace_as(string file_name_new, string workspace_xml)
 end

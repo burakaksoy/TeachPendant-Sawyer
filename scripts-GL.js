@@ -153,7 +153,7 @@ var config =
                             content: 
                             [
                                 {
-                                    width: 70,
+                                    width: 60,
                                     reorderEnabled: false,
                                     isClosable: false,
                                     type:'component',
@@ -161,13 +161,21 @@ var config =
                                     componentState: {comp_name: 'blockly_workspace'}
                                 },
                                 {
-                                    width: 30,
+                                    width: 20,
                                     // reorderEnabled: false,
                                     isClosable: false,
                                     type:'component',
                                     componentName: 'Blockly Code',
                                     componentState: {comp_name: 'blockly_code'}
                                 },
+                                {
+                                    width: 20,
+                                    // reorderEnabled: false,
+                                    isClosable: false,
+                                    type:'component',
+                                    componentName: 'Blockly Browser',
+                                    componentState: {comp_name: 'blockly_browser'}
+                                }
                             ]
                         },
                     ]
@@ -262,6 +270,12 @@ function initializeLayout(){
         container.getElement().append(clon);
     });
 
+    myLayout.registerComponent( 'Blockly Browser', function( container, state ){
+        var temp = document.getElementById('template_BlocklyBrowser');
+        var clon = temp.content.cloneNode(true);
+        container.getElement().append(clon);
+    });
+
     myLayout.init();
     return myLayout;
 }
@@ -345,6 +359,7 @@ $(document).ready(function() {
     addMenuItem( 'BLOCKLY');
     addMenuItem( 'Blockly Workspace');
     addMenuItem( 'Blockly Code');
+    addMenuItem( 'Blockly Browser');
 
     $(window).resize(function(){
         myLayout.updateSize();

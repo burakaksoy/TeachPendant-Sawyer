@@ -1,5 +1,6 @@
 function print_div(message)
 {
+    console.log(message) // For debug purposes 
     //$("#print_div").append("<br/>" + message +"\n");
     $("#print_div").append( message +" ");
 

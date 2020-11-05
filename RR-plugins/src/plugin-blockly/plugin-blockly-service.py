@@ -5,6 +5,16 @@ from RobotRaconteur.Client import *     #import RR client library to connect
 import numpy as np
 import time
 
+
+import os
+from os import listdir
+from os.path import isfile, join
+
+# import glob # To get the xml file names
+# if not os.path.exists('my_folder'):
+#     os.makedirs('my_folder')
+# print(glob.glob("/home/adam/*.txt"))
+
 class Blockly_impl(object):
     def __init__(self):
         self.url_plugins_lst = [] # The orher will be :
@@ -14,6 +24,15 @@ class Blockly_impl(object):
         self.plugin_jogCartesianSpace = None
         self.plugin_savePlayback = None
 
+        # Create a folder for saved blockly workspaces
+        self.path = "./blockly-savedWorkspaces"
+        self.extension = ".xml"
+
+        if not os.path.exists(self.path):
+            os.makedirs(self.path)
+
+        self.blockly_saved_workspaces()
+
     def reset(self):
         self.url_plugins_lst = []
 
@@ -21,6 +40,14 @@ class Blockly_impl(object):
         self.plugin_jogCartesianSpace = None
         self.plugin_savePlayback = None
 
+        # Create a folder for saved blockly workspaces
+        self.path = "./blockly-savedWorkspaces"
+        self.extension = ".xml"
+
+        if not os.path.exists(self.path):
+            os.makedirs(self.path)
+
+        self.blockly_saved_workspaces()
 
     def connect2plugins(self, url_plugins_lst):
         if not self.url_plugins_lst: # if the list is empty
@@ -39,6 +66,47 @@ class Blockly_impl(object):
             self.reset()
             self.connect2plugins(url_plugins_lst)
 
+    def blockly_saved_workspaces(self):
+        # self.saved_workspaces_filenames = [f for f in listdir(self.path) if isfile(join(self.path, f))]
+        self.saved_workspaces_filenames = [f for f in listdir(self.path) if f.endswith(self.extension)]
+
+        print(self.saved_workspaces_filenames)
+        return self.saved_workspaces_filenames
+
+
+    def blockly_load_workspace(self, filename):
+        with open( self.path +"/"+ filename, 'r') as file:
+            xml_str = file.read().replace('\n', '')
+
+        return xml_str
+
+    def blockly_delete_workspace(self,filename):
+        if os.path.exists(self.path +"/"+ filename):
+            os.remove(self.path +"/"+ filename)
+        else:
+            print("The file does not exist")
+
+    def blockly_edit_workspace_name(self, filename, file_name_new):
+        if os.path.exists(self.path +"/"+ filename):
+            os.rename(self.path +"/"+ filename, self.path +"/"+ file_name_new) 
+        else:
+            print("The file does not exist")
+
+    def blockly_save_workspace(self, filename, workspace_xml):
+        if os.path.exists(self.path +"/"+ filename):
+            with open(self.path +"/"+ filename, 'w') as filetowrite:
+                filetowrite.write(workspace_xml)
+        else:
+            print("The file does not exist")
+
+    def blockly_save_workspace_as(self, filename, workspace_xml):
+        if not os.path.exists(self.path +"/"+ filename):
+            with open(self.path +"/"+ filename, 'w') as filetowrite:
+                filetowrite.write(workspace_xml)
+        else:
+            print("The file already exists!")
+
+    # Blockly Code Execution
     def execute_blockly(self, code_text):
         output = code_text
 

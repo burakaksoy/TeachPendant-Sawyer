@@ -1,0 +1,25 @@
+<xml xmlns="https://developers.google.com/blockly/xml">
+  <block type="controls_repeat_ext" id="Tn|L~(B_WWE7K?(sh,UH" x="1" y="-26">
+    <value name="TIMES">
+      <block type="math_number" id="wN(Amy7]M;~wbrLAR%f4">
+        <field name="NUM">5</field>
+      </block>
+    </value>
+    <statement name="DO">
+      <block type="robot_jog_joint_relative" id="1^H5CJd/wL#9w?-/bfw,">
+        <field name="JOINT_SELECTED">1</field>
+        <field name="SPEED">100</field>
+        <value name="DEGREE">
+          <block type="math_number" id="cv-_bW;V.$8UH|3~Y8AL">
+            <field name="NUM">5</field>
+          </block>
+        </value>
+        <next>
+          <block type="robot_wait" id="exJ,U-iGv,6|mcWpbX@d">
+            <field name="WAIT_TIME">1</field>
+          </block>
+        </next>
+      </block>
+    </statement>
+  </block>
+</xml>

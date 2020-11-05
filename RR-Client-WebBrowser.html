@@ -436,6 +436,38 @@
             </table>
         </template>
 
+        <!-- Blockly File Browser -->
+        <template id="template_BlocklyBrowser">
+            <table id="table_BlocklyBrowser" border="1" > 
+                <Tr>
+                    <TH align="center" COLSPAN="3"> <H3>Blockly Browser</H3> </TH>
+                </Tr>
+                <Tr>
+                    <TH align="center" COLSPAN="3"> <H4>Saved Blocks</H4> </TH>
+                </Tr>
+                     
+                <tr>
+                    <td COLSPAN="3"> 
+                          <select id="saved_blocks_list" name="saved_blocks_list" size="5" multiple style="height:100%; width:100%; font-size: 16px;">
+                            <!-- <option value="0,0,0,0,0,0,0">0,0,0,0,0,0,0</option> -->
+                          </select>
+                    </td>    
+                </tr>
+                
+                <tr>
+                    <td> <button id="save_blocks_btn" type="button" style="width: 100%;">SAVE</button> </td>
+                    <td> <button id="save_as_blocks_btn" type="button" style="width: 100%;">SAVE AS</button> </td>
+                    <td> <button id="edit_blocks_name_btn" type="button" style="width: 100%;">EDIT NAME</button> </td>
+                </tr>
+                <tr>
+                    <td> <button id="load_blocks_btn" type="button" style="width: 100%;">LOAD</button> </td>
+                    <td> <button id="clear_blocks_btn" type="button" style="width: 100%;">CLEAR</button> </td>
+                    <td> <button id="delete_blocks_btn" type="button" style="width: 100%;">DELETE</button> </td>
+                </tr>
+            </table>
+            
+        </template>
+
         <!-- Blockly Interface Template -->
         <template id="template_BlocklyWorkspace">
             <table id="table_BlocklyWorkspace"   > <!-- border="1" -->
