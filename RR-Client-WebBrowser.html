@@ -29,6 +29,9 @@
         <script src="./blockly-customBlocks/print_div_block.js"></script>
         <script src="./blockly-customBlocks/jog_joint_blocks.js"></script>
         <script src="./blockly-customBlocks/jog_cartesian_blocks.js"></script>
+        <script src="./blockly-customBlocks/camera_blocks.js"></script>
+        <script src="./blockly-customBlocks/utils_blocks.js"></script>
+        <script src="./blockly-customBlocks/tool_blocks.js"></script>
         <!-- include language for blockly msgs -->
         <script src="./blockly/msg/js/en.js"></script>
 
@@ -694,45 +697,202 @@
                                     </block>
                                 </category>
                                 <category name="CartesianSpaceJog">
-                                    <block type="robot_jog_cartesian_not_relative"></block>
-                                    <block type="robot_jog_cartesian_relative"></block>
-                                    <block type="robot_jog_cartesian_position">
-                                        <value name="X">
-                                            <block type="math_number">
-                                                <field name="NUM">0</field>
+                                    <block type="robot_jog_cartesian_not_relative">
+                                        <value name="POSITION">
+                                            <block type="utils_position">
+                                                <value name="X">
+                                                    <block type="math_number">
+                                                        <field name="NUM">0</field>
+                                                    </block>
+                                                </value>
+                                                <value name="Y">
+                                                    <block type="math_number">
+                                                        <field name="NUM">0</field>
+                                                    </block>
+                                                </value>
+                                                <value name="Z">
+                                                    <block type="math_number">
+                                                        <field name="NUM">0</field>
+                                                    </block>
+                                                </value>
                                             </block>
                                         </value>
-                                        <value name="Y">
-                                            <block type="math_number">
-                                                <field name="NUM">0</field>
-                                            </block>
-                                        </value>
-                                        <value name="Z">
-                                            <block type="math_number">
-                                                <field name="NUM">0</field>
+                                        <value name="ORIENTATION">
+                                            <block type="utils_orientation">
+                                                <value name="TX">
+                                                    <block type="math_number">
+                                                        <field name="NUM">0</field>
+                                                    </block>
+                                                </value>
+                                                <value name="TY">
+                                                    <block type="math_number">
+                                                        <field name="NUM">0</field>
+                                                    </block>
+                                                </value>
+                                                <value name="TZ">
+                                                    <block type="math_number">
+                                                        <field name="NUM">0</field>
+                                                    </block>
+                                                </value>
                                             </block>
                                         </value>
                                     </block>
-                                    <block type="robot_jog_cartesian_orientation">
-                                        <value name="TX">
-                                            <block type="math_number">
-                                                <field name="NUM">0</field>
+                                    <block type="robot_jog_cartesian_relative">
+                                        <value name="POSITION">
+                                            <block type="utils_position">
+                                                <value name="X">
+                                                    <block type="math_number">
+                                                        <field name="NUM">0</field>
+                                                    </block>
+                                                </value>
+                                                <value name="Y">
+                                                    <block type="math_number">
+                                                        <field name="NUM">0</field>
+                                                    </block>
+                                                </value>
+                                                <value name="Z">
+                                                    <block type="math_number">
+                                                        <field name="NUM">0</field>
+                                                    </block>
+                                                </value>
                                             </block>
                                         </value>
-                                        <value name="TY">
-                                            <block type="math_number">
-                                                <field name="NUM">0</field>
-                                            </block>
-                                        </value>
-                                        <value name="TZ">
-                                            <block type="math_number">
-                                                <field name="NUM">0</field>
+                                        <value name="ORIENTATION">
+                                            <block type="utils_orientation">
+                                                <value name="TX">
+                                                    <block type="math_number">
+                                                        <field name="NUM">0</field>
+                                                    </block>
+                                                </value>
+                                                <value name="TY">
+                                                    <block type="math_number">
+                                                        <field name="NUM">0</field>
+                                                    </block>
+                                                </value>
+                                                <value name="TZ">
+                                                    <block type="math_number">
+                                                        <field name="NUM">0</field>
+                                                    </block>
+                                                </value>
                                             </block>
                                         </value>
                                     </block>
                                 </category>
                                 <block type="robot_wait"></block>
                             </category>
+                            <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+                            <sep></sep>
+                            <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+                            <category name="Camera" colour="180">
+                                <block type="camera_get_object_pose_z_required">
+                                    <value name="Z_DISTANCE">
+                                        <block type="math_number">
+                                            <field name="NUM">1.0</field>
+                                        </block>
+                                    </value>
+                                </block>
+                                <block type="camera_get_object_pose_z_not_required">
+                                    
+                                </block>
+                                <block type="camera_transform_pose_to_robot">
+                                    
+                                </block>
+                            </category>   
+                            <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+                            <sep></sep>
+                            <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+                            <category name="Utilities" colour="200">
+                                <block type="utils_position">
+                                    <value name="X">
+                                        <block type="math_number">
+                                            <field name="NUM">0</field>
+                                        </block>
+                                    </value>
+                                    <value name="Y">
+                                        <block type="math_number">
+                                            <field name="NUM">0</field>
+                                        </block>
+                                    </value>
+                                    <value name="Z">
+                                        <block type="math_number">
+                                            <field name="NUM">0</field>
+                                        </block>
+                                    </value>
+                                </block>
+                                <block type="utils_orientation">
+                                    <value name="TX">
+                                        <block type="math_number">
+                                            <field name="NUM">0</field>
+                                        </block>
+                                    </value>
+                                    <value name="TY">
+                                        <block type="math_number">
+                                            <field name="NUM">0</field>
+                                        </block>
+                                    </value>
+                                    <value name="TZ">
+                                        <block type="math_number">
+                                            <field name="NUM">0</field>
+                                        </block>
+                                    </value>
+                                </block>
+                                <block type="utils_pose_from_position_n_orientation">
+                                    <value name="POSITION">
+                                        <block type="utils_position">
+                                            <value name="X">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                            <value name="Y">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                            <value name="Z">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                        </block>
+                                    </value>
+                                    <value name="ORIENTATION">
+                                        <block type="utils_orientation">
+                                            <value name="TX">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                            <value name="TY">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                            <value name="TZ">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                        </block>
+                                    </value>
+                                </block>
+                                <block type="utils_position_in_pose">
+                                    
+                                </block>
+                                <block type="utils_orientation_in_pose">
+                                    
+                                </block>
+                                <block type="utils_arithmetic">
+                                    
+                                </block>
+                            </category>
+                            <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+                            <sep></sep>
+                            <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+                            <category name="Tools" colour="60">
+                                <block type="tool_gripper">
+                                </block>
+                            </category> 
                         </xml>
                     </td>          
                 </tr>
