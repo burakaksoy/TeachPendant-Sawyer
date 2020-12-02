@@ -862,12 +862,12 @@ async def client_drive():
     try:
         # Discover Available Robots
         ## Discovery plugin
-        print_div('Discovery plugin is connecting..<br>')
+        print_div('Discovery plugin is connecting (robot)..<br>')
 
         url_plugin_discovery = 'rr+ws://' + ip_plugins + ':8896?service=Discovery'
         global plugin_discovery
         plugin_discovery = await RRN.AsyncConnectService(url_plugin_discovery,None,None,None,None)
-        print_div('discovery plugin is connected..<br>')
+        print_div('discovery plugin is connected (robot)..<br>')
 
         RobotConnectionURLs = await plugin_discovery.async_available_robot_ConnectionURLs(None)
         # print_div(str(RobotConnectionURLs))

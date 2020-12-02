@@ -33,6 +33,13 @@ class ClientDiscovery(object):
         self.available_robots_list = document.getElementById("available_robots")
         # self.button_start_robot = document.getElementById("start_robot_btn")
 
+        # try:
+        #     self.available_cams_list = document.getElementById("available_cams")
+        # except:
+        #     print_div("No available camera list found..<br>")
+        #     pass
+        self.available_cams_list = document.getElementById("available_cams")
+
 
     def define_event_listeners(self):
         # print_div("Event Listeners are being created.. <br>")
@@ -50,8 +57,10 @@ class ClientDiscovery(object):
         #     # Sleep for 5 seconds
         #     await RRN.AsyncSleep(5,None)
 
-        # Get available robot names and add them as options to available_cams in html
+        # Get available robot names and add them as options to available_robots in html
         await self.async_create_available_robots_list()
+        # Get available camera names and add them as options to available_cams in html
+        await self.async_create_available_cams_list()
 
 
     async def async_connect_to_plugins(self):
@@ -66,7 +75,7 @@ class ClientDiscovery(object):
 
 
     async def async_create_available_robots_list(self):
-        print_div("Auto discovering..")
+        print_div("Auto discovering robots..")
         await self.plugin_discovery.async_autodiscover(None)
 
         try:
@@ -87,6 +96,33 @@ class ClientDiscovery(object):
                 option = document.createElement("option")
                 option.text = str(i) + ": " + str(nodeName)
                 self.available_robots_list.add(option)
+                i += 1 
+        except:
+            import traceback
+            print_div(traceback.format_exc())
+
+    async def async_create_available_cams_list(self):
+        print_div("Auto discovering cameras..")
+        await self.plugin_discovery.async_autodiscover_cams(None)
+
+        try:
+            # print_div("Clearing the previous available camera options..")
+            length = self.available_cams_list.options.length
+            i = length-1
+            while i >= 0:
+                self.available_cams_list.options[i] = None
+                i -= 1
+
+            print_div('Creating available cameras options..<br>')
+            self.camera_nodeNames = await self.plugin_discovery.async_available_camera_NodeNames(None) 
+            print_div(str(self.camera_nodeNames) + "<br>") 
+            i = 0
+            for nodeName in self.camera_nodeNames:
+                # print_div(str(self.camera_nodeNames[key]) + "<br>") # --> Right
+                # Add the available camera nodeName to the available_cameras list
+                option = document.createElement("option")
+                option.text = str(i) + ": " + str(nodeName)
+                self.available_cams_list.add(option)
                 i += 1 
         except:
             import traceback

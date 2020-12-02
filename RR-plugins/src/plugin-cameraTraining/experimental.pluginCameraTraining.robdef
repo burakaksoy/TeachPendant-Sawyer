@@ -3,6 +3,14 @@ service experimental.pluginCameraTraining
 
 stdver 0.10
 
-object CameraTraining
+import com.robotraconteur.image
 
+using com.robotraconteur.image.Image
+# using com.robotraconteur.image.ImagePart
+# using com.robotraconteur.image.CompressedImage
+
+object CameraTraining
+    function void connect2camera(string url_camera)
+    function Image train_new_visual()
+    # function void train_new_visual()
 end

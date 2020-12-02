@@ -1,6 +1,7 @@
 # Client for vision 
-from js import print_div
+from js import self as window
 from js import document
+from js import print_div
 from js import ImageData
 from RobotRaconteur.Client import *
 import numpy as np

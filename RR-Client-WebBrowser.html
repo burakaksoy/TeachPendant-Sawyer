@@ -70,11 +70,13 @@
         </div>
 
         <!-- General JS -->
-        <script type="text/javascript" src="./scripts-robot.js"></script>
-        <!-- <script type="text/javascript" src="./scripts-vision.js"></script> -->
-        
         <!-- Auto robot discovery -->
         <script type="text/javascript" src="./scripts-discovery.js"></script>
+
+        <!-- <script type="text/javascript" src="./scripts-robot.js"></script> -->
+        <script type="text/javascript" src="./scripts-vision.js"></script>
+        
+        
 
 
         <!-- Content HTMLs -->
@@ -322,6 +324,7 @@
                     <td>
                         <form>
                             <label for="chosen_cam">Camera:</label>
+                            <!-- <select name="available_cams" id="available_cams" onchange="run_vision()"> -->
                             <select name="available_cams" id="available_cams">
                                 <!-- <option value="cam0">Cam0</option>
                                 <option value="cam1">Cam1</option> -->
@@ -331,7 +334,9 @@
                 </tr>
                 <tr> 
                     <td>
-                        <canvas id="camera_image" width="320" height="240"></canvas>
+                        <!-- <canvas id="camera_image" width="320" height="240"></canvas> -->
+                        <!-- <img id="camera_image" src="img_pulpit.jpg" alt="The Pulpit Rock" width="304" height="228"> -->
+                        <img id="camera_image">
                     </td>          
                 </tr>
             </table>
