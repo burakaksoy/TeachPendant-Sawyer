@@ -35,6 +35,10 @@
         <!-- include language for blockly msgs -->
         <script src="./blockly/msg/js/en.js"></script>
 
+        <!-- INCLUDE CROPPER -->
+        <link rel="stylesheet" href="./cropperjs/dist/cropper.css">
+        <script src="./cropperjs/dist/cropper.js"></script>
+
         <!-- INCLUDE STYLES -->
         <link rel="stylesheet" type="text/css" href="styles.css">
     </head>
@@ -335,7 +339,6 @@
                 <tr> 
                     <td>
                         <!-- <canvas id="camera_image" width="320" height="240"></canvas> -->
-                        <!-- <img id="camera_image" src="img_pulpit.jpg" alt="The Pulpit Rock" width="304" height="228"> -->
                         <img id="camera_image">
                     </td>          
                 </tr>
@@ -345,6 +348,7 @@
         <!-- Train Vision Area template -->
         <template id="template_TrainVision"> 
             <table id="table_TrainVision" border="1"  > <!-- CELLPADDING="4" CELLSPACING="3"> -->
+                <col width="160"><col ><col >
                 <tr> 
                     <td colspan = "3" align="left">
                         <form>
@@ -357,8 +361,8 @@
                     </td>          
                 </tr>
                 <tr> 
-                    <td rowspan="4">
-                        <canvas id="selected_trained_visual" width="320" height="240"></canvas>
+                    <td rowspan="2">
+                        <img id="selected_trained_visual"></img>
                     </td>   
                     <td> Name: </td> 
                     <td>
@@ -373,15 +377,49 @@
                     </td>          
                 </tr>
                 <tr> 
-                    <td COLSPAN="2"> <button id="delete_selected_trained_visual_btn" type="button" style="width: 100%;">Delete</button> </td>         
+                    <td COLSPAN="3"> <button id="delete_selected_trained_visual_btn" type="button" style="width: 100%;">Delete</button> </td>         
                 </tr>
                 <tr> 
-                    <td COLSPAN="2"> <button id="edit_name_selected_trained_visual_btn" type="button" style="width: 100%;">Edit Name</button> </td>         
+                    <td COLSPAN="3"> <button id="edit_name_selected_trained_visual_btn" type="button" style="width: 100%;">Edit Name</button> </td>         
                 </tr>
                 <tr> 
                     <td COLSPAN="3"> <button id="train_new_visual_btn" type="button" style="width: 100%;">Train New Visual</button> </td>         
                 </tr>
             </table>
+            <div id="myModal" class="modal">
+
+              <!-- Modal content -->
+              <div class="modal-content">
+
+                <div class="modal-header">
+                  <span id="span_close" class="close">&times;</span>
+                  <h2>Crop the image</h2>
+                </div>
+
+                <div class="modal-body">
+                  <!-- <p>Some text in the Modal Body</p> -->
+                  <div class="img-container">
+                    <!-- <img id="image" src="../images/picture.jpg" alt="Picture"> -->
+                    <!-- <img id="image" src="https://fengyuanchen.github.io/cropperjs/images/picture.jpg" alt="Picture"> -->
+                    <img id="training_image">
+                  </div>
+                </div>
+
+                <div class="modal-footer">
+                  <!-- <h2>Modal Footer</h2> -->
+                  <button type="button" id="btn_close">Cancel</button>
+
+                  <button type="button" id="btn_reset">Reset</button>
+                  <button type="button" id="btn_rot_m5">Rotate -5 deg</button>
+                  <button type="button" id="btn_rot_p5">Rotate +5 deg</button>
+                  
+                  
+                  <button type="button" id="btn_crop">Crop & Save</button>
+                </div>
+
+              </div>
+
+            </div>
         </template>
 
         <!-- Camera Calibration Area Template -->

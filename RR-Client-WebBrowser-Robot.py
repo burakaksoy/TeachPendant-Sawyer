@@ -67,7 +67,6 @@ async def async_update_blockly_saved_workspaces():
     global plugin_blockly
     workspace_files_lst = await plugin_blockly.async_blockly_saved_workspaces(None)
 
-    # Add the current joint angles to the saved poses list on web browser UI
     element_id = "saved_blocks_list"
     blocks_list = document.getElementById(element_id)
     

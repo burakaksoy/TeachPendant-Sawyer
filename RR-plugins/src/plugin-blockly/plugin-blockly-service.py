@@ -89,6 +89,7 @@ class Blockly_impl(object):
     def blockly_edit_workspace_name(self, filename, file_name_new):
         if os.path.exists(self.path +"/"+ filename):
             os.rename(self.path +"/"+ filename, self.path +"/"+ file_name_new) 
+            # TODO: Check the existance of the new file name, maybe
         else:
             print("The file does not exist")
 

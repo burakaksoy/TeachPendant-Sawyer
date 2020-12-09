@@ -8,12 +8,22 @@ import numpy as np
 
 import base64 # To convert img byte array to base64string
 
+from js import Cropper
+
 class ClientVision(object):
     """Client Class to access client data in a more convenient way"""
     def __init__(self, ip_plugins):
         # Service IPs
         self.ip_plugins = ip_plugins
         
+        self.h_avatar = 160
+        self.w_avatar = 160
+
+        # RRN.RegisterServiceTypesFromFiles(['com.robotraconteur.image'],True)
+        # self._image_consts = RRN.GetConstants('com.robotraconteur.image')
+        # self._image_type = RRN.GetStructureType('com.robotraconteur.image.Image')
+        # self._image_info_type = RRN.GetStructureType('com.robotraconteur.image.ImageInfo')
+
         # Define Element references
         self.define_element_references()
         
@@ -91,6 +101,8 @@ class ClientVision(object):
             print_div('CameraTraining plugin is connecting..<br>')
             self.plugin_cameraTraining = await RRN.AsyncConnectService(self.url_plugin_cameraTraining,None,None,None,None)
             await self.plugin_cameraTraining.async_connect2camera(self.url_cam,None)
+            await self.async_update_saved_images()
+            await self.async_select_trained_visual()
             print_div('CameraTraining plugin is connected!<br>')
 
             ## CameraCalibration plugin
@@ -128,15 +140,46 @@ class ClientVision(object):
 
         # For Training
         self.button_train_new_visual = document.getElementById("train_new_visual_btn")
-        self.canvas_2 = document.getElementById("selected_trained_visual")
-        self.ctx_2 = self.canvas_2.getContext("2d")
+        self.img_selected_trained_visual = document.getElementById("selected_trained_visual")
+
+        self.img_training = document.getElementById("training_image")
+        self.modal = document.getElementById("myModal");
+
+        self.span_close = document.getElementById("span_close")
+        self.button_close = document.getElementById("btn_close")
+
+        self.button_crop = document.getElementById("btn_crop")
+        self.button_reset = document.getElementById("btn_reset")
+        self.button_rot_m5 = document.getElementById("btn_rot_p5")
+        self.button_rot_p5 = document.getElementById("btn_rot_m5")
+
+        self.select_trained_visuals = document.getElementById("trained_visuals")
+
+        self.button_delete_selected_trained_visual = document.getElementById("delete_selected_trained_visual_btn")
+
+
 
     def define_event_listeners(self):
         print_div("Event Listeners are being created.. <br>")
         # For Feedback
         self.available_cams_list.addEventListener("change", self.select_available_cam_func)
+
         # For Training
         self.button_train_new_visual.addEventListener("click", self.train_new_visual_func)
+        
+        self.span_close.addEventListener("click", self.close_modal_func)
+        self.button_close.addEventListener("click", self.close_modal_func)
+        # window.addEventListener("click", self.close_modal_func)
+
+        self.button_crop.addEventListener("click", self.crop_img_func)
+        self.button_reset.addEventListener("click", self.reset_img_func)
+        self.button_rot_m5.addEventListener("click", self.rot_m5_img_func)
+        self.button_rot_p5.addEventListener("click", self.rot_p5_img_func)
+
+        self.select_trained_visuals.addEventListener("change", self.select_trained_visual_func)
+        self.button_delete_selected_trained_visual.addEventListener("click", self.delete_selected_trained_visual_func)
+
+
 
     ## Callback functions
     # gets the selected index and return the camera url from the given camera urls
@@ -178,8 +221,8 @@ class ClientVision(object):
 
             self.img_feedback.src = "data:image/jpg;base64," + encoded
             # print_div(self.img_feedback.src)
-            self.img_feedback.width=str(image.image_info.width)
-            self.img_feedback.height=str(image.image_info.height)
+            self.img_feedback.width= str(image.image_info.width)
+            self.img_feedback.height= str(image.image_info.height)
             # print_div(str(image.image_info.width) + ", " + str(image.image_info.height))
 
 
@@ -218,16 +261,216 @@ class ClientVision(object):
         try: 
             image = await self.plugin_cameraTraining.async_train_new_visual(None)
             image_data, sw,sh = await self.async_img_for_canvas(image)
-            # await self.async_img_for_canvas(image)
-            # Show image
-            self.ctx_2.putImageData(image_data,0,0,0,0,320,240)
-            # self.ctx.putImageData(image_data,0,0,sw,sh,0,0,320,240)
-            # self.ctx.putImageData(image_data,320,240)
+            # print_div(image_data)
+
+            # Add image for cropping
+            canvas = document.createElement('canvas')
+            ctx = canvas.getContext('2d')
+            canvas.width = sw
+            canvas.height = sh
+            ctx.putImageData(image_data, 0, 0)
+
+            self.img_training.src = canvas.toDataURL()
+            
+            # Show the modal
+            self.modal.style.display = "block"
+
+            self.cropper = Cropper.new(self.img_training, {"viewMode":2}) # TODO options, Done
 
         except:
             import traceback
             print_div(traceback.format_exc())
             # raise
+
+    def close_modal_func(self,data):
+        self.modal.style.display = "none"
+        if self.cropper != None:
+            self.cropper.destroy()
+            self.cropper = None
+
+    def crop_img_func(self,data):
+        loop.call_soon(async_save_image())
+
+
+    def crop_img_func(self,data):
+        print_div("Crop & Save button is clicked!<br>")
+        # Hide cropping modal
+        self.modal.style.display = "none"
+        
+        # # Get the cropped image avatar
+        # self.cropped_canvas_avatar = self.cropper.getCroppedCanvas({"width": self.w_avatar,"height": self.h_avatar}) 
+        # # Show the cropped image avatar
+        # self.img_selected_trained_visual.src = self.cropped_canvas_avatar.toDataURL()
+        # self.img_selected_trained_visual.width = str(self.w_avatar)
+        # self.img_selected_trained_visual.height = str(self.h_avatar)
+
+        # Save the cropped image for offline usage
+        fileName = window.prompt("Please enter the new file name to save image (Don't forget .png file extension)", "cropped001.png")
+        if (fileName != None and fileName != ""):
+            # Search the existing filenames to check for coincidence
+            is_found = fileName in self.image_files_lst
+
+            if not is_found:
+                # Get the cropped image
+                self.cropped_canvas = self.cropper.getCroppedCanvas({"imageSmoothingEnabled":False})
+                # Save the image
+                self.loop_client.call_soon(self.async_save_image(fileName))
+                
+            else:
+                window.alert("The file already exists! Try another file name")    
+        else:
+            window.alert("Enter a valid file name and try again.." )
+
+        self.cropper.destroy()
+        self.cropper = None
+
+    async def async_canvas_to_image_str(self, canvas):
+        data_url = canvas.toDataURL('image/png')
+        # print_div(canvas.toDataURL('image/png'))
+
+        # Remove the unnecessary part from the image string
+        img_str = data_url.replace("data:image/png;base64,","")
+        # print_div(img_str)
+        # print_div(len(img_str))
+        
+        # print_div(canvas.width)
+        # print_div(canvas.height)
+
+        # image.data = mat.reshape(mat.size, order='C')
+        return img_str,canvas.width, canvas.height
+        
+
+    async def async_save_image(self,fileName):
+        # Convert the cropped image to RR Image type
+        img_str,w,h = await self.async_canvas_to_image_str(self.cropped_canvas)
+        
+        # Send this image to training service plug in to save
+        await self.plugin_cameraTraining.async_save_image(fileName,img_str,w,h, None)
+
+        # # Saves with browser
+        # link = document.createElement("a")
+        # document.body.appendChild(link) # for Firefox
+        # # Download the image
+        # base64_ = self.cropped_canvas.toDataURL()
+        # link.href = base64_
+        # link.download = fileName
+        # link.click()
+
+        # Update the available saved images list
+        await self.async_update_saved_images()
+        await self.async_select_trained_visual()
+
+
+    def reset_img_func(self,data):
+        self.cropper.reset()
+
+    def rot_m5_img_func(self,data):
+        self.cropper.rotate(-5)
+
+    def rot_p5_img_func(self,data):
+        self.cropper.rotate(5)
+
+
+    async def async_update_saved_images(self):
+        try:
+            # print_div("Clearing the previous available visual options..")
+            length = self.select_trained_visuals.options.length
+            i = length-1
+            while i >= 0:
+                # self.select_trained_visuals.options[i] = None
+                self.select_trained_visuals.remove(i)
+                i -= 1
+
+            print_div('Creating available trained images options..<br>')
+            self.image_files_lst = await self.plugin_cameraTraining.async_saved_images(None)
+            # print_div(str(self.image_files_lst) + "<br>") 
+            i = 0
+            for fileName in self.image_files_lst:
+                # print_div(str(self.camera_nodeNames[key]) + "<br>") # --> Right
+                # Add the available image fileName to the select_trained_visuals list
+                option = document.createElement("option")
+                option.text = str(i) + ": " + str(fileName)
+                self.select_trained_visuals.add(option)
+                i += 1 
+        except:
+            import traceback
+            print_div(traceback.format_exc())
+
+    def select_trained_visual_func(self,data):
+        print_div("A Saved image is selected!<br>")
+        self.loop_client.call_soon(self.async_select_trained_visual())
+
+    async def async_select_trained_visual(self):
+        # Read the selected image index from the browser
+        index = self.select_trained_visuals.selectedIndex
+        try:
+            if index == -1 and len(self.image_files_lst) == 0:
+                print_div("No available trained images found")
+                # Clear the selected image area
+                self.img_selected_trained_visual.src = "''"
+
+            else:
+                if index == -1 and len(self.image_files_lst)> 0:
+                    print_div("Selecting the first available trained image")
+                    index = 0
+
+                file_name = self.image_files_lst[index]
+                print_div(file_name)
+                image = await self.plugin_cameraTraining.async_load_image(file_name,None)
+                image_data, sw,sh = await self.async_img_for_canvas(image)
+
+                canvas = document.createElement('canvas')
+                ctx = canvas.getContext('2d')
+                canvas.width = sw
+                canvas.height = sh
+                ctx.putImageData(image_data, 0, 0)
+
+                self.img_selected_trained_visual.src = canvas.toDataURL()
+                self.img_selected_trained_visual.width = str(self.w_avatar)
+                self.img_selected_trained_visual.height = str(self.h_avatar)
+
+        except:
+            import traceback
+            print_div(traceback.format_exc())
+            # raise
+            pass
+
+        # Update the available saved images list
+        # await self.async_update_saved_images()
+
+
+    def delete_selected_trained_visual_func(self,data):
+        print_div("Delete selected_trained_visual button is clicked!<br>")
+        self.loop_client.call_soon(self.async_delete_selected_trained_visual())
+
+    async def async_delete_selected_trained_visual(self):
+        # Read the selected image index from the browser
+        index = self.select_trained_visuals.selectedIndex
+        try:
+            if index == -1 or len(self.image_files_lst) == 0:
+                print_div("No available trained images found or not selected")
+
+            else:
+                # if index == -1 and len(self.image_files_lst)> 0:
+                #     print_div("Selecting the first available trained image")
+                #     index = 0
+
+                file_name = self.image_files_lst[index]
+                # Ask user: are you sure you want to delete 'file_name'
+                resp = window.confirm("Sure you want to delete '" + file_name + "'?")
+                # if sure delete, else ignore and return
+                if resp:
+                    await self.plugin_cameraTraining.async_delete_image(file_name,None)
+
+        except:
+            import traceback
+            print_div(traceback.format_exc())
+            # raise
+            pass
+
+        # Update the available saved images list
+        await self.async_update_saved_images()
+        await self.async_select_trained_visual()
 
 
        
