@@ -3,60 +3,70 @@ Blockly.defineBlocksWithJsonArray([{
   "lastDummyAlign0": "RIGHT",
   "message0": "Get Pose of object: %1 %2 wrt. cam: %3 %4 with z = %5 (m)",
   "args0": [
+    // {
+    //   "type": "field_dropdown",
+    //   "name": "TRAINED_OBJECTS",
+    //   "options": [
+    //     [
+    //       {
+    //         "src": "https://www.gstatic.com/codesite/ph/images/star_on.gif",
+    //         "width": 30,
+    //         "height": 30,
+    //         "alt": "*"
+    //       },
+    //       "OBJECT1"
+    //     ],
+    //     [
+    //       {
+    //         "src": "https://www.gstatic.com/codesite/ph/images/star_on.gif",
+    //         "width": 30,
+    //         "height": 30,
+    //         "alt": "*"
+    //       },
+    //       "OBJECT2"
+    //     ],
+    //     [
+    //       {
+    //         "src": "https://www.gstatic.com/codesite/ph/images/star_on.gif",
+    //         "width": 30,
+    //         "height": 30,
+    //         "alt": "*"
+    //       },
+    //       "OBJECT3"
+    //     ]
+    //   ]
+    // },
     {
-      "type": "field_dropdown",
-      "name": "TRAINED_OBJECTS",
-      "options": [
-        [
-          {
-            "src": "https://www.gstatic.com/codesite/ph/images/star_on.gif",
-            "width": 30,
-            "height": 30,
-            "alt": "*"
-          },
-          "OBJECT1"
-        ],
-        [
-          {
-            "src": "https://www.gstatic.com/codesite/ph/images/star_on.gif",
-            "width": 30,
-            "height": 30,
-            "alt": "*"
-          },
-          "OBJECT2"
-        ],
-        [
-          {
-            "src": "https://www.gstatic.com/codesite/ph/images/star_on.gif",
-            "width": 30,
-            "height": 30,
-            "alt": "*"
-          },
-          "OBJECT3"
-        ]
-      ]
+      "type": "input_dummy",
+      "align": "RIGHT",
+      "name" : "TRAINED_OBJECTS"
     },
     {
       "type": "input_dummy",
       "align": "RIGHT"
     },
+    // {
+    //   "type": "field_dropdown",
+    //   "name": "CAMS",
+    //   "options": [
+    //     [
+    //       "cam1",
+    //       "CAM1"
+    //     ],
+    //     [
+    //       "cam2",
+    //       "CAM2"
+    //     ],
+    //     [
+    //       "cam3",
+    //       "CAM3"
+    //     ]
+    //   ]
+    // },
     {
-      "type": "field_dropdown",
-      "name": "CAMS",
-      "options": [
-        [
-          "cam1",
-          "CAM1"
-        ],
-        [
-          "cam2",
-          "CAM2"
-        ],
-        [
-          "cam3",
-          "CAM3"
-        ]
-      ]
+      "type": "input_dummy",
+      "align": "RIGHT",
+      "name" : "CAMS"
     },
     {
       "type": "input_dummy",
@@ -73,74 +83,86 @@ Blockly.defineBlocksWithJsonArray([{
   "output": "pose",
   "colour": 180,
   "tooltip": "Use this block to get the pose of a trained object with respect to a camera. You need to specify the z direction distance away from the camera to get correct position values",
-  "helpUrl": ""
+  "helpUrl": "",
+  "extensions": ["cams_dynamic_menu_extension","images_dynamic_menu_extension"] //Added
 },
 {
   "type": "camera_get_object_pose_z_not_required",
   "lastDummyAlign0": "RIGHT",
   "message0": "Get Pose of object: %1 %2 wrt. 3D capable cam: %3",
   "args0": [
+    // {
+    //   "type": "field_dropdown",
+    //   "name": "TRAINED_OBJECTS",
+    //   "options": [
+    //     [
+    //       {
+    //         "src": "https://www.gstatic.com/codesite/ph/images/star_on.gif",
+    //         "width": 30,
+    //         "height": 30,
+    //         "alt": "*"
+    //       },
+    //       "OBJECT1"
+    //     ],
+    //     [
+    //       {
+    //         "src": "https://www.gstatic.com/codesite/ph/images/star_on.gif",
+    //         "width": 30,
+    //         "height": 30,
+    //         "alt": "*"
+    //       },
+    //       "OBJECT2"
+    //     ],
+    //     [
+    //       {
+    //         "src": "https://www.gstatic.com/codesite/ph/images/star_on.gif",
+    //         "width": 30,
+    //         "height": 30,
+    //         "alt": "*"
+    //       },
+    //       "OBJECT3"
+    //     ]
+    //   ]
+    // },
     {
-      "type": "field_dropdown",
-      "name": "TRAINED_OBJECTS",
-      "options": [
-        [
-          {
-            "src": "https://www.gstatic.com/codesite/ph/images/star_on.gif",
-            "width": 30,
-            "height": 30,
-            "alt": "*"
-          },
-          "OBJECT1"
-        ],
-        [
-          {
-            "src": "https://www.gstatic.com/codesite/ph/images/star_on.gif",
-            "width": 30,
-            "height": 30,
-            "alt": "*"
-          },
-          "OBJECT2"
-        ],
-        [
-          {
-            "src": "https://www.gstatic.com/codesite/ph/images/star_on.gif",
-            "width": 30,
-            "height": 30,
-            "alt": "*"
-          },
-          "OBJECT3"
-        ]
-      ]
+      "type": "input_dummy",
+      "align": "RIGHT",
+      "name" : "TRAINED_OBJECTS"
     },
     {
       "type": "input_dummy",
       "align": "RIGHT"
     },
+    // {
+    //   "type": "field_dropdown",
+    //   "name": "CAMS",
+    //   "options": [
+    //     [
+    //       "cam1",
+    //       "CAM1"
+    //     ],
+    //     [
+    //       "cam2",
+    //       "CAM2"
+    //     ],
+    //     [
+    //       "cam3",
+    //       "CAM3"
+    //     ]
+    //   ]
+    // }
     {
-      "type": "field_dropdown",
-      "name": "CAMS",
-      "options": [
-        [
-          "cam1",
-          "CAM1"
-        ],
-        [
-          "cam2",
-          "CAM2"
-        ],
-        [
-          "cam3",
-          "CAM3"
-        ]
-      ]
+      "type": "input_dummy",
+      "align": "RIGHT",
+      "name" : "CAMS"
     }
   ],
   "inputsInline": true,
   "output": "pose",
   "colour": 180,
   "tooltip": "Use this block to get the pose of a trained object with respect to a 3D capable camera (eg Kinect, Intel Realsense). Hence, you DON'T need to specify the z direction distance away from the camera to get correct position values. However, be careful to choose a camera with 3D capability",
-  "helpUrl": ""
+  "helpUrl": "",
+  "extensions": ["cams_dynamic_menu_extension","images_dynamic_menu_extension"] //Added
 },
 {
   "type": "camera_transform_pose_to_robot",
@@ -153,30 +175,40 @@ Blockly.defineBlocksWithJsonArray([{
       "check": "pose",
       "align": "RIGHT"
     },
+    // {
+    //   "type": "field_dropdown",
+    //   "name": "CAMS",
+    //   "options": [
+    //     [
+    //       "cam1",
+    //       "CAM1"
+    //     ],
+    //     [
+    //       "cam2",
+    //       "CAM2"
+    //     ],
+    //     [
+    //       "cam3",
+    //       "CAM3"
+    //     ]
+    //   ]
+    // },
+    // {
+    //   "type": "input_dummy",
+    //   "align": "RIGHT"
+    // },
     {
-      "type": "field_dropdown",
-      "name": "CAMS",
-      "options": [
-        [
-          "cam1",
-          "CAM1"
-        ],
-        [
-          "cam2",
-          "CAM2"
-        ],
-        [
-          "cam3",
-          "CAM3"
-        ]
-      ]
+      "type": "input_dummy",
+      "align": "RIGHT",
+      "name" : "CAMS"
     }
   ],
   "inputsInline": true,
   "output": "pose",
   "colour": 180,
   "tooltip": "Transforms the given pose in a camera frame into the robot's frame",
-  "helpUrl": ""
+  "helpUrl": "",
+  "extensions": ["cams_dynamic_menu_extension"] //Added
 }]);
 
 Blockly.Python['camera_get_object_pose_z_required'] = function(block) {
@@ -206,3 +238,29 @@ Blockly.Python['camera_transform_pose_to_robot'] = function(block) {
   // TODO: Change ORDER_NONE to the correct strength.
   return [code, Blockly.Python.ORDER_NONE];
 };
+
+function register_vision_extensions_blockly(){
+  console.log("i am in register_vision_extensions in blockly");
+
+  function options_cams(){
+    options = pyodide.globals.cli_vision.camera_node_names_lst_for_blockly();
+    console.log(options);
+    return options
+  }
+  Blockly.Extensions.register('cams_dynamic_menu_extension',
+    function() {
+      this.getInput('CAMS')
+        .appendField(new Blockly.FieldDropdown(options_cams()), 'OPTIONS_CAMS');
+    });
+
+  function options_images(){
+    options = pyodide.globals.cli_vision.image_files_lst_for_blockly();
+    console.log(options);
+    return options
+  }  
+  Blockly.Extensions.register('images_dynamic_menu_extension',
+    function() {
+      this.getInput('TRAINED_OBJECTS')
+        .appendField(new Blockly.FieldDropdown(options_images()), 'OPTIONS_IMAGES');
+    });
+}

@@ -348,14 +348,13 @@
         <!-- Train Vision Area template -->
         <template id="template_TrainVision"> 
             <table id="table_TrainVision" border="1"  > <!-- CELLPADDING="4" CELLSPACING="3"> -->
-                <col width="160"><col ><col >
+                <col width="160"><col >
                 <tr> 
-                    <td colspan = "3" align="left">
+                    <td colspan = "2" align="left">
                         <form>
                             <label for="trained_visuals">Trained Visuals:</label>
                             <select name="trained_visuals" id="trained_visuals">
-                                <option value="vis0">Visual_00</option>
-                                <option value="vis1">Visual_01</option>
+                                <!-- <option value="vis0">Visual_00</option> -->
                             </select>
                         </form>
                     </td>          
@@ -364,26 +363,14 @@
                     <td rowspan="2">
                         <img id="selected_trained_visual"></img>
                     </td>   
-                    <td> Name: </td> 
-                    <td>
-                        <div align="left" id="print_div_selected_trained_visual_name"></div>
-                    </td>        
+                    <td COLSPAN="1"> <button id="edit_name_selected_trained_visual_btn" type="button" style="width: 100%;">Edit Name</button> </td>  
                 </tr>
 
                 <tr> 
-                    <td> Camera: </td> 
-                    <td>
-                        <div align="left" id="print_div_selected_trained_visual_by_camera"></div>
-                    </td>          
+                    <td COLSPAN="1"> <button id="delete_selected_trained_visual_btn" type="button" style="width: 100%;">Delete</button> </td>         
                 </tr>
                 <tr> 
-                    <td COLSPAN="3"> <button id="delete_selected_trained_visual_btn" type="button" style="width: 100%;">Delete</button> </td>         
-                </tr>
-                <tr> 
-                    <td COLSPAN="3"> <button id="edit_name_selected_trained_visual_btn" type="button" style="width: 100%;">Edit Name</button> </td>         
-                </tr>
-                <tr> 
-                    <td COLSPAN="3"> <button id="train_new_visual_btn" type="button" style="width: 100%;">Train New Visual</button> </td>         
+                    <td COLSPAN="2"> <button id="train_new_visual_btn" type="button" style="width: 100%;">Train New Visual</button> </td>         
                 </tr>
             </table>
             <div id="myModal" class="modal">

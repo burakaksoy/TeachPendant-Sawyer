@@ -9,15 +9,24 @@ import numpy as np
 import base64 # To convert img byte array to base64string
 
 from js import Cropper
+from js import Blockly
+from js import register_vision_extensions_blockly
 
 class ClientVision(object):
     """Client Class to access client data in a more convenient way"""
     def __init__(self, ip_plugins):
+
         # Service IPs
         self.ip_plugins = ip_plugins
-        
+
+        # Training image avatar sizes        
         self.h_avatar = 160
         self.w_avatar = 160
+
+        # Register Extensions of Blockly Camera Blocks (see blockly-customBlocks/camera_blocks.js)
+        register_vision_extensions_blockly()
+        self.camera_node_names_lst = None # For storing camera names
+        self.image_files_lst = None # For storing trained image file names
 
         # RRN.RegisterServiceTypesFromFiles(['com.robotraconteur.image'],True)
         # self._image_consts = RRN.GetConstants('com.robotraconteur.image')
@@ -26,7 +35,6 @@ class ClientVision(object):
 
         # Define Element references
         self.define_element_references()
-        
         # Define Event Listeners
         self.define_event_listeners()
 
@@ -44,17 +52,14 @@ class ClientVision(object):
             await self.async_disconnect_from_plugins()
         except:
             pass
-
         # Connect to plugins
         is_connected = await self.async_connect_to_plugins()
-
         if is_connected:
             self.is_stop_vision = False
             # # Show the feedback image of the first available camera initially
             self.camera_fb_pipe.PacketReceivedEvent += self.show_new_frame
             # self.camera_pipe.PacketReceivedEvent += self.show_new_frame # debug
             # self.camera.async_start_streaming(None) # debug       
-
 
     async def async_connect_to_plugins(self):
         # Discover Available Cameras
@@ -65,7 +70,7 @@ class ClientVision(object):
         print_div('discovery plugin is connected (camera)..<br>')
         # Get the available camera connection URLs
         self.CameraConnectionURLs = await self.plugin_discovery.async_available_camera_ConnectionURLs(None)
-
+        self.camera_node_names_lst =  await self.plugin_discovery.async_available_camera_NodeNames(None)
         
         try:
             # Trying to find an available camera url -----
@@ -110,15 +115,12 @@ class ClientVision(object):
             self.plugin_cameraCalibration = await RRN.AsyncConnectService(self.url_plugin_cameraCalibration,None,None,None,None)
             # await self.plugin_cameraCalibration.async_connect2camera(self.url_cam,None)
             print_div('CameraCalibration plugin is connected!<br>')
-
             return True
         except:
             import traceback
             print_div(traceback.format_exc())
             print_div("No camera could be found, or something went wrong..<br>")
             return False
-
-        
 
     async def async_disconnect_from_plugins(self):
         await RRN.AsyncDisconnectService(self.plugin_discovery, None)
@@ -131,7 +133,6 @@ class ClientVision(object):
         # await self.camera.async_stop_streaming(None) #debug
         # await RRN.AsyncDisconnectService(self.camera, None)  # debug
         
-
     def define_element_references(self):
         print_div("HTML Element references are being created..<br>")
         # For Feedback
@@ -156,8 +157,7 @@ class ClientVision(object):
         self.select_trained_visuals = document.getElementById("trained_visuals")
 
         self.button_delete_selected_trained_visual = document.getElementById("delete_selected_trained_visual_btn")
-
-
+        self.button_edit_name_selected_trained_visual = document.getElementById("edit_name_selected_trained_visual_btn")
 
     def define_event_listeners(self):
         print_div("Event Listeners are being created.. <br>")
@@ -178,10 +178,9 @@ class ClientVision(object):
 
         self.select_trained_visuals.addEventListener("change", self.select_trained_visual_func)
         self.button_delete_selected_trained_visual.addEventListener("click", self.delete_selected_trained_visual_func)
+        self.button_edit_name_selected_trained_visual.addEventListener("click", self.edit_name_selected_trained_visual_func)
 
-
-
-    ## Callback functions
+    # # -------------------------- BEGIN: Callback functions -------------------------- #
     # gets the selected index and return the camera url from the given camera urls
     async def async_select_available_camera_url(self, camera_urls):
         print_div("Selecting the camera URL.. <br>")
@@ -192,7 +191,7 @@ class ClientVision(object):
             return camera_urls[0]
         return camera_urls[index]
 
-    # For Feedback
+    # Callback functions For FEEDBACK
     def select_available_cam_func(self,data):
         print_div("Selecting the cam.. <br>")
         self.loop_client.call_soon(self.async_new_cam_selected())
@@ -226,7 +225,7 @@ class ClientVision(object):
             # print_div(str(image.image_info.width) + ", " + str(image.image_info.height))
 
 
-    # For Training
+    # Callback functions For TRAINING
     def train_new_visual_func(self,data):
         print_div("Training a new image.. <br>")
         self.loop_client.call_soon(self.async_train_new_visual())
@@ -291,7 +290,6 @@ class ClientVision(object):
     def crop_img_func(self,data):
         loop.call_soon(async_save_image())
 
-
     def crop_img_func(self,data):
         print_div("Crop & Save button is clicked!<br>")
         # Hide cropping modal
@@ -339,7 +337,6 @@ class ClientVision(object):
         # image.data = mat.reshape(mat.size, order='C')
         return img_str,canvas.width, canvas.height
         
-
     async def async_save_image(self,fileName):
         # Convert the cropped image to RR Image type
         img_str,w,h = await self.async_canvas_to_image_str(self.cropped_canvas)
@@ -360,7 +357,6 @@ class ClientVision(object):
         await self.async_update_saved_images()
         await self.async_select_trained_visual()
 
-
     def reset_img_func(self,data):
         self.cropper.reset()
 
@@ -369,7 +365,6 @@ class ClientVision(object):
 
     def rot_p5_img_func(self,data):
         self.cropper.rotate(5)
-
 
     async def async_update_saved_images(self):
         try:
@@ -392,6 +387,8 @@ class ClientVision(object):
                 option.text = str(i) + ": " + str(fileName)
                 self.select_trained_visuals.add(option)
                 i += 1 
+
+            # self.rerender_workspace_blocks()
         except:
             import traceback
             print_div(traceback.format_exc())
@@ -428,7 +425,6 @@ class ClientVision(object):
                 self.img_selected_trained_visual.src = canvas.toDataURL()
                 self.img_selected_trained_visual.width = str(self.w_avatar)
                 self.img_selected_trained_visual.height = str(self.h_avatar)
-
         except:
             import traceback
             print_div(traceback.format_exc())
@@ -437,7 +433,6 @@ class ClientVision(object):
 
         # Update the available saved images list
         # await self.async_update_saved_images()
-
 
     def delete_selected_trained_visual_func(self,data):
         print_div("Delete selected_trained_visual button is clicked!<br>")
@@ -461,7 +456,6 @@ class ClientVision(object):
                 # if sure delete, else ignore and return
                 if resp:
                     await self.plugin_cameraTraining.async_delete_image(file_name,None)
-
         except:
             import traceback
             print_div(traceback.format_exc())
@@ -472,8 +466,84 @@ class ClientVision(object):
         await self.async_update_saved_images()
         await self.async_select_trained_visual()
 
+    def edit_name_selected_trained_visual_func(self,data):
+        print_div("Edit selected_trained_visual name button is clicked!<br>")
+        self.loop_client.call_soon(self.async_edit_name_selected_trained_visual())
 
-       
+    async def async_edit_name_selected_trained_visual(self):
+        # Read the selected image index from the browser
+        index = self.select_trained_visuals.selectedIndex
+        try:
+            if index == -1 or len(self.image_files_lst) == 0:
+                print_div("No available trained images found or not selected")
+
+            else:
+                # if index == -1 and len(self.image_files_lst)> 0:
+                #     print_div("Selecting the first available trained image")
+                #     index = 0
+
+                file_name = self.image_files_lst[index]
+
+                # Ask user: New name for 'file_name'
+                file_name_new = window.prompt("Please enter the new file name (Don't forget .png file extension)", file_name);
+                if (file_name_new != None and file_name_new != ""):
+                    await self.plugin_cameraTraining.async_edit_image_name(file_name,file_name_new, None)
+        except:
+            import traceback
+            print_div(traceback.format_exc())
+            # raise
+            pass
+
+        # Update the available saved images list
+        await self.async_update_saved_images()
+        await self.async_select_trained_visual()
+    # # -------------------------- END: Callback functions -------------------------- #
+
+
+    # # ---------------------------BEGIN: BLOCKLY FUNCTIONS  --------------------------- #
+    # Extension Registration Functions BEGIN
+    def image_files_lst_for_blockly(self):
+        if self.image_files_lst is None or len(self.image_files_lst) < 1:
+            optionss = [["none","NONE"]]
+        else:
+            optionss = [] # Create an empty list
+            for fileName in self.image_files_lst:
+                optionss.append([fileName, fileName.upper()])
+                print_div(str([fileName, fileName.upper()]))
+
+        return optionss
+
+    def camera_node_names_lst_for_blockly(self):
+        if self.camera_node_names_lst is None or len(self.camera_node_names_lst) < 1:
+            optionss = [["none","NONE"]]
+        else:
+            optionss = [] # Create an empty list
+            for nodeName in self.camera_node_names_lst:
+                optionss.append([nodeName, nodeName.upper()])
+                print_div(str([nodeName, nodeName.upper()]))
+
+        return optionss
+    # Extension Registration Functions END
+
+    def rerender_workspace_blocks(self):
+        workspace = Blockly.getMainWorkspace() # get the Blockly workspace
+        all_blocks = workspace.getAllBlocks() # get blockly blocks in the workspace
+        # type_blocks = workspace.getBlocksByType("type")
+        # renderer = Blockly.blockRendering.Renderer.new("rendererr")
+        print_div(len(all_blocks))
+        
+        for block in all_blocks:
+            # renderer.render(block)
+            Blockly.blockRendering.Renderer.render(block)
+
+
+
+
+
+
+    # # ---------------------------END: BLOCKLY FUNCTIONS --------------------------- #
+
+
 async def client_vision():
     # ip_cam = 'localhost'
     # ip_cam = '192.168.50.152'
@@ -485,6 +555,7 @@ async def client_vision():
     try:
         # Run the client as a class to access client data in a more convenient way
         # cli_vision = ClientVision(ip_cam,ip_plugins) 
+        global cli_vision
         cli_vision = ClientVision(ip_plugins) 
 
         

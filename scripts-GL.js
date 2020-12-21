@@ -113,7 +113,7 @@ var config =
                             componentState: {message: 'Debug Output will be shown here..'}
                         },
                         {   
-                            reorderEnabled: false,                                 
+                            // reorderEnabled: false,                                 
                             isClosable: false,
                             title: 'VISION',
                             type:'row',
@@ -121,7 +121,7 @@ var config =
                             [
                                 {
                                     width: 20,
-                                    reorderEnabled: false,
+                                    // reorderEnabled: false,
                                     isClosable: false,
                                     type:'component',
                                     componentName: 'Camera Feedback',
@@ -146,7 +146,7 @@ var config =
                             ]
                         },
                         {
-                            reorderEnabled: false,
+                            // reorderEnabled: false,
                             isClosable: false,
                             title:'BLOCKLY',
                             type:'row',
@@ -154,7 +154,7 @@ var config =
                             [
                                 {
                                     width: 60,
-                                    reorderEnabled: false,
+                                    // reorderEnabled: false,
                                     isClosable: false,
                                     type:'component',
                                     componentName: 'Blockly Workspace',

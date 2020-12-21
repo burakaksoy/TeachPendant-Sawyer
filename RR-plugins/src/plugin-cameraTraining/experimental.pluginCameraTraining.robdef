@@ -13,7 +13,7 @@ object CameraTraining
     function void connect2camera(string url_camera)
     function Image train_new_visual()
 
-    # returns the list of str as saved image names
+    # returns the list of str as saved image file names
     function string{list} saved_images()
 
     # Returns the image of the specified file
