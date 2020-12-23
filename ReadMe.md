@@ -264,8 +264,8 @@ python3 test_sawyer_driver3.py
 *Use Mozilla Firefox Web Browser*
 1. Setup Mozilla Firefox:
 - Inside Firefox, type in `about:config` to the adress bar
-- Modify `Allowinsecurefromhttps` to be `True`,
-- and `privacy.file unique origin` to be `False`.
+- Modify `network.websocket.allowInsecureFromHTTPS` to be `true`,
+- and `privacy.file_unique_origin` to be `false`.
 
 ***Note:***
 *There's memory leak, after a while (e.g. many refreshes on the page) Firefox will be out of memory.*

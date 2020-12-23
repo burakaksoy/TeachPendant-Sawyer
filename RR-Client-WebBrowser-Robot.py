@@ -810,10 +810,11 @@ def stop_robot_func(self):
 async def client_drive():
     # rr+ws : WebSocket connection without encryption
     # ip = '192.168.50.152' # robot service ip
-    # ip = '192.168.50.40' # robot service ip
+    # ip = '192.168.50.19' # robot service ip
     # ip = 'localhost'
     
-    ip_plugins = '192.168.50.152' # plugins ip
+    # ip_plugins = '192.168.50.152' # plugins ip
+    ip_plugins = '192.168.50.19' # plugins ip
     # ip_plugins = '128.113.224.154' # plugins ip lab
     # ip_plugins = 'localhost' # plugins ip
 
@@ -834,15 +835,15 @@ async def client_drive():
     # url_sawyer = 'rr+ws://'+ ip +':58653?service=robot' # Sawyer simulation
     # # url_sawyer = 'rr+ws://'+ ip +':58654?service=robot' # Sawyer simulation in Lab
 
-    # ip = '192.168.50.152' # robot service ip
+    # ip = '192.168.50.19' # robot service ip
     # url_rp260 = 'rr+ws://'+ ip +':23333?service=robot'  # Dr.Wasons's Robot (rp260)
 
-    # ip = '192.168.50.152' # robot service ip
+    # ip = '192.168.50.19' # robot service ip
     # # ip = '128.113.224.12' # robot service ip in Lab
     # url_abb = 'rr+ws://'+ ip +':58655?service=robot'  # ABB
     # # url_abb = 'rr+ws://'+ ip +':58651?service=robot'  # ABB in Lab
 
-    # ip = '192.168.50.152' # robot service ip
+    # ip = '192.168.50.19' # robot service ip
     # # ip = '128.113.224.83' # robot service ip in Lab
     # url_ur5 = 'rr+ws://'+ ip +':58653?service=robot'  # UR5
     # # url_ur5 = 'rr+ws://'+ ip +':58653?service=robot'  # UR5 in Lab
