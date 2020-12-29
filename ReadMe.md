@@ -45,6 +45,10 @@ sudo apt-get install ros-melodic-effort-controllers
 1. Follow the steps at:
 https://docs.microsoft.com/en-us/dotnet/core/install/linux-package-manager-ubuntu-1804
 
+***Note:*** 
+*Or you can use the tar method: 
+https://dotnet.microsoft.com/download/dotnet-core/thank-you/sdk-3.1.404-linux-x64-binaries*
+
 
 ### D. INSTALL AND START THE SAWYER SIMULATOR ###
 
