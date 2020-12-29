@@ -41,8 +41,12 @@ class EmulatedVelocityControl(object):
 
             joint_cmd1.command = q
 
-            self.robot.position_command.PokeOutValue(joint_cmd1)
-            # self._pos_command_wire.SetOutValueAll(joint_cmd1) 
+            try:
+                self.robot.position_command.PokeOutValue(joint_cmd1)
+                # self._pos_command_wire.SetOutValueAll(joint_cmd1) 
+            except:
+                print("Poke failed..")
+                traceback.print_exc()
 
     def enable_velocity_mode(self):
         with self._this_lock:
