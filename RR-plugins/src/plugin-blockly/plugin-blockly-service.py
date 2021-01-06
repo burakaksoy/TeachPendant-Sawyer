@@ -46,7 +46,17 @@ class Blockly_impl(object):
         self.plugin_jogCartesianSpace = None
         self.plugin_savePlayback = None
 
-        self.url_plugins_vision_lst = [] # The order will be :
+        # Create a folder for saved blockly workspaces
+        self.path = "./blockly-savedWorkspaces"
+        self.extension = ".xml"
+
+        if not os.path.exists(self.path):
+            os.makedirs(self.path)
+
+        self.blockly_saved_workspaces()
+
+    def reset_vision(self):
+        self.url_plugins_vision_lst = [] 
         
         self.plugin_cameraFeedback = None
         self.plugin_cameraTraining = None
@@ -93,7 +103,7 @@ class Blockly_impl(object):
         else:
             # Give an error that says the robot plugins are already connected
             print("Vision plugins are already connected to Blockly service! Trying to connect again..")
-            self.reset()
+            self.reset_vision()
             self.connect2plugins_vision(url_plugins_vision_lst)
 
     def blockly_saved_workspaces(self):
@@ -209,7 +219,7 @@ class Blockly_impl(object):
             import traceback
             print(traceback.format_exc())   
     # --- ROBOT related implementation of blockly functions: END -----------   
-    
+
     # --- VISION related implementation of blockly functions: BEGIN -----------
 
     # --- VISION related implementation of blockly functions: END -----------   
