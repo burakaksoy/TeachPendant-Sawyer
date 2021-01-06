@@ -87,13 +87,20 @@ class ClientVision(object):
             self.port_pluginCameraFeedback_service = '8889'
             self.port_pluginCameraTraining_service = '8892'
             self.port_pluginCameraCalibration_service = '8893'
+            self.port_pluginCameraTracking_service = '8898'
+
+            self.port_pluginBlockly_service = '8897'
             
             # Create Service and Plugin URLs 
             # rr+ws : WebSocket connection without encryption
             # self.url_cam = 'rr+ws://' + ip_cam+ ':'+ self.port_webcam_service +'?service=Webcam'
             self.url_plugin_cameraFeedback = 'rr+ws://' + self.ip_plugins + ':' + self.port_pluginCameraFeedback_service + '?service=CameraFeedback'
             self.url_plugin_cameraTraining = 'rr+ws://' + self.ip_plugins + ':' + self.port_pluginCameraTraining_service + '?service=CameraTraining'
-            self.url_plugin_cameraCalibration='rr+ws://'+ self.ip_plugins + ':' + self.port_pluginCameraCalibration_service+'?service=CameraCalibration'
+            self.url_plugin_cameraCalibration = 'rr+ws://'+ self.ip_plugins + ':' + self.port_pluginCameraCalibration_service+'?service=CameraCalibration'
+            self.url_plugin_cameraTracking = 'rr+ws://'+ self.ip_plugins + ':' + self.port_pluginCameraTracking_service+'?service=CameraTracking'
+            
+            self.url_plugin_blockly = 'rr+ws://'+ self.ip_plugins + ':' + self.port_pluginBlockly_service+'?service=Blockly'
+
 
             ## CameraFeedback plugin
             print_div('CameraFeedback plugin is connecting..<br>')
@@ -115,6 +122,25 @@ class ClientVision(object):
             self.plugin_cameraCalibration = await RRN.AsyncConnectService(self.url_plugin_cameraCalibration,None,None,None,None)
             # await self.plugin_cameraCalibration.async_connect2camera(self.url_cam,None)
             print_div('CameraCalibration plugin is connected!<br>')
+
+            ## CameraTracking plugin
+            print_div('CameraTracking plugin is connecting..<br>')
+            self.plugin_cameraTracking = await RRN.AsyncConnectService(self.url_plugin_cameraTracking,None,None,None,None)
+            self.url_plugins_vision_lst = [self.url_plugin_cameraFeedback,self.url_plugin_cameraTraining,self.url_plugin_cameraCalibration]
+            # Make camera tracking connect to all vision plugins as well so that it can reach the inner files of those services with their permit
+            await self.plugin_cameraTracking.async_connect2plugins_vision(self.url_plugins_vision_lst,None) 
+            # Make tracking plugin to connect to all cameras and make it get the all corresponding camera (node) names
+            await self.plugin_cameraTracking.async_connect2all_cameras(self.CameraConnectionURLs,self.camera_node_names_lst,None) 
+            print_div('CameraTrackin plugin is connected!<br>')
+
+            ## Blockly plugin
+            print_div('Blockly plugin is connecting (from Vision)..<br>')
+            self.plugin_blockly = await RRN.AsyncConnectService(self.url_plugin_blockly,None,None,None,None)
+            self.url_plugins_vision_lst = [self.url_plugin_cameraFeedback,self.url_plugin_cameraTraining,self.url_plugin_cameraCalibration,self.url_plugin_cameraTracking ]
+            await self.plugin_blockly.async_connect2plugins_vision(self.url_plugins_vision_lst,None)            
+            print_div('Blockly plugin is connected (from Vision)!<br>')
+
+
             return True
         except:
             import traceback

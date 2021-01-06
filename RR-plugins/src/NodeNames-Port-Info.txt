@@ -8,4 +8,5 @@
 ("experimental.plugin-updateInfo-service", 8895)
 ("experimental.plugin-discovery-service", 8896)
 ("experimental.plugin-blockly-service", 8897)
+("experimental.plugin-cameraTracking-service", 8898)
 
