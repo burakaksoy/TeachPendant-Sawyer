@@ -4,5 +4,11 @@ service experimental.pluginCameraTracking
 stdver 0.10
 
 object CameraTracking
+    # Make camera tracking connect to all vision plugins as well so that it can reach the inner files of those services with their permit
+    function void connect2plugins_vision(string{list} url_plugins_vision_lst)
+
+    # Make tracking plugin to connect to all cameras and make it get the all corresponding camera (node) names
+    function void connect2all_cameras( string{list} camera_connection_urls_lst, string{list} camera_node_names_lst )
+
 
 end

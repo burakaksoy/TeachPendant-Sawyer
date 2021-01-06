@@ -1,3 +1,6 @@
+# THIS FILE IS FOR INFORMATION ONLY
+# CHANGING THIS FILE HAS NO AFFECT ON THE IMPLEMENTED SOFTWARE
+
 ("NodeName", TCP listen port)
 ("experimental.plugin-jogJointSpace-service", 8890)
 ("experimental.plugin-jogCartesianSpace-service", 8891)

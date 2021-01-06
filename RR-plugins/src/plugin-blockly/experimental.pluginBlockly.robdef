@@ -5,7 +5,7 @@ stdver 0.10
 
 object Blockly
     function void connect2plugins(string{list} url_plugins_lst)
-    function void connect2plugins_vision(string{list} url_plugins_lst)
+    function void connect2plugins_vision(string{list} url_plugins_vision_lst)
     function string execute_blockly(string code_text)
 
     # returns the list of str as saved workspace names
