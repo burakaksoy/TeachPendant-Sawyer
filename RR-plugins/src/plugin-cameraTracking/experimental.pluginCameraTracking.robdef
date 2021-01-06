@@ -1,0 +1,8 @@
+#Service to provide interface to RR-webBrowser-plugin-cameraTracking
+service experimental.pluginCameraTracking
+
+stdver 0.10
+
+object CameraTracking
+
+end
