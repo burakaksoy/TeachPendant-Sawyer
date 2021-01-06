@@ -131,6 +131,10 @@ class ClientVision(object):
             await self.plugin_cameraTracking.async_connect2plugins_vision(self.url_plugins_vision_lst,None) 
             # Make tracking plugin to connect to all cameras and make it get the all corresponding camera (node) names
             await self.plugin_cameraTracking.async_connect2all_cameras(self.CameraConnectionURLs,self.camera_node_names_lst,None) 
+
+            obj_img_filename = "example.png"
+            camera_name = "camera1"
+            await self.plugin_cameraTracking.async_find_object_in_img_frame(obj_img_filename, camera_name, None)
             print_div('CameraTrackin plugin is connected!<br>')
 
             ## Blockly plugin
