@@ -17,12 +17,18 @@ from os.path import isfile, join
 
 class Blockly_impl(object):
     def __init__(self):
-        self.url_plugins_lst = [] # The orher will be :
+        self.url_plugins_lst = [] # The order will be :
         # url_plugin_jogJointSpace, url_plugin_jogCartesianSpace, url_plugin_savePlayback
-
         self.plugin_jogJointSpace = None
         self.plugin_jogCartesianSpace = None
         self.plugin_savePlayback = None
+
+        self.url_plugins_vision_lst = [] # The order will be :
+        # url_plugin_cameraFeedback, url_plugin_cameraTraining, url_plugin_cameraCalibration, url_plugin_cameraTracking
+        self.plugin_cameraFeedback = None
+        self.plugin_cameraTraining = None
+        self.plugin_cameraCalibration = None
+        self.plugin_cameraTracking = None
 
         # Create a folder for saved blockly workspaces
         self.path = "./blockly-savedWorkspaces"
@@ -40,6 +46,13 @@ class Blockly_impl(object):
         self.plugin_jogCartesianSpace = None
         self.plugin_savePlayback = None
 
+        self.url_plugins_vision_lst = [] # The order will be :
+        
+        self.plugin_cameraFeedback = None
+        self.plugin_cameraTraining = None
+        self.plugin_cameraCalibration = None
+        self.plugin_cameraTracking = None
+
         # Create a folder for saved blockly workspaces
         self.path = "./blockly-savedWorkspaces"
         self.extension = ".xml"
@@ -53,18 +66,35 @@ class Blockly_impl(object):
         if not self.url_plugins_lst: # if the list is empty
             self.url_plugins_lst = url_plugins_lst # append the new urls
             # self.url_plugins_lst = list(set(self.url_plugins_lst)) # keep only the unique urls, prevent adding the same urls again
+            print("robot plugin urls:")
             print(self.url_plugins_lst)
 
             self.plugin_jogJointSpace = RRN.ConnectService(self.url_plugins_lst[0])
             self.plugin_jogCartesianSpace = RRN.ConnectService(self.url_plugins_lst[1])
             self.plugin_savePlayback = RRN.ConnectService(self.url_plugins_lst[2])
-            
-
         else:
             # Give an error that says the robot plugins are already connected
             print("Robot plugins are already connected to Blockly service! Trying to connect again..")
             self.reset()
             self.connect2plugins(url_plugins_lst)
+
+    def connect2plugins_vision(self, url_plugins_vision_lst):
+        if not self.url_plugins_vision_lst: # if the list is empty
+            self.url_plugins_vision_lst = url_plugins_vision_lst # append the new urls
+            # self.url_plugins_vision_lst = list(set(self.url_plugins_vision_lst)) # keep only the unique urls, prevent adding the same urls again
+            print("vision plugin urls:")
+            print(self.url_plugins_vision_lst)
+
+            self.plugin_cameraFeedback = RRN.ConnectService(self.url_plugins_vision_lst[0])
+            self.plugin_cameraTraining = RRN.ConnectService(self.url_plugins_vision_lst[1])
+            self.plugin_cameraCalibration = RRN.ConnectService(self.url_plugins_vision_lst[2])
+            self.plugin_cameraTracking = RRN.ConnectService(self.url_plugins_vision_lst[3])
+
+        else:
+            # Give an error that says the robot plugins are already connected
+            print("Vision plugins are already connected to Blockly service! Trying to connect again..")
+            self.reset()
+            self.connect2plugins_vision(url_plugins_vision_lst)
 
     def blockly_saved_workspaces(self):
         # self.saved_workspaces_filenames = [f for f in listdir(self.path) if isfile(join(self.path, f))]
@@ -116,6 +146,8 @@ class Blockly_impl(object):
         return output
 
     # implementations of blockly functions
+
+    # --- ROBOT related implementation of blockly functions: BEGIN -----------
     def jog_joint(self, dropdown_joint_selected ,value_degree, speed_perc):
         try:
             self.plugin_jogJointSpace.jog_joint_to_angle(dropdown_joint_selected-1, np.deg2rad(float(value_degree)), float(speed_perc))
@@ -175,8 +207,12 @@ class Blockly_impl(object):
             self.plugin_jogCartesianSpace.jog_cartesian_relative_with_speed(P,R_angles,speed_perc)
         except:
             import traceback
-            print(traceback.format_exc())      
+            print(traceback.format_exc())   
+    # --- ROBOT related implementation of blockly functions: END -----------   
+    
+    # --- VISION related implementation of blockly functions: BEGIN -----------
 
+    # --- VISION related implementation of blockly functions: END -----------   
 
         
 
