@@ -13,5 +13,4 @@ object CameraTracking
     # Get the pose of the given object image in camera image coordinates
     function void find_object_in_img_frame(string obj_img_filename, string camera_name)
 
-
 end
