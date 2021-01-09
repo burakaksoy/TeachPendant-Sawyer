@@ -20,6 +20,11 @@ class CameraTracking_impl(object):
         self.camera_name_url_dict = {} # Dictionary for connected camera urls(key:node names)
         self.camera_objs_dict = {} # Dictionary for connected camera objects(key:node names)
         self.is_cameras_connected = False
+
+        self._image_consts = RRN.GetConstants('com.robotraconteur.image')
+        self._image_info_type = RRN.GetStructureType('com.robotraconteur.image.ImageInfo')
+        self._compressed_image_type = RRN.GetStructureType('com.robotraconteur.image.CompressedImage')
+
         
     def reset_vision_plugins(self):
         self.url_plugins_vision_lst = [] 
@@ -89,7 +94,26 @@ class CameraTracking_impl(object):
         frame2=image.data.reshape([image.image_info.height, image.image_info.width, 3], order='C')
         return frame2
 
-    def find_object_in_img_frame(self, obj_img_filename, camera_name):
+    def _cv_mat_to_compressed_image(self, mat, quality = 100):
+        is_mono = False
+        if (len(mat.shape) == 2 or mat.shape[2] == 1):
+            is_mono = True
+
+        image_info = self._image_info_type()
+        image_info.width =mat.shape[1]
+        image_info.height = mat.shape[0]
+        
+        image_info.step = 0
+        image_info.encoding = self._image_consts["ImageEncoding"]["compressed"]
+        
+        image = self._compressed_image_type()
+        image.image_info = image_info
+        res, encimg = cv2.imencode(".jpg",mat,[int(cv2.IMWRITE_JPEG_QUALITY), quality])
+        assert res, "Could not compress frame!"
+        image.data=encimg
+        return image
+
+    def find_object_in_img_frame(self, obj_img_filename, camera_name, return_result_image):
         if self.is_plugins_connected and self.is_cameras_connected :
             # print("We are in DEBUG")
 
@@ -115,17 +139,40 @@ class CameraTracking_impl(object):
 
             # execute the image detection using opencv
             matcher = TemplateMatchingMultiAngle(img_obj,img_compressed_cam)
-            center, wh, angle = matcher.detect_object()
+            # return_result_image = True
+            if return_result_image:
+                self.center, self.wh, self.angle, self.detection_result_img = matcher.detect_object(return_result_image)
+            else:
+                self.center, self.wh, self.angle = matcher.detect_object()
+                self.detection_result_img = None
             
             # return the pose of the object
             print("the object is found..:")
-            print("center coordinates in img frame: " + str(center))
-            print("(w,h): " + str(wh))
-            print("angle: " + str(angle))
-            
+            print("center coordinates in img frame(x,y): " + str(self.center))
+            print("(w,h): " + str(self.wh))
+            print("angle: " + str(self.angle))
+
+
+            # Pack the results into DetectedObject structure
+            detection_result = RRN.NewStructure("experimental.pluginCameraTracking.DetectedObject")
+            detection_result.width = self.wh[0]
+            detection_result.height = self.wh[1]
+            detection_result.center_x = self.center[0]
+            detection_result.center_y = self.center[1]
+            detection_result.angle = self.angle
+
+            if self.detection_result_img is not None:
+                # Convert opencv result image to compressed RR image
+                detection_result.result_img = self._cv_mat_to_compressed_image(self.detection_result_img, 70)
+            else:
+                detection_result.result_img = None
+
+            return detection_result
+
         else:
             # Give an error message to show that the robot is not connected
             print("Cameras or plugins are not connected to CameraTracking service yet!")
+
 
 
 
@@ -134,7 +181,8 @@ def main():
     with RR.ServerNodeSetup("experimental.plugin-cameraTracking-service", 8898) as node_setup:
 
         # register service type
-        RRN.RegisterServiceTypeFromFile("./experimental.pluginCameraTracking")
+        # RRN.RegisterServiceTypeFromFile("./experimental.pluginCameraTracking")
+        RRN.RegisterServiceTypesFromFiles(['com.robotraconteur.image',"./experimental.pluginCameraTracking"],True)
 
         # create object
         CameraTracking_inst = CameraTracking_impl()

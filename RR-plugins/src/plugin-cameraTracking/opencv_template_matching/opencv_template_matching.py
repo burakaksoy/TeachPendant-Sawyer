@@ -89,7 +89,7 @@ class TemplateMatchingMultiAngle(object):
         # return the edged image
         return edged
 
-    def detect_object(self):
+    def detect_object(self, return_result_image = False):
         self.template = self.auto_canny(self.template_img)
 
         if self.show_visuals:
@@ -151,7 +151,7 @@ class TemplateMatchingMultiAngle(object):
         # gray = cv2.Canny(gray, 50, 200)
         gray = self.auto_canny(gray)
         
-        if self.show_visuals:
+        if self.show_visuals or return_result_image:
             img_copy = self.camera_img.copy() # Copy original image to keep the original just in case
 
         # Loop over the rotated images
@@ -197,7 +197,7 @@ class TemplateMatchingMultiAngle(object):
             (W, H) = (endX-startX ,endY-startY) # Outer ractangle widht and height
             P0 = (startX,startY) # The first corner coordinates in img frame of the outer rectangle
 
-            if self.show_visuals:
+            if self.show_visuals or return_result_image:
                 rr = RRect_center(P0,(W,H),(w,h),angle)     
                 # draw a bounding box around the detected result and display the image
                 cv2.rectangle(img_copy, (startX, startY), (endX, endY), (0, 255, 0), 2)
@@ -219,4 +219,7 @@ class TemplateMatchingMultiAngle(object):
         # print("(w,h): " + str(self.wh))
         # print("angle: " + str(self.angle))
 
-        return self.center, self.wh, self.angle
+        if return_result_image:
+            return self.center, self.wh, self.angle, img_copy
+        else:
+            return self.center, self.wh, self.angle

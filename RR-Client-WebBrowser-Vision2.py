@@ -131,10 +131,26 @@ class ClientVision(object):
             await self.plugin_cameraTracking.async_connect2plugins_vision(self.url_plugins_vision_lst,None) 
             # Make tracking plugin to connect to all cameras and make it get the all corresponding camera (node) names
             await self.plugin_cameraTracking.async_connect2all_cameras(self.CameraConnectionURLs,self.camera_node_names_lst,None) 
+            # obj_img_filename = "example.png"
+            # camera_name = "camera1"
+            # return_result_image = True
+            # detection_result = await self.plugin_cameraTracking.async_find_object_in_img_frame(obj_img_filename, camera_name, return_result_image, None)
+            # print_div(str(detection_result.width) + "<br>")
+            # print_div(str(detection_result.height) + "<br>")
+            # print_div(str(detection_result.center_x) + "<br>")
+            # print_div(str(detection_result.center_y) + "<br>")
+            # print_div(str(detection_result.angle) + "<br>")
 
-            obj_img_filename = "example.png"
-            camera_name = "camera1"
-            await self.plugin_cameraTracking.async_find_object_in_img_frame(obj_img_filename, camera_name, None)
+            # image = detection_result.result_img
+            # encoded = str(base64.b64encode(image.data))[2:-1]
+            # # encoded = str(base64.standard_b64encode(image.data))
+            # # print_div(encoded)
+
+            # self.img_feedback.src = "data:image/jpg;base64," + encoded
+            # # print_div(self.img_feedback.src)
+            # self.img_feedback.width= str(image.image_info.width)
+            # self.img_feedback.height= str(image.image_info.height)
+            # # print_div(str(image.image_info.width) + ", " + str(image.image_info.height))
             print_div('CameraTrackin plugin is connected!<br>')
 
             ## Blockly plugin
