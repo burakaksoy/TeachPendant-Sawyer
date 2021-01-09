@@ -205,11 +205,17 @@ class ClientVision(object):
         self.button_delete_selected_trained_visual = document.getElementById("delete_selected_trained_visual_btn")
         self.button_edit_name_selected_trained_visual = document.getElementById("edit_name_selected_trained_visual_btn")
 
+        # For Object Detection Tracking
+        self.button_test_detection = document.getElementById("test_detection_btn")
+        self.img_test_detection_result = document.getElementById("test_detection_result_image")
+
+
     def define_event_listeners(self):
         print_div("Event Listeners are being created.. <br>")
         # For Feedback
         self.available_cams_list.addEventListener("change", self.select_available_cam_func)
 
+        
         # For Training
         self.button_train_new_visual.addEventListener("click", self.train_new_visual_func)
         
@@ -225,6 +231,10 @@ class ClientVision(object):
         self.select_trained_visuals.addEventListener("change", self.select_trained_visual_func)
         self.button_delete_selected_trained_visual.addEventListener("click", self.delete_selected_trained_visual_func)
         self.button_edit_name_selected_trained_visual.addEventListener("click", self.edit_name_selected_trained_visual_func)
+
+
+        # For Object Detection Tracking
+        self.button_test_detection.addEventListener("click", self.test_detection_func)
 
     # # -------------------------- BEGIN: Callback functions -------------------------- #
     # gets the selected index and return the camera url from the given camera urls
@@ -543,6 +553,35 @@ class ClientVision(object):
         # Update the available saved images list
         await self.async_update_saved_images()
         await self.async_select_trained_visual()
+
+    # Callback functions For OBJECT DETECTION TRACKING
+    def test_detection_func(self,data):
+        print_div("test_detection button is clicked!<br>")
+        self.loop_client.call_soon(self.async_test_detection())
+
+    async def async_test_detection(self):
+        obj_img_filename = "example.png"
+        camera_name = "camera1"
+        return_result_image = True
+        detection_result = await self.plugin_cameraTracking.async_find_object_in_img_frame(obj_img_filename, camera_name, return_result_image, None)
+        print_div(str(detection_result.width) + "<br>")
+        print_div(str(detection_result.height) + "<br>")
+        print_div(str(detection_result.center_x) + "<br>")
+        print_div(str(detection_result.center_y) + "<br>")
+        print_div(str(detection_result.angle) + "<br>")
+
+        image = detection_result.result_img
+        encoded = str(base64.b64encode(image.data))[2:-1]
+        # encoded = str(base64.standard_b64encode(image.data))
+        # print_div(encoded)
+
+        self.img_test_detection_result.src = "data:image/jpg;base64," + encoded
+        # print_div(self.img_test_detection_result.src)
+        self.img_test_detection_result.width= str(image.image_info.width)
+        self.img_test_detection_result.height= str(image.image_info.height)
+        # print_div(str(image.image_info.width) + ", " + str(image.image_info.height))
+
+
     # # -------------------------- END: Callback functions -------------------------- #
 
 
