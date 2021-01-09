@@ -122,6 +122,12 @@ table#table_TrainVision td{
   /*display:block;  */
 }
 
+table#table_CameraTracking td{
+  text-align: left; 
+  margin:auto;  
+  /*display:block;  */
+}
+
 /*table#table_JointSpaceControl td {
   width: 16.666666% ;
 }*/

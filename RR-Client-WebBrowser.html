@@ -436,6 +436,56 @@
             </table>
         </template>
 
+        <!-- Camera Tracking Area Template -->
+        <template id="template_CameraTracking"> 
+            <table id="table_CameraTracking" border="1"  > <!-- CELLPADDING="4" CELLSPACING="3"> -->
+                <tr> 
+                    <td>Selected Camera: 
+                        <div align="left" id="print_div_test_selected_camera"></div>
+                    </td>
+                </tr>
+                <tr> 
+                    <td>Selected Visual: 
+                        <div align="left" id="print_div_test_selected_visual"></div>
+                    </td>
+                </tr>
+                <tr> 
+                    <td > <button id="test_detection_btn" type="button" style="width: 100%;">Test Detection</button> </td>         
+                </tr>
+                <tr> 
+                    <td>
+                        <!-- <canvas id="camera_image" width="320" height="240"></canvas> -->
+                        <img id="test_detection_result_image">
+                    </td>          
+                </tr>
+                <tr> 
+                    <td>Selected Camera Image Size: 
+                        <div align="left" id="print_div_test_selected_camera_img_size"></div>
+                    </td>
+                </tr>
+                <tr> 
+                    <td>Selected Visual Image Size: 
+                        <div align="left" id="print_div_test_selected_visual_img_size"></div>
+                    </td>
+                </tr>
+                <tr> 
+                    <td>Detected Object Size: 
+                        <div align="left" id="print_div_test_detected_obj_size"></div>
+                    </td>
+                </tr>
+                <tr> 
+                    <td>Detected Object Center Coordinates in Camera Image Frame (x,y): 
+                        <div align="left" id="print_div_test_detected_obj_coordinates"></div>
+                    </td>
+                </tr>
+                <tr> 
+                    <td>Detected Object Rotation Angle (+: CCW, -: CW): 
+                        <div align="left" id="print_div_test_detected_obj_angle"></div>
+                    </td>
+                </tr>
+            </table>
+        </template>
+
         <!-- print_div for debug texts -->
         <template id="template_print_div">
             <div id="print_div"></div> 
