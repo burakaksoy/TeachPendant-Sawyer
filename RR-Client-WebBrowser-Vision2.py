@@ -432,7 +432,7 @@ class ClientVision(object):
                 self.select_trained_visuals.add(option)
                 i += 1 
 
-            # self.rerender_workspace_blocks()
+            self.rerender_workspace_blocks()
         except:
             import traceback
             print_div(traceback.format_exc())
@@ -624,15 +624,15 @@ class ClientVision(object):
     # Extension Registration Functions END
 
     def rerender_workspace_blocks(self):
-        workspace = Blockly.getMainWorkspace() # get the Blockly workspace
-        all_blocks = workspace.getAllBlocks() # get blockly blocks in the workspace
-        # type_blocks = workspace.getBlocksByType("type")
-        # renderer = Blockly.blockRendering.Renderer.new("rendererr")
-        print_div(len(all_blocks))
+        # This function refreshes the blockly workspace but highly inefficiently.
+        # Further info: https://github.com/google/blockly/issues/3941
         
-        for block in all_blocks:
-            # renderer.render(block)
-            Blockly.blockRendering.Renderer.render(block)
+        workspace = Blockly.getMainWorkspace() # get the Blockly workspace
+        workspace_xml = Blockly.Xml.workspaceToDom(workspace)
+        workspace.clear()
+        Blockly.Xml.domToWorkspace(workspace_xml, workspace)
+        workspace.refreshToolboxSelection();
+
 
 
 
