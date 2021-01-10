@@ -606,8 +606,9 @@ class ClientVision(object):
         else:
             optionss = [] # Create an empty list
             for fileName in self.image_files_lst:
-                optionss.append([fileName, fileName.upper()])
-                print_div(str([fileName, fileName.upper()]))
+                # optionss.append([fileName, fileName.upper()])
+                optionss.append([fileName, fileName])
+                # print_div(str([fileName, fileName.upper()]))
 
         return optionss
 
@@ -617,8 +618,9 @@ class ClientVision(object):
         else:
             optionss = [] # Create an empty list
             for nodeName in self.camera_node_names_lst:
-                optionss.append([nodeName, nodeName.upper()])
-                print_div(str([nodeName, nodeName.upper()]))
+                # optionss.append([nodeName, nodeName.upper()])
+                optionss.append([nodeName, nodeName])
+                # print_div(str([nodeName, nodeName.upper()]))
 
         return optionss
     # Extension Registration Functions END
@@ -626,7 +628,7 @@ class ClientVision(object):
     def rerender_workspace_blocks(self):
         # This function refreshes the blockly workspace but highly inefficiently.
         # Further info: https://github.com/google/blockly/issues/3941
-        
+
         workspace = Blockly.getMainWorkspace() # get the Blockly workspace
         workspace_xml = Blockly.Xml.workspaceToDom(workspace)
         workspace.clear()

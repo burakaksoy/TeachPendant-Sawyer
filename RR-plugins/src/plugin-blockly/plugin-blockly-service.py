@@ -5,6 +5,7 @@ from RobotRaconteur.Client import *     #import RR client library to connect
 import numpy as np
 import time
 
+import general_robotics_toolbox as rox #mainly used to define the pose(position-orientaion) related block functionalities
 
 import os
 from os import listdir
@@ -221,6 +222,73 @@ class Blockly_impl(object):
     # --- ROBOT related implementation of blockly functions: END -----------   
 
     # --- VISION related implementation of blockly functions: BEGIN -----------
+
+    def camera_get_object_pose_z_required(self, dropdown_trained_objects, dropdown_cams, value_z_distance ):
+        try:
+            # Execute the object detection in camera frame
+            return_result_image = False
+            detection_result = self.plugin_cameraTracking.find_object_in_img_frame(dropdown_trained_objects, dropdown_cams, return_result_image)
+
+            print(str(detection_result.width) + "," + str(detection_result.height))
+            print(str(detection_result.center_x) + "," + str(detection_result.center_y))
+            print(str(detection_result.angle) + " degrees")
+
+            # detection_result.width
+            # detection_result.height
+            # detection_result.center_x
+            # detection_result.center_y
+            # detection_result.angle
+
+            # Find the corresponding world pose of the detected pose in camera frame
+            # TODO
+
+            # Return the detected pose in camera frame with given z distance to camera
+            # TODO
+            return str([detection_result.center_x, detection_result.center_y, detection_result.angle])
+        except:
+            import traceback
+            print(traceback.format_exc())  
+
+
+    def camera_get_object_pose_z_not_required(self, dropdown_trained_objects, dropdown_cams):
+        try:
+            # Execute the object detection in camera frame
+            return_result_image = False
+            detection_result = self.plugin_cameraTracking.find_object_in_img_frame(dropdown_trained_objects, dropdown_cams, return_result_image)
+
+            print(str(detection_result.width) + "," + str(detection_result.height))
+            print(str(detection_result.center_x) + "," + str(detection_result.center_y))
+            print(str(detection_result.angle) + " degrees")
+
+            # detection_result.width
+            # detection_result.height
+            # detection_result.center_x
+            # detection_result.center_y
+            # detection_result.angle
+
+            # Find the corresponding world pose of the detected pose in camera frame
+            # TODO
+
+            # Find Z distance from the 3D information from camera
+            # TODO
+
+            # Return the detected pose in camera frame with given z distance to camera
+            # TODO
+            return str([detection_result.center_x, detection_result.center_y, detection_result.angle])
+        except:
+            import traceback
+            print(traceback.format_exc()) 
+
+    def camera_transform_pose_to_robot(self, value_pose_in_cam, dropdown_cams):
+        try:
+            # A pose is given in the camera frame.
+            # Find the corresponding pose in the robot base frame.   
+            # TODO
+
+
+        except:
+            import traceback
+            print(traceback.format_exc()) 
 
     # --- VISION related implementation of blockly functions: END -----------   
 

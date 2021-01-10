@@ -212,29 +212,29 @@ Blockly.defineBlocksWithJsonArray([{
 }]);
 
 Blockly.Python['camera_get_object_pose_z_required'] = function(block) {
-  var dropdown_trained_objects = block.getFieldValue('TRAINED_OBJECTS');
-  var dropdown_cams = block.getFieldValue('CAMS');
+  var dropdown_trained_objects = block.getFieldValue('OPTIONS_IMAGES');
+  var dropdown_cams = block.getFieldValue('OPTIONS_CAMS');
   var value_z_distance = Blockly.Python.valueToCode(block, 'Z_DISTANCE', Blockly.Python.ORDER_ATOMIC);
   // TODO: Assemble Python into code variable.
-  var code = '...';
+  var code = 'self.camera_get_object_pose_z_required("'+ dropdown_trained_objects +'","'+ dropdown_cams +'",'+ value_z_distance +')';
   // TODO: Change ORDER_NONE to the correct strength.
   return [code, Blockly.Python.ORDER_NONE];
 };
 
 Blockly.Python['camera_get_object_pose_z_not_required'] = function(block) {
-  var dropdown_trained_objects = block.getFieldValue('TRAINED_OBJECTS');
-  var dropdown_cams = block.getFieldValue('CAMS');
+  var dropdown_trained_objects = block.getFieldValue('OPTIONS_IMAGES');
+  var dropdown_cams = block.getFieldValue('OPTIONS_CAMS');
   // TODO: Assemble Python into code variable.
-  var code = '...';
+  var code = 'self.camera_get_object_pose_z_not_required("'+ dropdown_trained_objects +'","'+ dropdown_cams +'")';
   // TODO: Change ORDER_NONE to the correct strength.
   return [code, Blockly.Python.ORDER_NONE];
 };
 
 Blockly.Python['camera_transform_pose_to_robot'] = function(block) {
   var value_pose_in_cam = Blockly.Python.valueToCode(block, 'POSE_IN_CAM', Blockly.Python.ORDER_ATOMIC);
-  var dropdown_cams = block.getFieldValue('CAMS');
+  var dropdown_cams = block.getFieldValue('OPTIONS_CAMS');
   // TODO: Assemble Python into code variable.
-  var code = '...';
+  var code = 'self.camera_transform_pose_to_robot('+  value_pose_in_cam + ',"'+ dropdown_cams +'")';
   // TODO: Change ORDER_NONE to the correct strength.
   return [code, Blockly.Python.ORDER_NONE];
 };
