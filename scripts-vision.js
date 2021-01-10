@@ -8,7 +8,41 @@ function print_div(message)
     var $textarea = $("#print_div").parent();
     $textarea.scrollTop($textarea[0].scrollHeight);
 
-}    
+}
+
+function print_div_test_selected_camera(message)
+{
+    $("#print_div_test_selected_camera").html(message)
+}
+
+function print_div_test_selected_visual(message)
+{
+    $("#print_div_test_selected_visual").html(message)
+}
+
+function print_div_test_selected_camera_img_size(message)
+{
+    $("#print_div_test_selected_camera_img_size").html(message)
+}   
+
+function print_div_test_selected_visual_img_size(message)
+{
+    $("#print_div_test_selected_visual_img_size").html(message)
+}   
+
+function print_div_test_detected_obj_size(message)
+{
+    $("#print_div_test_detected_obj_size").html(message)
+}
+function print_div_test_detected_obj_coordinates(message)
+{
+    $("#print_div_test_detected_obj_coordinates").html(message)
+}   
+function print_div_test_detected_obj_angle(message)
+{
+    $("#print_div_test_detected_obj_angle").html(message)
+}         
+
 
 function run_vision(){
     run_test_vision();

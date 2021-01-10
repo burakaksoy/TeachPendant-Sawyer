@@ -2,6 +2,14 @@
 from js import self as window
 from js import document
 from js import print_div
+from js import print_div_test_selected_camera
+from js import print_div_test_selected_visual
+from js import print_div_test_selected_camera_img_size
+from js import print_div_test_selected_visual_img_size
+from js import print_div_test_detected_obj_size
+from js import print_div_test_detected_obj_coordinates
+from js import print_div_test_detected_obj_angle
+
 from js import ImageData
 from RobotRaconteur.Client import *
 import numpy as np
@@ -131,26 +139,6 @@ class ClientVision(object):
             await self.plugin_cameraTracking.async_connect2plugins_vision(self.url_plugins_vision_lst,None) 
             # Make tracking plugin to connect to all cameras and make it get the all corresponding camera (node) names
             await self.plugin_cameraTracking.async_connect2all_cameras(self.CameraConnectionURLs,self.camera_node_names_lst,None) 
-            # obj_img_filename = "example.png"
-            # camera_name = "camera1"
-            # return_result_image = True
-            # detection_result = await self.plugin_cameraTracking.async_find_object_in_img_frame(obj_img_filename, camera_name, return_result_image, None)
-            # print_div(str(detection_result.width) + "<br>")
-            # print_div(str(detection_result.height) + "<br>")
-            # print_div(str(detection_result.center_x) + "<br>")
-            # print_div(str(detection_result.center_y) + "<br>")
-            # print_div(str(detection_result.angle) + "<br>")
-
-            # image = detection_result.result_img
-            # encoded = str(base64.b64encode(image.data))[2:-1]
-            # # encoded = str(base64.standard_b64encode(image.data))
-            # # print_div(encoded)
-
-            # self.img_feedback.src = "data:image/jpg;base64," + encoded
-            # # print_div(self.img_feedback.src)
-            # self.img_feedback.width= str(image.image_info.width)
-            # self.img_feedback.height= str(image.image_info.height)
-            # # print_div(str(image.image_info.width) + ", " + str(image.image_info.height))
             print_div('CameraTrackin plugin is connected!<br>')
 
             ## Blockly plugin
@@ -560,27 +548,52 @@ class ClientVision(object):
         self.loop_client.call_soon(self.async_test_detection())
 
     async def async_test_detection(self):
-        obj_img_filename = "example.png"
-        camera_name = "camera1"
-        return_result_image = True
-        detection_result = await self.plugin_cameraTracking.async_find_object_in_img_frame(obj_img_filename, camera_name, return_result_image, None)
-        print_div(str(detection_result.width) + "<br>")
-        print_div(str(detection_result.height) + "<br>")
-        print_div(str(detection_result.center_x) + "<br>")
-        print_div(str(detection_result.center_y) + "<br>")
-        print_div(str(detection_result.angle) + "<br>")
+        try:
+            # Print selected camera name
+            index = self.available_cams_list.selectedIndex
 
-        image = detection_result.result_img
-        encoded = str(base64.b64encode(image.data))[2:-1]
-        # encoded = str(base64.standard_b64encode(image.data))
-        # print_div(encoded)
+            if index == -1 or len(self.available_cams_list) == 0:
+                print_div_test_selected_camera("No available camera is found or none selected")
+            else:
+                camera_name = self.camera_node_names_lst[index]
+                print_div_test_selected_camera(camera_name)
 
-        self.img_test_detection_result.src = "data:image/jpg;base64," + encoded
-        # print_div(self.img_test_detection_result.src)
-        self.img_test_detection_result.width= str(image.image_info.width)
-        self.img_test_detection_result.height= str(image.image_info.height)
-        # print_div(str(image.image_info.width) + ", " + str(image.image_info.height))
+            # Print Selected visual file name
+            index = self.select_trained_visuals.selectedIndex
+            if index == -1 or len(self.image_files_lst) == 0:
+                print_div_test_selected_visual("No available trained images found or not selected")
+            else:
+                obj_img_filename = self.image_files_lst[index]
+                print_div_test_selected_visual(obj_img_filename)
 
+            # Execute the object detection
+            return_result_image = True
+            detection_result = await self.plugin_cameraTracking.async_find_object_in_img_frame(obj_img_filename, camera_name, return_result_image, None)
+
+            #Show the results
+            image = detection_result.result_img
+            encoded = str(base64.b64encode(image.data))[2:-1]
+            # encoded = str(base64.standard_b64encode(image.data))
+            # print_div(encoded)
+
+            self.img_test_detection_result.src = "data:image/jpg;base64," + encoded
+            # print_div(self.img_test_detection_result.src)
+            self.img_test_detection_result.width= str(image.image_info.width)
+            self.img_test_detection_result.height= str(image.image_info.height)
+            # print_div(str(image.image_info.width) + ", " + str(image.image_info.height))
+
+            # print_div_test_selected_camera_img_size("")
+            # print_div_test_selected_visual_img_size("")
+            print_div_test_detected_obj_size(str(detection_result.width) + "," + str(detection_result.height))
+            print_div_test_detected_obj_coordinates(str(detection_result.center_x) + "," + str(detection_result.center_y))
+            print_div_test_detected_obj_angle(str(detection_result.angle) + " degrees")
+
+        except:
+            import traceback
+            print_div(traceback.format_exc())
+            # raise
+            pass
+        
 
     # # -------------------------- END: Callback functions -------------------------- #
 

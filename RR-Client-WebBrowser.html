@@ -440,6 +440,9 @@
         <template id="template_CameraTracking"> 
             <table id="table_CameraTracking" border="1"  > <!-- CELLPADDING="4" CELLSPACING="3"> -->
                 <tr> 
+                    <td > <button id="test_detection_btn" type="button" style="width: 100%;">Test Detection</button> </td>         
+                </tr>
+                <tr> 
                     <td>Selected Camera: 
                         <div align="left" id="print_div_test_selected_camera"></div>
                     </td>
@@ -450,15 +453,12 @@
                     </td>
                 </tr>
                 <tr> 
-                    <td > <button id="test_detection_btn" type="button" style="width: 100%;">Test Detection</button> </td>         
-                </tr>
-                <tr> 
                     <td>
                         <!-- <canvas id="camera_image" width="320" height="240"></canvas> -->
                         <img id="test_detection_result_image">
                     </td>          
                 </tr>
-                <tr> 
+                <!-- <tr> 
                     <td>Selected Camera Image Size: 
                         <div align="left" id="print_div_test_selected_camera_img_size"></div>
                     </td>
@@ -467,9 +467,9 @@
                     <td>Selected Visual Image Size: 
                         <div align="left" id="print_div_test_selected_visual_img_size"></div>
                     </td>
-                </tr>
+                </tr> -->
                 <tr> 
-                    <td>Detected Object Size: 
+                    <td>Detected Object Size(width,height): 
                         <div align="left" id="print_div_test_detected_obj_size"></div>
                     </td>
                 </tr>
