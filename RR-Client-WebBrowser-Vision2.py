@@ -318,8 +318,8 @@ class ClientVision(object):
             
             # Show the modal
             self.modal.style.display = "block"
-            # Hide GL splitters
-            self.disable_GL_splitters()
+            # # Hide GL splitters
+            # self.disable_GL_splitters()
 
             self.cropper = Cropper.new(self.img_training, {"viewMode":2}) # TODO options, Done
 
@@ -328,21 +328,21 @@ class ClientVision(object):
             print_div(traceback.format_exc())
             # raise
 
-    def enable_GL_splitters(self):
-        for splitter in self.Gl_lm_splitters:
-            # Set back to default GL splitters
-            splitter.style.visibility = ""
+    # def enable_GL_splitters(self):
+    #     for splitter in self.Gl_lm_splitters:
+    #         # Set back to default GL splitters
+    #         splitter.style.visibility = ""
 
-    def disable_GL_splitters(self):
-        for splitter in self.Gl_lm_splitters:
-            # Hide GL splitters
-            splitter.style.visibility = "hidden"        
+    # def disable_GL_splitters(self):
+    #     for splitter in self.Gl_lm_splitters:
+    #         # Hide GL splitters
+    #         splitter.style.visibility = "hidden"        
 
     def close_modal_func(self,data):
         # Hide the modal
         self.modal.style.display = "none"
-        # Set back to default GL splitters
-        self.enable_GL_splitters()
+        # # Set back to default GL splitters
+        # self.enable_GL_splitters()
 
         if self.cropper != None:
             self.cropper.destroy()
@@ -355,8 +355,8 @@ class ClientVision(object):
         print_div("Crop & Save button is clicked!<br>")
         # Hide cropping modal
         self.modal.style.display = "none"
-        # Set back to default GL splitters
-        self.enable_GL_splitters()
+        # # Set back to default GL splitters
+        # self.enable_GL_splitters()
         
         # # Get the cropped image avatar
         # self.cropped_canvas_avatar = self.cropper.getCroppedCanvas({"width": self.w_avatar,"height": self.h_avatar}) 
