@@ -48,7 +48,7 @@ var config =
     },
     dimensions: 
     {
-        borderWidth: 5,
+        borderWidth: 15,
         minItemHeight: 10,
         minItemWidth: 10,
         headerHeight: 30,

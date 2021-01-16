@@ -30,6 +30,14 @@
  font-weight: bold;
 }
 
+/*.lm_splitter { visibility: hidden; pointer-events: none; }*/
+/*.lm_splitter.lm_horizontal{
+  width: 15px;
+}
+.lm_splitter.lm_vertical{
+  height: 15px;
+}*/
+
 h2{
   font: 14px Arial, sans-serif;
   color:#fff;
