@@ -10,6 +10,7 @@ function print_div(message)
 
 }
 
+// FOR OBJECT DETECTION TEST
 function print_div_test_selected_camera(message)
 {
     $("#print_div_test_selected_camera").html(message)
@@ -42,6 +43,35 @@ function print_div_test_detected_obj_angle(message)
 {
     $("#print_div_test_detected_obj_angle").html(message)
 }         
+
+// FOR CAMERA CALIBRATION
+function print_div_selected_camera_matrix(message)
+{
+    $("#print_div_selected_camera_matrix").html(message)
+} 
+function print_div_selected_camera_distortion_coefficients(message)
+{
+    $("#print_div_selected_camera_distortion_coefficients").html(message)
+} 
+function print_div_selected_camera_RnT(message)
+{
+    $("#print_div_selected_camera_RnT").html(message)
+} 
+function print_div_selected_camera_calibration_error(message)
+{
+    $("#print_div_selected_camera_calibration_error").html(message)
+} 
+
+function print_div_num_captured_calibration_imgs(message)
+{
+    $("#print_div_num_captured_calibration_imgs").html("Currently "+ message + " images are captured.")
+}
+
+function clear_div_modal_body_CameraCalibration(){
+    print_div("clearing modal<br>")
+    $("#modal_body_CameraCalibration div").empty()
+}
+
 
 
 function run_vision(){

@@ -373,7 +373,8 @@
                     <td COLSPAN="2"> <button id="train_new_visual_btn" type="button" style="width: 100%;">Train New Visual</button> </td>         
                 </tr>
             </table>
-            <div id="myModal" class="modal">
+
+            <div id="modal_TrainVision" class="modal">
 
               <!-- Modal content -->
               <div class="modal-content">
@@ -412,28 +413,108 @@
         <!-- Camera Calibration Area Template -->
         <template id="template_CameraCalibration"> 
             <table id="table_CameraCalibration" border="1"  > <!-- CELLPADDING="4" CELLSPACING="3"> -->
+                <col><col>
                 <tr> 
-                    <td>Selected Camera: </td>   
+                    <td colspan = "2" align="left">
+                        <form>
+                            <label for="calibrated_cameras">Calibrated Cameras:</label>
+                            <select name="calibrated_cameras" id="calibrated_cameras">
+                                <!-- <option value="cam0">Camera_00</option> -->
+                            </select>
+                        </form>
+                    </td>          
+                </tr>
+
+                <tr> 
+                    <td align="right">Camera Matrix: </td>   
                     <td>
-                        <div align="left" id="print_div_selected_camera"></div>
+                        <div align="left" id="print_div_selected_camera_matrix"></div>
                     </td>       
                 </tr>
                 <tr> 
-                    <td>Internal Parameters: </td>   
+                    <td align="right">Distortion Coefficients: </td>   
                     <td>
-                        <div align="left" id="print_div_selected_camera_internal_params"></div>
+                        <div align="left" id="print_div_selected_camera_distortion_coefficients"></div>
                     </td>       
                 </tr>
                 <tr> 
-                    <td>External Parameters: </td>   
+                    <td align="right">[R|t] of the 1st Calibration Pattern: </td>   
                     <td>
-                        <div align="left" id="print_div_selected_camera_external_params"></div>
+                        <div align="left" id="print_div_selected_camera_RnT"></div>
                     </td>       
                 </tr>
                 <tr> 
-                    <td COLSPAN="2"> <button id="camera_calibration_btn" type="button" style="width: 100%;">Calibrate</button> </td>         
+                    <td align="right">RMS re-projection error: </td>   
+                    <td>
+                        <div align="left" id="print_div_selected_camera_calibration_error"></div>
+                    </td>          
+                </tr>
+                <tr>
+                    <td> <button id="delete_calibration_btn" type="button" style="width: 100%;">Delete</button> </td> 
+                    <td> <button id="calibrate_camera_btn" type="button" style="width: 100%;">Calibrate New</button> </td>         
                 </tr>
             </table>
+
+            <div id="modal_CameraCalibration" class="modal">
+
+              <!-- Modal content -->
+              <div class="modal-content">
+
+                <div class="modal-header">
+                  <span id="span_close_calibration" class="close">&times;</span>
+                  <h2>Calibrate the Camera with a Checker Board </h2>
+                </div>
+
+                <div class="modal-body" id="modal_body_CameraCalibration">
+                  <p>You need to use a planar Checker Board as the calibration object</p>
+                  <p>If the selected camera is already calibrated, it will be overwritten. Otherwise a new calibration will be added.</p>
+                  <table id="table_calibration_modal" border="1"> <!-- CELLPADDING="4" CELLSPACING="3"> -->
+                      <col width="80%"><col width="20%"> <!-- It does not work, see css -->
+                      <tr> 
+                          <td align="left">Please enter the Number of Squares in the WIDTH of the checker board: </td>   
+                          <td>
+                              <input type="number" id="width_checkerboard_input" placeholder="width squares" value="8" min="1" style="font-size: 25px;">
+                          </td>       
+                      </tr>
+                      <tr> 
+                          <td align="left">Please enter the Number of Squares in the HEIGHT of the checker board: </td>   
+                          <td>
+                              <input type="number" id="height_checkerboard_input" placeholder="height squares" value="7" min="1" style="font-size: 25px;">
+                          </td>       
+                      </tr>
+                      <tr> 
+                          <td align="left">Please enter one side length of the squares (in millimeters): </td>   
+                          <td> 
+                            <input type="number" id="square_size_input" placeholder="one side length of the squares (mm)" value="29.0" min="0" step="0.5" style="font-size: 25px;"> 
+                          </td>     
+                      </tr>
+                      <tr> 
+                          <td colspan = "2" align="left">Now capture checkerboard images from different positions and orientations </td>        
+                      </tr>
+                      <tr> 
+                          <td align="left">For better results, at least 10 images are needed. </td>   
+                          <td> <button id="capture_img_calibration_btn" type="button" style="width: 100%;">Capture Image</button> </td>      
+                      </tr>
+                      <tr> 
+                          <td>
+                              <img id="calibration_camera_image"></img>
+                          </td>   
+                          <td >
+                            <div align="center" id="print_div_num_captured_calibration_imgs"></div> 
+                          </td>  
+                      </tr>
+                  </table>
+                </div>
+
+                <div class="modal-footer">
+                  <!-- <h2>Modal Footer</h2> -->
+                  <button type="button" id="btn_close_calibration">Cancel</button>
+                  <button type="button" id="btn_calibrate_n_save">Calibrate & Save</button>
+                </div>
+
+              </div>
+
+            </div>
         </template>
 
         <!-- Camera Tracking Area Template -->

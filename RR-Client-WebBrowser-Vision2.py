@@ -10,6 +10,13 @@ from js import print_div_test_detected_obj_size
 from js import print_div_test_detected_obj_coordinates
 from js import print_div_test_detected_obj_angle
 
+from js import print_div_selected_camera_matrix
+from js import print_div_selected_camera_distortion_coefficients
+from js import print_div_selected_camera_RnT
+from js import print_div_num_captured_calibration_imgs
+from js import print_div_selected_camera_calibration_error
+from js import clear_div_modal_body_CameraCalibration
+
 from js import ImageData
 from RobotRaconteur.Client import *
 import numpy as np
@@ -35,6 +42,7 @@ class ClientVision(object):
         register_vision_extensions_blockly()
         self.camera_node_names_lst = None # For storing camera names
         self.image_files_lst = None # For storing trained image file names
+        self.calibration_files_lst = None # For storing the camera calibration file names 
 
         # RRN.RegisterServiceTypesFromFiles(['com.robotraconteur.image'],True)
         # self._image_consts = RRN.GetConstants('com.robotraconteur.image')
@@ -128,7 +136,9 @@ class ClientVision(object):
             ## CameraCalibration plugin
             print_div('CameraCalibration plugin is connecting..<br>')
             self.plugin_cameraCalibration = await RRN.AsyncConnectService(self.url_plugin_cameraCalibration,None,None,None,None)
-            # await self.plugin_cameraCalibration.async_connect2camera(self.url_cam,None)
+            await self.plugin_cameraCalibration.async_connect2camera(self.url_cam,None)
+            await self.async_update_calibrated_cameras()
+            await self.async_select_calibrated_camera()
             print_div('CameraCalibration plugin is connected!<br>')
 
             ## CameraTracking plugin
@@ -169,16 +179,16 @@ class ClientVision(object):
         
     def define_element_references(self):
         print_div("HTML Element references are being created..<br>")
-        # For Feedback
+        # For Camera Feedback
         self.available_cams_list = document.getElementById("available_cams")
         self.img_feedback = document.getElementById("camera_image")
 
-        # For Training
+        # For Visual (Object) Training
         self.button_train_new_visual = document.getElementById("train_new_visual_btn")
         self.img_selected_trained_visual = document.getElementById("selected_trained_visual")
 
         self.img_training = document.getElementById("training_image")
-        self.modal = document.getElementById("myModal")
+        self.modal_TrainVision = document.getElementById("modal_TrainVision")
         self.Gl_lm_splitters = document.getElementsByClassName("lm_splitter")
 
         self.span_close = document.getElementById("span_close")
@@ -197,6 +207,26 @@ class ClientVision(object):
         # For Object Detection Tracking
         self.button_test_detection = document.getElementById("test_detection_btn")
         self.img_test_detection_result = document.getElementById("test_detection_result_image")
+
+        # For Camera Calibration
+        self.select_calibrated_cameras = document.getElementById("calibrated_cameras")
+
+        self.button_calibrate_camera = document.getElementById("calibrate_camera_btn")
+        self.button_delete_calibration = document.getElementById("delete_calibration_btn")
+
+        self.modal_CameraCalibration = document.getElementById("modal_CameraCalibration")
+        self.span_close_calibration = document.getElementById("span_close_calibration")
+        self.button_close_calibration = document.getElementById("btn_close_calibration")
+
+        self.input_width_checkerboard = document.getElementById("width_checkerboard_input")
+        self.input_height_checkerboard = document.getElementById("height_checkerboard_input")
+        self.input_square_size = document.getElementById("square_size_input")
+
+        self.button_capture_img_calibration = document.getElementById("capture_img_calibration_btn")
+        self.img_calibration_camera = document.getElementById("calibration_camera_image")
+
+        self.button_calibrate_n_save = document.getElementById("btn_calibrate_n_save")
+
 
 
     def define_event_listeners(self):
@@ -224,6 +254,19 @@ class ClientVision(object):
 
         # For Object Detection Tracking
         self.button_test_detection.addEventListener("click", self.test_detection_func)
+
+
+        # For Camera Calibration
+        self.button_calibrate_camera.addEventListener("click", self.calibrate_camera_func)
+
+        self.span_close_calibration.addEventListener("click", self.close_modal_calibration_func)
+        self.button_close_calibration.addEventListener("click", self.close_modal_calibration_func)
+
+        self.button_capture_img_calibration.addEventListener("click", self.capture_img_calibration_func)
+        self.button_calibrate_n_save.addEventListener("click", self.calibrate_n_save_func)
+
+        self.select_calibrated_cameras.addEventListener("change", self.select_calibrated_camera_func)
+        self.button_delete_calibration.addEventListener("click", self.delete_calibration_func)
 
     # # -------------------------- BEGIN: Callback functions -------------------------- #
     # gets the selected index and return the camera url from the given camera urls
@@ -268,6 +311,11 @@ class ClientVision(object):
             self.img_feedback.width= str(image.image_info.width)
             self.img_feedback.height= str(image.image_info.height)
             # print_div(str(image.image_info.width) + ", " + str(image.image_info.height))
+
+            # Add camera feedback image previews into opened camera calibration modal 
+            self.img_calibration_camera.src = self.img_feedback.src
+            self.img_calibration_camera.width = self.img_feedback.width
+            self.img_calibration_camera.height = self.img_feedback.height
 
 
     # Callback functions For TRAINING
@@ -317,11 +365,11 @@ class ClientVision(object):
             self.img_training.src = canvas.toDataURL()
             
             # Show the modal
-            self.modal.style.display = "block"
+            self.modal_TrainVision.style.display = "block"
             # # Hide GL splitters
             # self.disable_GL_splitters()
 
-            self.cropper = Cropper.new(self.img_training, {"viewMode":2}) # TODO options, Done
+            self.cropper = Cropper.new(self.img_training, {"viewMode":2})
 
         except:
             import traceback
@@ -340,7 +388,7 @@ class ClientVision(object):
 
     def close_modal_func(self,data):
         # Hide the modal
-        self.modal.style.display = "none"
+        self.modal_TrainVision.style.display = "none"
         # # Set back to default GL splitters
         # self.enable_GL_splitters()
 
@@ -348,13 +396,11 @@ class ClientVision(object):
             self.cropper.destroy()
             self.cropper = None
 
-    def crop_img_func(self,data):
-        loop.call_soon(async_save_image())
 
     def crop_img_func(self,data):
         print_div("Crop & Save button is clicked!<br>")
         # Hide cropping modal
-        self.modal.style.display = "none"
+        self.modal_TrainVision.style.display = "none"
         # # Set back to default GL splitters
         # self.enable_GL_splitters()
         
@@ -612,7 +658,194 @@ class ClientVision(object):
             print_div(traceback.format_exc())
             # raise
             pass
+
+    # Callback functions for CAMERA CALIBRATION
+    def calibrate_camera_func(self,data):
+        print_div("Calibrating a new camera button is pressed.. <br>")
+        self.loop_client.call_soon(self.async_calibrate_camera())
+
+    async def async_calibrate_camera(self):
+        try: 
+            # Show the modal
+            self.modal_CameraCalibration.style.display = "block"
+            # # Hide GL splitters
+            # self.disable_GL_splitters()
+
+            # Clear the calibration serverside captured images
+            await self.plugin_cameraCalibration.async_remove_captured_images(None)
+            # Get how many images are taken in the server side of calibration
+            num_images = await self.plugin_cameraCalibration.async_num_of_captured_images(None)
+            # Print num of images for the user see
+            print_div_num_captured_calibration_imgs(str(num_images))
+        except:
+            import traceback
+            print_div(traceback.format_exc())
+            # raise
+
+    def close_modal_calibration_func(self,data):
+        # Hide the modal
+        self.modal_CameraCalibration.style.display = "none"
+        # # Set back to default GL splitters
+        # self.enable_GL_splitters()
+
+        # Clear the modal body content
+        clear_div_modal_body_CameraCalibration()
+
+    def calibrate_n_save_func(self,data):
+        print_div("Calibrate & Save button is clicked!<br>")
+        loop.call_soon(self.async_calibrate_n_save())
+
+    async def async_calibrate_n_save(self):
+        try: 
+            # Hide cropping modal
+            self.modal_CameraCalibration.style.display = "none"
+            # # Hide GL splitters
+            # self.disable_GL_splitters()
+
+            # Create the file name by looking at the selected camera name at camera feedback layout
+            index = self.available_cams_list.selectedIndex
+            if index == -1 or len(self.available_cams_list) == 0:
+                print_div("No available camera is found or none selected<br>")
+            else:
+                camera_name = self.camera_node_names_lst[index]
+                fileName = camera_name + ".yml"
+
+                # Get checkerboard related info from the inputs
+                width = int(self.input_width_checkerboard.value)
+                height = int(self.input_height_checkerboard.value)
+                square_size = float(self.input_square_size.value)
+
+                # Assuming enough pictures are already taken by the user
+                # Send these information to camera calibration plugin
+                await self.plugin_cameraCalibration.async_calibrate_n_save(fileName, square_size, width, height, None)
+
+                # Update the available calibrated cameras list
+                await self.async_update_calibrated_cameras()
+                await self.async_select_calibrated_camera()
+                
+
+        except:
+            import traceback
+            print_div(traceback.format_exc())
+            # raise
         
+    async def async_update_calibrated_cameras(self):
+        try:
+            # print_div("Clearing the previous available calibrated cameras options..")
+            length = self.select_calibrated_cameras.options.length
+            i = length-1
+            while i >= 0:
+                # self.select_calibrated_cameras.options[i] = None
+                self.select_calibrated_cameras.remove(i)
+                i -= 1
+
+            print_div('Creating available calibrated cameras options..<br>')
+            self.calibration_files_lst = await self.plugin_cameraCalibration.async_saved_calibrations(None)
+            # print_div(str(self.calibration_files_lst) + "<br>") 
+            i = 0
+            for fileName in self.calibration_files_lst:
+                # Add the available calibration fileName to the select_calibrated_cameras list
+                option = document.createElement("option")
+                option.text = str(i) + ": " + str(fileName)
+                self.select_calibrated_cameras.add(option)
+                i += 1 
+
+            # self.rerender_workspace_blocks()
+        except:
+            import traceback
+            print_div(traceback.format_exc())
+
+    def select_calibrated_camera_func(self,data):
+        print_div("A Saved Camera Calibration file is selected!<br>")
+        self.loop_client.call_soon(self.async_select_calibrated_camera())
+
+    async def async_select_calibrated_camera(self):
+        # Read the selected calibration file index from the browser
+        index = self.select_calibrated_cameras.selectedIndex
+        try:
+            if index == -1 and len(self.calibration_files_lst) == 0:
+                print_div("No available camera calibration file is found<br>")
+                # Clear the selected calibration information areas
+                print_div_selected_camera_matrix("")
+                print_div_selected_camera_distortion_coefficients("")
+                print_div_selected_camera_RnT("")
+
+            else:
+                if index == -1 and len(self.calibration_files_lst)> 0:
+                    print_div("Selecting the first available calibration file")
+                    index = 0
+
+                file_name = self.calibration_files_lst[index]
+                print_div(file_name)
+                params = await self.plugin_cameraCalibration.async_load_calibration(file_name,None)
+
+                
+                float_formatter_f = "{:.2f}".format
+                float_formatter_e = "{:.2e}".format
+                
+                np.set_printoptions(formatter={'float_kind':float_formatter_f})
+                print_div_selected_camera_matrix(str(params.camera_matrix).replace('\n', '<br> '))
+
+                np.set_printoptions(formatter={'float_kind':float_formatter_e})
+                print_div_selected_camera_distortion_coefficients(str(params.distortion_coefficients).replace('\n', '<br> '))
+
+                float_formatter_f = "{:.3f}".format
+                np.set_printoptions(formatter={'float_kind':float_formatter_f})
+                print_div_selected_camera_RnT(str(params.R_co).replace('\n', '<br> ') + "<br>" + str(params.T_co).replace('\n', '<br> '))
+
+                print_div_selected_camera_calibration_error('{0: 1.3f}'.format(params.error))
+
+                np.set_printoptions(formatter=None)
+        except:
+            import traceback
+            print_div(traceback.format_exc())
+            # raise
+            pass
+
+    def delete_calibration_func(self,data):
+        print_div("Delete selected calibration file button is clicked!<br>")
+        self.loop_client.call_soon(self.async_delete_calibration())
+
+    async def async_delete_calibration(self):
+        # Read the selected calibration file index from the browser
+        index = self.select_calibrated_cameras.selectedIndex
+        try:
+            if index == -1 or len(self.calibration_files_lst) == 0:
+                print_div("No available trained images found or not selected")
+
+            else:
+                # if index == -1 and len(self.calibration_files_lst)> 0:
+                #     print_div("Selecting the first available calibration file")
+                #     index = 0
+
+                file_name = self.calibration_files_lst[index]
+                # Ask user: are you sure you want to delete 'file_name'
+                resp = window.confirm("Sure you want to delete '" + file_name + "'?")
+                # if sure delete, else ignore and return
+                if resp:
+                    await self.plugin_cameraCalibration.async_delete_calibration(file_name,None)
+        except:
+            import traceback
+            print_div(traceback.format_exc())
+            # raise
+            pass
+
+        # Update the available calibrated cameras list
+        await self.async_update_calibrated_cameras()
+        await self.async_select_calibrated_camera()
+
+    def capture_img_calibration_func(self,data):
+        print_div("Capturing an image for the calibration..<br>")
+        self.loop_client.call_soon(self.async_capture_img_calibration())
+
+    async def async_capture_img_calibration(self):
+        # Capture the image at the server side of calibration
+        await self.plugin_cameraCalibration.async_capture_image(None)
+
+        # Get how many images are taken in the server side of calibration
+        num_images = await self.plugin_cameraCalibration.async_num_of_captured_images(None)
+        # Print num of images for the user see
+        print_div_num_captured_calibration_imgs(str(num_images))
 
     # # -------------------------- END: Callback functions -------------------------- #
 
