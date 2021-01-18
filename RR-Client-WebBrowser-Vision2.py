@@ -42,7 +42,9 @@ class ClientVision(object):
         register_vision_extensions_blockly()
         self.camera_node_names_lst = None # For storing camera names
         self.image_files_lst = None # For storing trained image file names
-        self.calibration_files_lst = None # For storing the camera calibration file names 
+        self.calibration_files_lst = None # For storing the camera calibration file names
+
+        self.is_updated_available_cameras = False # Created to update the available cameras only once 
 
         # RRN.RegisterServiceTypesFromFiles(['com.robotraconteur.image'],True)
         # self._image_consts = RRN.GetConstants('com.robotraconteur.image')
@@ -72,10 +74,7 @@ class ClientVision(object):
         is_connected = await self.async_connect_to_plugins()
         if is_connected:
             self.is_stop_vision = False
-            # # Show the feedback image of the first available camera initially
-            self.camera_fb_pipe.PacketReceivedEvent += self.show_new_frame
-            # self.camera_pipe.PacketReceivedEvent += self.show_new_frame # debug
-            # self.camera.async_start_streaming(None) # debug       
+     
 
     async def async_connect_to_plugins(self):
         # Discover Available Cameras
@@ -84,21 +83,8 @@ class ClientVision(object):
         self.url_plugin_discovery = 'rr+ws://' + self.ip_plugins + ':8896?service=Discovery'
         self.plugin_discovery = await RRN.AsyncConnectService(self.url_plugin_discovery,None,None,None,None)
         print_div('discovery plugin is connected (camera)..<br>')
-        # Get the available camera connection URLs
-        self.CameraConnectionURLs = await self.plugin_discovery.async_available_camera_ConnectionURLs(None)
-        self.camera_node_names_lst =  await self.plugin_discovery.async_available_camera_NodeNames(None)
         
         try:
-            # Trying to find an available camera url -----
-            self.url_cam = await self.async_select_available_camera_url(self.CameraConnectionURLs)
-            print_div('Selected Camera url: '+ self.url_cam + '<br>')
-
-            # ip_cam = 'localhost' # debug
-            # port_webcam_service = '59824' #'59824' #'59823' # debug
-            # self.url_cam = 'rr+ws://' + ip_cam+ ':'+ port_webcam_service +'?service=camera' # debug
-            # self.camera = await RRN.AsyncConnectService(self.url_cam,None,None,None,None) # debug
-            # self.camera_pipe = await self.camera.preview_stream.AsyncConnect(-1,None) # debug
-
             # Plugin Port numbers
             self.port_pluginCameraFeedback_service = '8889'
             self.port_pluginCameraTraining_service = '8892'
@@ -121,8 +107,11 @@ class ClientVision(object):
             ## CameraFeedback plugin
             print_div('CameraFeedback plugin is connecting..<br>')
             self.plugin_cameraFeedback = await RRN.AsyncConnectService(self.url_plugin_cameraFeedback,None,None,None,None)
-            await self.plugin_cameraFeedback.async_connect2camera(self.url_cam,None)
-            self.camera_fb_pipe = await self.plugin_cameraFeedback.preview_stream_out.AsyncConnect(-1,None) 
+            print_div(self.is_updated_available_cameras)
+            if not self.is_updated_available_cameras:
+                await self.async_update_available_cameras() 
+            await self.async_select_available_camera() 
+
             print_div('CameraFeedback plugin is connected!<br>')
 
             ## CameraTraining plugin
@@ -232,7 +221,7 @@ class ClientVision(object):
     def define_event_listeners(self):
         print_div("Event Listeners are being created.. <br>")
         # For Feedback
-        self.available_cams_list.addEventListener("change", self.select_available_cam_func)
+        self.available_cams_list.addEventListener("change", self.select_available_camera_func)
 
         
         # For Training
@@ -269,29 +258,78 @@ class ClientVision(object):
         self.button_delete_calibration.addEventListener("click", self.delete_calibration_func)
 
     # # -------------------------- BEGIN: Callback functions -------------------------- #
-    # gets the selected index and return the camera url from the given camera urls
-    async def async_select_available_camera_url(self, camera_urls):
-        print_div("Selecting the camera URL.. <br>")
-        # Read the selected camera index from the browser  
-        index = self.available_cams_list.selectedIndex
-        if index == -1:
-            print_div("No camera is selected, Selecting the first available camera")
-            return camera_urls[0]
-        return camera_urls[index]
-
     # Callback functions For FEEDBACK
-    def select_available_cam_func(self,data):
-        print_div("Selecting the cam.. <br>")
-        self.loop_client.call_soon(self.async_new_cam_selected())
+    async def async_update_available_cameras(self):
+        try:
+            # print_div("Clearing the previous available camera options..")
+            length = self.available_cams_list.options.length
+            i = length-1
+            while i >= 0:
+                self.available_cams_list.remove(i)
+                i -= 1
 
-    async def async_new_cam_selected(self):
-        # Trying -----
-        self.url_cam = await self.async_select_available_camera_url(self.CameraConnectionURLs)
-        print_div('Selected Camera url: '+ self.url_cam + '<br>')
-        # ------------
-        self.is_stop_vision = True
-        await RRN.AsyncSleep(0.5,None)  # Await a bit to camera feedback stops in the main 
+            print_div('Creating available cameras options..<br>')
+            # Get the available camera connection URLs
+            self.CameraConnectionURLs = await self.plugin_discovery.async_available_camera_ConnectionURLs(None)
+            self.camera_node_names_lst =  await self.plugin_discovery.async_available_camera_NodeNames(None)
+            # print_div(str(self.camera_node_names_lst) + "<br>") 
+            i = 0
+            for cameraName in self.camera_node_names_lst:
+                # Add the available cameraName to the self.available_cams_list list
+                option = document.createElement("option")
+                option.text = str(i) + ": " + str(cameraName)
+                self.available_cams_list.add(option)
+                i += 1 
+
+            self.rerender_workspace_blocks()
+
+            self.is_updated_available_cameras = True
+        except:
+            import traceback
+            print_div(traceback.format_exc())
+
+    def select_available_camera_func(self,data):
+        print_div("Selecting the cam.. <br>")
         self.restart()
+
+    async def async_select_available_camera(self):
+        # Read the selected camera index from the browser
+        index = self.available_cams_list.selectedIndex
+        try:
+            if index == -1 and len(self.camera_node_names_lst) == 0:
+                print_div("No available cameras found")
+                # Clear the selected camera image area
+                self.img_feedback.src = "''"
+
+            else:
+                if index == -1 and len(self.camera_node_names_lst)> 0:
+                    print_div("Selecting the first available camera")
+                    index = 0
+
+                camera_name = self.camera_node_names_lst[index]
+                print_div("Selected camera name: " + camera_name + "<br>")
+
+                self.url_cam = self.CameraConnectionURLs[index]
+                print_div('Selected Camera url: '+ self.url_cam + '<br>')
+
+                self.is_stop_vision = True
+                await RRN.AsyncSleep(0.5,None)  # Await a bit to camera feedback stops in the main 
+
+                await self.plugin_cameraFeedback.async_connect2camera(self.url_cam,None)
+                self.camera_fb_pipe = await self.plugin_cameraFeedback.preview_stream_out.AsyncConnect(-1,None)
+
+                # Show the feedback image of the first available camera initially
+                self.camera_fb_pipe.PacketReceivedEvent += self.show_new_frame
+
+                # self.restart()
+        except:
+            import traceback
+            print_div(traceback.format_exc())
+            # raise
+            pass
+
+        # Update the available cameras list
+        # await self.async_update_available_cameras()
 
     def show_new_frame(self,pipe_ep):
         #Loop to get the newest frame

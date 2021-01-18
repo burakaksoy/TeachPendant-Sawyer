@@ -51,7 +51,7 @@ def execute_blockly_func(self):
         is_jogging = True
         loop.call_soon(async_execute_blockly(code_text))
     else:
-        print_div("Jogging has not finished yet..<br>")
+        print_div("Blockly execution has not finished yet..<br>")
 
     
 async def async_execute_blockly(code_text):
