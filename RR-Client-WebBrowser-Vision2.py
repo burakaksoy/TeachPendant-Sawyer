@@ -161,10 +161,7 @@ class ClientVision(object):
         await RRN.AsyncDisconnectService(self.plugin_cameraFeedback, None)
         await RRN.AsyncDisconnectService(self.plugin_cameraTraining, None)
         await RRN.AsyncDisconnectService(self.plugin_cameraCalibration, None)
-
-        # await self.camera_pipe.AsyncClose(None) # debug
-        # await self.camera.async_stop_streaming(None) #debug
-        # await RRN.AsyncDisconnectService(self.camera, None)  # debug
+        await RRN.AsyncDisconnectService(self.plugin_cameraTracking, None)
         
     def define_element_references(self):
         print_div("HTML Element references are being created..<br>")

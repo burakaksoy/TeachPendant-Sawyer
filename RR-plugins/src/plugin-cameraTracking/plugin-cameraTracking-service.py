@@ -5,6 +5,7 @@ from RobotRaconteur.Client import *     #import RR client library to connect
 import numpy as np
 
 import cv2
+import math 
 
 from opencv_template_matching import TemplateMatchingMultiAngle
 
@@ -168,6 +169,67 @@ class CameraTracking_impl(object):
                 detection_result.result_img = None
 
             return detection_result
+
+        else:
+            # Give an error message to show that the robot is not connected
+            print("Cameras or plugins are not connected to CameraTracking service yet!")
+
+    def find_object_pose_in_cam_frame(self,obj_img_filename, camera_name, value_z_distance):
+        if self.is_plugins_connected and self.is_cameras_connected:
+            # If the value of z distance is given bigger than zero use the given one 
+            #otherwise camera has 3D capability, get z value from thecapability of the camera
+            if value_z_distance <= 0:
+                #TODO
+                # value_z_distance = getFrom3DCapableCamera
+                print("Provide a proper positive z distance")
+            
+            # Find the object in image frame 
+            detection_result = self.find_object_in_img_frame(obj_img_filename, camera_name, False)
+            
+            # detection_result.width
+            # detection_result.height
+            x = detection_result.center_x
+            y = detection_result.center_y
+            theta = detection_result.angle
+            src = np.asarray([x,y], dtype=np.float32)
+            src = np.reshape(src,(-1,1,2)) # Rehsape as opencv requires (N,1,2)
+            # print(src)
+            # Now the detection results in image frame is found,
+            # Hence, find the detected pose in camera frame with given z distance to camera
+            # To do that first we need to get the camera parameters
+            # Load the camera matrix and distortion coefficients from the calibration result.
+            filename = str(camera_name) + ".yml"
+            params = self.plugin_cameraCalibration.load_calibration(filename)
+
+            mtx = params.camera_matrix 
+            dist = params.distortion_coefficients
+            # R_co = params.R_co 
+            # T_co = params.T_co 
+            # error = params.error
+
+            # Find the corresponding world pose of the detected pose in camera frame
+            dst = cv2.undistortPoints(src,mtx,dist) # dst is Xc/Zc and Yc/Zc in the same shape of src
+            dst = dst * float(value_z_distance) * 1000.0 # Multiply by given Zc distance to find all cordinates, multiply by 1000 is because of Zc is given in meters but others are in millimeters
+            dst = np.squeeze(dst) * 0.001 # Xc and Yc as vector
+
+            # Finally the translation between the detected object center and the camera frame represented in camera frame is T = [Xc,Yc,Zc]
+            Xc = dst[0]
+            Yc = dst[1]
+            Zc = float(value_z_distance)
+            T = np.asarray([Xc,Yc,Zc])
+
+            # Now lets find the orientation of the detected object with respect to camera 
+            # We are assuming +z axis is looking towards the camera and xy axes of the both object and camera are parallel planes
+            # So the rotation matrix would be
+            theta = np.deg2rad(theta) #convert theta from degrees to radian
+            R_co = np.asarray([[math.cos(theta),-math.sin(theta),0],[-math.sin(theta),-math.cos(theta),0],[0,0,-1]])
+
+            # Pack the results into CalibrationParameters structure
+            pose = RRN.NewStructure("experimental.pluginCameraTracking.Pose")
+            pose.R = R_co
+            pose.T = T
+
+            return pose
 
         else:
             # Give an error message to show that the robot is not connected

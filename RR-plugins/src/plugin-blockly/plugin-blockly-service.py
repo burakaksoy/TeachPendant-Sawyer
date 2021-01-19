@@ -11,6 +11,8 @@ import os
 from os import listdir
 from os.path import isfile, join
 
+import math
+
 # import glob # To get the xml file names
 # if not os.path.exists('my_folder'):
 #     os.makedirs('my_folder')
@@ -225,26 +227,23 @@ class Blockly_impl(object):
 
     def camera_get_object_pose_z_required(self, dropdown_trained_objects, dropdown_cams, value_z_distance ):
         try:
-            # Execute the object detection in camera frame
-            return_result_image = False
-            detection_result = self.plugin_cameraTracking.find_object_in_img_frame(dropdown_trained_objects, dropdown_cams, return_result_image)
+            # # Execute the object detection in image frame
+            # return_result_image = False
+            # detection_result = self.plugin_cameraTracking.find_object_in_img_frame(dropdown_trained_objects, dropdown_cams, return_result_image)
 
-            print(str(detection_result.width) + "," + str(detection_result.height))
-            print(str(detection_result.center_x) + "," + str(detection_result.center_y))
-            print(str(detection_result.angle) + " degrees")
+            print("")
+            print("------------------------------")
+            print("Camera: " + str(dropdown_cams) + ", Object: " + str(dropdown_trained_objects))
+            # print("Detected Object Size(w,h): ("+ str(detection_result.width) + "," + str(detection_result.height) + ")")
+            # print("Detected Object Center(x,y): ("+ str(detection_result.center_x) + "," + str(detection_result.center_y)+ ")")
+            # print("Detected Object Angle: " + str(detection_result.angle) + " degrees")
 
-            # detection_result.width
-            # detection_result.height
-            # detection_result.center_x
-            # detection_result.center_y
-            # detection_result.angle
+            pose = self.plugin_cameraTracking.find_object_pose_in_cam_frame(dropdown_trained_objects, dropdown_cams, value_z_distance)
 
-            # Find the corresponding world pose of the detected pose in camera frame
-            # TODO
+            print("R: " + str(pose.R))
+            print("T: " + str(pose.T))
 
-            # Return the detected pose in camera frame with given z distance to camera
-            # TODO
-            return str([detection_result.center_x, detection_result.center_y, detection_result.angle])
+            return pose
         except:
             import traceback
             print(traceback.format_exc())  
@@ -252,29 +251,13 @@ class Blockly_impl(object):
 
     def camera_get_object_pose_z_not_required(self, dropdown_trained_objects, dropdown_cams):
         try:
-            # Execute the object detection in camera frame
-            return_result_image = False
-            detection_result = self.plugin_cameraTracking.find_object_in_img_frame(dropdown_trained_objects, dropdown_cams, return_result_image)
-
-            print(str(detection_result.width) + "," + str(detection_result.height))
-            print(str(detection_result.center_x) + "," + str(detection_result.center_y))
-            print(str(detection_result.angle) + " degrees")
-
-            # detection_result.width
-            # detection_result.height
-            # detection_result.center_x
-            # detection_result.center_y
-            # detection_result.angle
-
-            # Find the corresponding world pose of the detected pose in camera frame
             # TODO
+            pose = self.plugin_cameraTracking.find_object_pose_in_cam_frame(dropdown_trained_objects, dropdown_cams, 0)
 
-            # Find Z distance from the 3D information from camera
-            # TODO
+            print("R: " + str(pose.R))
+            print("T: " + str(pose.T))
 
-            # Return the detected pose in camera frame with given z distance to camera
-            # TODO
-            return str([detection_result.center_x, detection_result.center_y, detection_result.angle])
+            return pose
         except:
             import traceback
             print(traceback.format_exc()) 
@@ -283,8 +266,34 @@ class Blockly_impl(object):
         try:
             # A pose is given in the camera frame.
             # Find the corresponding pose in the robot base frame.   
-            # TODO
+            Rc_obj = value_pose_in_cam.R
+            Tc_obj = value_pose_in_cam.T
 
+            # Predefined pose of the camera wrt robot base
+            # TODO: Will be selected via dropdown_cams later 
+            T0_c = np.asarray([0.5,0,0.73], dtype=np.float32) # Predefined when camera is fixed
+            # T0_c = np.asarray([0.5,0.5,0.73], dtype=np.float32) # Predefined when camera is fixed
+            R0_c = np.asarray([[0,1,0],[1,0,0],[0,0,-1]], dtype=np.float32) # Predefined when camera is fixed
+
+            # For sawyer, fixed rotation btw base to initial end effector
+            R0_E0 = np.asarray([[1,0,0],[0,-1,0],[0,0,-1]], dtype=np.float32)
+
+            # To grab the object via end effector, the orientation btw them should be:
+            RE_obj = np.asarray([[0,0,-1],[-1,0,0],[0,1,0]], dtype=np.float32)
+
+            # We need to find 
+            T0_obj = (R0_c @ Tc_obj) + T0_c # Tranlastion from base frame to object origin in base frame
+            # RE0_E = R0_E0.T @ R0_c @ Rc_obj @ RE_obj.T # Rotation between the initial end eff. and the desired end effector
+            R0_E = R0_c @ Rc_obj @ RE_obj.T # Rotation between the initial end eff. and the desired end effector
+
+            # Return the same type pose with the new calculated values
+            value_pose_in_cam.R = R0_E
+            value_pose_in_cam.T = T0_obj
+
+            print("value_pose_in_cam.R" + str(value_pose_in_cam.R))
+            print("value_pose_in_cam.T" + str(value_pose_in_cam.T))
+
+            return value_pose_in_cam
 
         except:
             import traceback
@@ -292,7 +301,58 @@ class Blockly_impl(object):
 
     # --- VISION related implementation of blockly functions: END -----------   
 
-        
+    # --- UTILS related implementation of blockly functions: BEGIN -----------        
+    def utils_position_in_pose(self,value_pose):
+        try:
+            T = value_pose.T # T is a numpy vector
+            # We need to convert it to list 
+            print("T: "+ str(T.tolist()))
+            return T.tolist()
+        except:
+            import traceback
+            print(traceback.format_exc()) 
+
+    #########################################################
+    # ZYX Euler angles calculation from rotation matrix
+    def isclose(self,x, y, rtol=1.e-5, atol=1.e-8):
+        return abs(x-y) <= atol + rtol * abs(y)
+
+    def euler_angles_from_rotation_matrix(self,R):
+        '''
+        From a paper by Gregory G. Slabaugh (undated),
+        "Computing Euler angles from a rotation matrix
+        '''
+        phi = 0.0
+        if self.isclose(R[2,0],-1.0):
+            theta = math.pi/2.0
+            psi = math.atan2(R[0,1],R[0,2])
+        elif self.isclose(R[2,0],1.0):
+            theta = -math.pi/2.0
+            psi = math.atan2(-R[0,1],-R[0,2])
+        else:
+            theta = -math.asin(R[2,0])
+            cos_theta = math.cos(theta)
+            psi = math.atan2(R[2,1]/cos_theta, R[2,2]/cos_theta)
+            phi = math.atan2(R[1,0]/cos_theta, R[0,0]/cos_theta)
+        return psi, theta, phi #  x y z for Rz * Ry * Rx
+    #########################################################
+
+    def utils_orientation_in_pose(self,value_pose):
+        try:
+            R = value_pose.R # R is a 3x3 numpy array
+            # Calculate euler ZYX angles from Rotation matrix
+            x,y,z = self.euler_angles_from_rotation_matrix(R)
+            # Convert from radian to degree
+            R_angles = np.rad2deg([x,y,z]) # Convert rad to deg 
+            # We need to convert it to list
+            print("R: "+ str(R_angles.tolist())) 
+            return R_angles.tolist()
+
+        except:
+            import traceback
+            print(traceback.format_exc()) 
+
+    # --- UTILS related implementation of blockly functions: END -----------        
 
 
 

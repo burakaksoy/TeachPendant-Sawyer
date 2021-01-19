@@ -1,0 +1,175 @@
+<xml xmlns="https://developers.google.com/blockly/xml">
+  <variables>
+    <variable id="TCB:|K@NCwCK^+k}PC.v">pose</variable>
+  </variables>
+  <block type="variables_set" id="]vnYyAD3kf^kqHfQk@_~" x="134" y="-150">
+    <field name="VAR" id="TCB:|K@NCwCK^+k}PC.v">pose</field>
+    <value name="VALUE">
+      <block type="camera_get_object_pose_z_required" id="7s_/h,AQ1^56u*u#_tx-">
+        <field name="OPTIONS_IMAGES">parfume.png</field>
+        <field name="OPTIONS_CAMS">camera1</field>
+        <value name="Z_DISTANCE">
+          <block type="math_number" id="-(%D|CL5_{Z.}cxs.9*!">
+            <field name="NUM">0.73</field>
+          </block>
+        </value>
+      </block>
+    </value>
+    <next>
+      <block type="variables_set" id="n/|2Z%KD8Y7=!SACD*ZI">
+        <field name="VAR" id="TCB:|K@NCwCK^+k}PC.v">pose</field>
+        <value name="VALUE">
+          <block type="camera_transform_pose_to_robot" id="j[/-])z}bj[$6;^wWN6o">
+            <field name="OPTIONS_CAMS">camera1</field>
+            <value name="POSE_IN_CAM">
+              <block type="variables_get" id="Co#O1SyatFHXU]:4[[L^">
+                <field name="VAR" id="TCB:|K@NCwCK^+k}PC.v">pose</field>
+              </block>
+            </value>
+          </block>
+        </value>
+        <next>
+          <block type="robot_jog_cartesian_not_relative" id="`,p*eag3zS;hmLcKEg%R" inline="false">
+            <field name="SPEED">50</field>
+            <value name="POSITION">
+              <block type="utils_position_in_pose" id="E}l$o{hGX/__xaL`1xM(">
+                <value name="POSE">
+                  <block type="variables_get" id="2_kcn(B,=acoJwk`;n.i">
+                    <field name="VAR" id="TCB:|K@NCwCK^+k}PC.v">pose</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <value name="ORIENTATION">
+              <block type="utils_orientation_in_pose" id="Hy`yp*XuL_EK4qk?*)qv">
+                <value name="POSE">
+                  <block type="variables_get" id="JaN9UcLWuc(6/9w/ofe)">
+                    <field name="VAR" id="TCB:|K@NCwCK^+k}PC.v">pose</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <next>
+              <block type="robot_wait" id="J.of2`${!b|Y9t#55;B#">
+                <field name="WAIT_TIME">1</field>
+                <next>
+                  <block type="variables_set" id=",+GM{r~;O4$wuieQ@`wQ">
+                    <field name="VAR" id="TCB:|K@NCwCK^+k}PC.v">pose</field>
+                    <value name="VALUE">
+                      <block type="camera_get_object_pose_z_required" id="=QRuv!X4RZ!cv*Q`2mEG">
+                        <field name="OPTIONS_IMAGES">toothpaste.png</field>
+                        <field name="OPTIONS_CAMS">camera1</field>
+                        <value name="Z_DISTANCE">
+                          <block type="math_number" id="a)jRAUJ!hNgq^L@|S(SV">
+                            <field name="NUM">0.73</field>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                    <next>
+                      <block type="variables_set" id="gQL!oZlsI!DlNZxYs5lM">
+                        <field name="VAR" id="TCB:|K@NCwCK^+k}PC.v">pose</field>
+                        <value name="VALUE">
+                          <block type="camera_transform_pose_to_robot" id="K8O@B?u6QKr~kxRSL}wp">
+                            <field name="OPTIONS_CAMS">camera1</field>
+                            <value name="POSE_IN_CAM">
+                              <block type="variables_get" id="#9{`LHVRd#5^VYlHL,-n">
+                                <field name="VAR" id="TCB:|K@NCwCK^+k}PC.v">pose</field>
+                              </block>
+                            </value>
+                          </block>
+                        </value>
+                        <next>
+                          <block type="robot_jog_cartesian_not_relative" id="YK#`-(TyS%P-w(Qc5}$C" inline="false">
+                            <field name="SPEED">50</field>
+                            <value name="POSITION">
+                              <block type="utils_position_in_pose" id="d3J.?|4Oh!43v+J3]o8z">
+                                <value name="POSE">
+                                  <block type="variables_get" id="u[gpM/~b8RwN#;oU9xi9">
+                                    <field name="VAR" id="TCB:|K@NCwCK^+k}PC.v">pose</field>
+                                  </block>
+                                </value>
+                              </block>
+                            </value>
+                            <value name="ORIENTATION">
+                              <block type="utils_orientation_in_pose" id="r-lQ8^ArS4le/_W!HKpx">
+                                <value name="POSE">
+                                  <block type="variables_get" id="xGk7)9D][J=23jL.7Q2,">
+                                    <field name="VAR" id="TCB:|K@NCwCK^+k}PC.v">pose</field>
+                                  </block>
+                                </value>
+                              </block>
+                            </value>
+                            <next>
+                              <block type="robot_wait" id="!6I!|K7}y!-dm/7l)_eK">
+                                <field name="WAIT_TIME">1</field>
+                                <next>
+                                  <block type="variables_set" id="5}k={Vz97u]C*vDbJ~)/">
+                                    <field name="VAR" id="TCB:|K@NCwCK^+k}PC.v">pose</field>
+                                    <value name="VALUE">
+                                      <block type="camera_get_object_pose_z_required" id="7(4-8iQ@+~yq9y^.+L7X">
+                                        <field name="OPTIONS_IMAGES">blackbottle.png</field>
+                                        <field name="OPTIONS_CAMS">camera1</field>
+                                        <value name="Z_DISTANCE">
+                                          <block type="math_number" id="ulf=+c7R,R!0{Si2d{dK">
+                                            <field name="NUM">0.73</field>
+                                          </block>
+                                        </value>
+                                      </block>
+                                    </value>
+                                    <next>
+                                      <block type="variables_set" id="MK/9zdqk6JFtrgb[gGw/">
+                                        <field name="VAR" id="TCB:|K@NCwCK^+k}PC.v">pose</field>
+                                        <value name="VALUE">
+                                          <block type="camera_transform_pose_to_robot" id="w5B{3zF).lzREVnu[}wj">
+                                            <field name="OPTIONS_CAMS">camera1</field>
+                                            <value name="POSE_IN_CAM">
+                                              <block type="variables_get" id="]dRn6PS7nqvx!5[y7ckD">
+                                                <field name="VAR" id="TCB:|K@NCwCK^+k}PC.v">pose</field>
+                                              </block>
+                                            </value>
+                                          </block>
+                                        </value>
+                                        <next>
+                                          <block type="robot_jog_cartesian_not_relative" id="|B2I7u9;/41;A}$/s-==" inline="false">
+                                            <field name="SPEED">50</field>
+                                            <value name="POSITION">
+                                              <block type="utils_position_in_pose" id=".izX6;?lDT(j*}XAqjPE">
+                                                <value name="POSE">
+                                                  <block type="variables_get" id="cR=(7.v5aWsd=t(,QSqw">
+                                                    <field name="VAR" id="TCB:|K@NCwCK^+k}PC.v">pose</field>
+                                                  </block>
+                                                </value>
+                                              </block>
+                                            </value>
+                                            <value name="ORIENTATION">
+                                              <block type="utils_orientation_in_pose" id="RtJJ{$,az=nlj5QhfLii">
+                                                <value name="POSE">
+                                                  <block type="variables_get" id="T1w0c14qF[X^*`*0M}W$">
+                                                    <field name="VAR" id="TCB:|K@NCwCK^+k}PC.v">pose</field>
+                                                  </block>
+                                                </value>
+                                              </block>
+                                            </value>
+                                          </block>
+                                        </next>
+                                      </block>
+                                    </next>
+                                  </block>
+                                </next>
+                              </block>
+                            </next>
+                          </block>
+                        </next>
+                      </block>
+                    </next>
+                  </block>
+                </next>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </next>
+  </block>
+</xml>

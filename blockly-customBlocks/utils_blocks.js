@@ -163,7 +163,7 @@ Blockly.defineBlocksWithJsonArray([{
 Blockly.Python['utils_position_in_pose'] = function(block) {
   var value_pose = Blockly.Python.valueToCode(block, 'POSE', Blockly.Python.ORDER_ATOMIC);
   // TODO: Assemble Python into code variable.
-  var code = '...';
+  var code = 'self.utils_position_in_pose('+  value_pose + ')';
   // TODO: Change ORDER_NONE to the correct strength.
   return [code, Blockly.Python.ORDER_NONE];
 };
@@ -171,7 +171,7 @@ Blockly.Python['utils_position_in_pose'] = function(block) {
 Blockly.Python['utils_orientation_in_pose'] = function(block) {
   var value_pose = Blockly.Python.valueToCode(block, 'POSE', Blockly.Python.ORDER_ATOMIC);
   // TODO: Assemble Python into code variable.
-  var code = '...';
+  var code = 'self.utils_orientation_in_pose('+  value_pose + ')';
   // TODO: Change ORDER_NONE to the correct strength.
   return [code, Blockly.Python.ORDER_NONE];
 };
