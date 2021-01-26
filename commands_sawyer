@@ -1,8 +1,11 @@
 sleep 1s; 
-gnome-terminal --tab --title="Gazebo Sawyer Sim" --command "bash -c \"source ~/TeachPendantSpace/ros_ws/devel/setup.bash; roslaunch sawyer_gazebo sawyer_world.launch; exec bash\""; 
 
-# gnome-terminal --tab --title="RR Sawyer service" --command "bash -c \"source ~/ros_csharp_ws/devel_isolated/setup.bash; cd ~/Sawyer_bin_local/; dotnet SawyerRobotRaconteurDriver.dll --robot-info-file=sawyer_robot_default_config.yml; exec bash\" ";
+# gnome-terminal --tab --title="Gazebo Sawyer Sim" --command "bash -c \"source ~/TeachPendantSpace/ros_ws/devel/setup.bash; roslaunch sawyer_gazebo sawyer_world.launch; exec bash\""; 
 
-# gnome-terminal --tab --title="RR Sawyer service" --command "bash -c \"source ~/ros_csharp_ws/devel_isolated/setup.bash; cd ~/sawyer_driver_csharp_2020-10-10/; dotnet SawyerRobotRaconteurDriver.dll --robot-info-file=sawyer_robot_default_config.yml; exec bash\" ";
+# gnome-terminal --tab --title="Gazebo Sawyer Sim with Sensor" --command "bash -c \"source ~/TeachPendantSpace/ros_ws/devel/setup.bash; roslaunch sawyer_gazebo sawyer_world2.launch; exec bash\""; 
+
+gnome-terminal --tab --title="Gazebo Sawyer Sim with Sensor" --command "bash -c \"source ~/TeachPendantSpace/ros_ws/devel/setup.bash; roslaunch sawyer_gazebo sawyer_world3.launch; exec bash\""; 
+
+sleep 5s;
 
 gnome-terminal --tab --title="RR Sawyer service" --command "bash -c \"source ~/TeachPendantSpace/ros_csharp_ws/devel_isolated/setup.bash; cd ~/TeachPendantSpace/sawyer_driver_csharp_2020-11-23/; dotnet SawyerRobotRaconteurDriver.dll --robot-info-file=sawyer_robot_default_config.yml; exec bash\" ";

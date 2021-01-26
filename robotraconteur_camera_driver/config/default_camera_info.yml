@@ -1,0 +1,39 @@
+device_info:
+  device:
+    name: default_camera
+  manufacturer:
+    name: DefaultManufacturer
+    uuid: 6768680f-f282-4735-aa3c-8793f5f6a563
+  model:
+    name: DefaultModel
+    uuid: 5162e021-94ac-4383-8466-3e5006e94c00
+  serial_number: 123456789
+  device_classes:
+    - class_identifier:
+        name: usb_camera
+        uuid: b25bf959-7ba9-46be-989e-5529026a00da
+      subclasses:
+        - webcam
+  implemented_types:
+    - com.robotraconteur.imaging.Camera
+calibration:
+  image_size:
+    width: 320
+    height: 240
+  distortion_info:
+    k1: -0.057918765907244367
+    k2: 0.72983710468810736
+    p1: 0.00079960607086119464
+    p2: -0.0013402179109618226
+    k3: -2.9234208516000812
+  K:
+    - 417.95221322102748
+    - 0.0
+    - 0.0
+    - 0.0
+    - 417.34779922731116
+    - 0.0
+    - 158.48050408655786
+    - 128.08240416341590
+    - 1.0
+  

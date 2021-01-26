@@ -11,23 +11,17 @@ from RobotRaconteurCompanion.Util.InfoFileLoader import InfoFileLoader
 from RobotRaconteurCompanion.Util.DateTimeUtil import DateTimeUtil
 from RobotRaconteurCompanion.Util.SensorDataUtil import SensorDataUtil
 from RobotRaconteurCompanion.Util.AttributesUtil import AttributesUtil
-
+from RobotRaconteur.Client import * # To connect gazebo server
 
 class CameraImpl(object):
     
-    def __init__(self, device_id, width, height, fps, camera_info):
+    def __init__(self, camera_sim_path, camera_info):
         
-        #if platform.system() == "Windows":
-        #    self._capture = cv2.VideoCapture(device_id + cv2.CAP_DSHOW)
-        #else:
-        self._capture = cv2.VideoCapture(device_id)
-        assert self._capture.isOpened(), f"Could not open device: {device_id}"
-
         self._seqno = 0
 
-        self._capture.set(cv2.CAP_PROP_FRAME_WIDTH, width)
-        self._capture.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
-        self._capture.set(cv2.CAP_PROP_FPS, fps)
+        self.server = RRN.ConnectService('rr+tcp://localhost:11346?service=GazeboServer')# Gazebo server
+        print(self.server.sensor_names)
+        self._capture = self.server.get_sensors(camera_sim_path)
 
         self._imaging_consts = RRN.GetConstants('com.robotraconteur.imaging')
         self._image_consts = RRN.GetConstants('com.robotraconteur.image')
@@ -38,7 +32,7 @@ class CameraImpl(object):
         self._isoch_info = RRN.GetStructureType('com.robotraconteur.device.isoch.IsochInfo')
         self._capture_lock = threading.Lock()
         self._streaming = False
-        self._fps = self._capture.get(cv2.CAP_PROP_FPS)
+        self._fps = 30
         self._camera_info = camera_info
         self._date_time_util = DateTimeUtil(RRN)
         self._sensor_data_util = SensorDataUtil(RRN)
@@ -108,20 +102,19 @@ class CameraImpl(object):
         image.data=encimg
         return image
 
+    def ImageToMat(self, image):
+        frame2=image.data.reshape([image.image_info.height, image.image_info.width, 3], order='C')
+        return np.concatenate((np.atleast_3d(frame2[:,:,2]), np.atleast_3d(frame2[:,:,1]), np.atleast_3d(frame2[:,:,0])),axis=2)
+
     def capture_frame(self):
         with self._capture_lock:
-            ret, mat=self._capture.read()
-            if not ret:
-                raise RR.OperationFailedException("Could not read from camera")
-            self._seqno+=1
-        return self._cv_mat_to_image(mat)
+            img = self._capture.capture_image()
+        return img
 
     def capture_frame_compressed(self):
         with self._capture_lock:
-            ret, mat=self._capture.read()
-            if not ret:
-                raise RRN.OperationFailedException("Could not read from camera")
-            self._seqno+=1
+            img = self._capture.capture_image()
+            mat = self.ImageToMat(img)
         return self._cv_mat_to_compressed_image(mat)
 
     def trigger(self):
@@ -130,11 +123,8 @@ class CameraImpl(object):
     def frame_threadfunc(self):
         while(self._streaming):
             with self._capture_lock:
-                ret, mat=self._capture.read()
-                if not ret:
-                    #TODO: notify user?
-                    self._streaming=False
-                    continue
+                img = self._capture.capture_image()
+                mat = self.ImageToMat(img)
                 self._seqno+=1
             
             self.frame_stream.AsyncSendPacket(self._cv_mat_to_image(mat),lambda: None)
@@ -177,12 +167,9 @@ class CameraImpl(object):
     
 
 def main():
-    parser = argparse.ArgumentParser(description="OpenCV based camera driver service for Robot Raconteur")
+    parser = argparse.ArgumentParser(description="OpenCV based camera driver service for Robot Raconteur Emulator for Gazebo Simulation Worlds with Camera Sensors")
     parser.add_argument("--camera-info-file", type=argparse.FileType('r'),default=None,required=True,help="Camera info file (required)")
-    parser.add_argument("--device-id", type=int, default=0, help="the device to open (default 0)")
-    parser.add_argument("--width", type=int, default=1280, help="try to set width of image (default 1280)")
-    parser.add_argument("--height", type=int, default=720, help="try to set height of image (default 720)")
-    parser.add_argument("--fps", type=int, default=15, help="try to set rate of video capture (default 15 fps)")
+    parser.add_argument("--camera-sim-path", type=str, default="default::rip::pendulum::camera", help="Specify the camera path in the simulation world (default 'default::rip::pendulum::camera')")
     parser.add_argument("--wait-signal",action='store_const',const=True,default=False, help="wait for SIGTERM orSIGINT (Linux only)")
 
     args, _ = parser.parse_known_args()
@@ -201,7 +188,7 @@ def main():
     attributes_util = AttributesUtil(RRN)
     camera_attributes = attributes_util.GetDefaultServiceAttributesFromDeviceInfo(camera_info.device_info)
 
-    camera = CameraImpl(args.device_id,args.width,args.height,args.fps, camera_info)
+    camera = CameraImpl(args.camera_sim_path,camera_info)
     for _ in range(10):
         camera.capture_frame()
     
