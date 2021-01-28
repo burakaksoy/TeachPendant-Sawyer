@@ -1,0 +1,8 @@
+service edu.rpi.robotics.vacuumlink
+
+stdver 0.10
+
+object vacuumlink
+	property int8{string} actions
+	function void vacuum(string robot_name, string model_name, int8 action)
+end

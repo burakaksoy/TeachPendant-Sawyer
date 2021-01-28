@@ -1,0 +1,45 @@
+<xml xmlns="https://developers.google.com/blockly/xml">
+  <block type="robot_jog_joints_not_relative" id="=%54{8z7QKb#zq:/vJS:" x="34" y="113">
+    <field name="SPEED">100</field>
+    <value name="DEGREE_1">
+      <block type="math_number" id="YQzC!X%-bgf?th#0*v}+">
+        <field name="NUM">20.52</field>
+      </block>
+    </value>
+    <value name="DEGREE_2">
+      <block type="math_number" id="5l`UI}-pTkF}M1adq%2E">
+        <field name="NUM">-58.31</field>
+      </block>
+    </value>
+    <value name="DEGREE_3">
+      <block type="math_number" id="5qNF5#36{sjv~j$cl5B-">
+        <field name="NUM">-7.37</field>
+      </block>
+    </value>
+    <value name="DEGREE_4">
+      <block type="math_number" id="]TZ|2?b`u{mdW~qgE.J2">
+        <field name="NUM">106.43</field>
+      </block>
+    </value>
+    <value name="DEGREE_5">
+      <block type="math_number" id="_Bi6$P:LthbPU7lDmH5z">
+        <field name="NUM">6.13</field>
+      </block>
+    </value>
+    <value name="DEGREE_6">
+      <block type="math_number" id="7at3{C6uWfEjUrfmnuF,">
+        <field name="NUM">39.34</field>
+      </block>
+    </value>
+    <value name="DEGREE_7">
+      <block type="math_number" id="h~Vc;#j,a`f0YPi,6/H]">
+        <field name="NUM">-32.45</field>
+      </block>
+    </value>
+    <next>
+      <block type="robot_wait" id=").SC,ry`s)iGb/kvp8Gk">
+        <field name="WAIT_TIME">1</field>
+      </block>
+    </next>
+  </block>
+</xml>

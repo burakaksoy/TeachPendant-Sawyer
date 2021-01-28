@@ -85,6 +85,8 @@ class Blockly_impl(object):
             self.plugin_jogJointSpace = RRN.ConnectService(self.url_plugins_lst[0])
             self.plugin_jogCartesianSpace = RRN.ConnectService(self.url_plugins_lst[1])
             self.plugin_savePlayback = RRN.ConnectService(self.url_plugins_lst[2])
+
+            self.plugin_toolLinkAttacher = RRN.ConnectService(self.url_plugins_lst[3])
         else:
             # Give an error that says the robot plugins are already connected
             print("Robot plugins are already connected to Blockly service! Trying to connect again..")
@@ -288,7 +290,9 @@ class Blockly_impl(object):
 
             # Return the same type pose with the new calculated values
             value_pose_in_cam.R = R0_E
-            value_pose_in_cam.T = T0_obj
+            
+            position_offset = np.asarray([0,0,0.15], dtype=np.float32) # TODO: THIS HAS TO BE REMOVED AND HANDLED WITH THE POSE RELATED ARITHMATIC BLOCKS, THIS IS JUST TEMPORARY!!!
+            value_pose_in_cam.T = T0_obj + position_offset
 
             print("value_pose_in_cam.R" + str(value_pose_in_cam.R))
             print("value_pose_in_cam.T" + str(value_pose_in_cam.T))
@@ -354,6 +358,15 @@ class Blockly_impl(object):
 
     # --- UTILS related implementation of blockly functions: END -----------        
 
+    # --- TOOLS related implementation of blockly functions: BEGIN -----------        
+    def tool_link_attacher(self,text_robot_name,text_obj_name,dropdown_status):
+        try:
+            # todo
+            self.plugin_toolLinkAttacher.attach_link(str(text_robot_name),str(text_obj_name), int(dropdown_status))
+        except:
+            import traceback
+            print(traceback.format_exc()) 
+    # --- TOOLS related implementation of blockly functions: END -----------
 
 
 def main():

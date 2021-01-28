@@ -2,11 +2,11 @@
   <variables>
     <variable id="TCB:|K@NCwCK^+k}PC.v">pose</variable>
   </variables>
-  <block type="variables_set" id="]vnYyAD3kf^kqHfQk@_~" x="63" y="-59">
+  <block type="variables_set" id="]vnYyAD3kf^kqHfQk@_~" x="172" y="72">
     <field name="VAR" id="TCB:|K@NCwCK^+k}PC.v">pose</field>
     <value name="VALUE">
       <block type="camera_get_object_pose_z_required" id="7s_/h,AQ1^56u*u#_tx-">
-        <field name="OPTIONS_IMAGES">perfume_sim.png</field>
+        <field name="OPTIONS_IMAGES">blackbottle_sim.png</field>
         <field name="OPTIONS_CAMS">camera_sim1</field>
         <value name="Z_DISTANCE">
           <block type="math_number" id="-(%D|CL5_{Z.}cxs.9*!">
@@ -30,36 +30,12 @@
         </value>
         <next>
           <block type="robot_jog_cartesian_not_relative" id="`,p*eag3zS;hmLcKEg%R" inline="false">
-            <field name="SPEED">50</field>
+            <field name="SPEED">100</field>
             <value name="POSITION">
-              <block type="utils_arithmetic" id="7a:%rFF{_f5[`QhJvLuA">
-                <field name="NAME">ADD</field>
-                <value name="A">
-                  <block type="utils_position_in_pose" id="E}l$o{hGX/__xaL`1xM(">
-                    <value name="POSE">
-                      <block type="variables_get" id="2_kcn(B,=acoJwk`;n.i">
-                        <field name="VAR" id="TCB:|K@NCwCK^+k}PC.v">pose</field>
-                      </block>
-                    </value>
-                  </block>
-                </value>
-                <value name="B">
-                  <block type="utils_position" id="w3j6@4neiZWDw}/cFl#-">
-                    <value name="X">
-                      <block type="math_number" id="d{OS%c%){.AJUO::rwW|">
-                        <field name="NUM">0</field>
-                      </block>
-                    </value>
-                    <value name="Y">
-                      <block type="math_number" id="*I-PXci9@}Y_v%#A6Gvb">
-                        <field name="NUM">0</field>
-                      </block>
-                    </value>
-                    <value name="Z">
-                      <block type="math_number" id="r{926}59X6_DT0tuR$Rm">
-                        <field name="NUM">-0.15</field>
-                      </block>
-                    </value>
+              <block type="utils_position_in_pose" id="E}l$o{hGX/__xaL`1xM(">
+                <value name="POSE">
+                  <block type="variables_get" id="2_kcn(B,=acoJwk`;n.i">
+                    <field name="VAR" id="TCB:|K@NCwCK^+k}PC.v">pose</field>
                   </block>
                 </value>
               </block>
@@ -74,7 +50,7 @@
               </block>
             </value>
             <next>
-              <block type="robot_wait" id="J.of2`${!b|Y9t#55;B#">
+              <block type="robot_wait" id="2??tfc.Yj;N)rB=`n#A$">
                 <field name="WAIT_TIME">1</field>
               </block>
             </next>

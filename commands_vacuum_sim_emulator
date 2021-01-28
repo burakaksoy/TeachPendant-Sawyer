@@ -1,0 +1,4 @@
+sleep 1s;
+
+## Start vacuuming simulation emulator for gazebo link attacher (Run this after the simulation is started)
+gnome-terminal --tab --title="Vacuum Sim 1" --command "bash -c \"source ~/TeachPendantSpace/catkin_ws_RR/devel/setup.bash; cd ./vacuum_sim_emulator; python3 vacuum.py; exec bash\""; 

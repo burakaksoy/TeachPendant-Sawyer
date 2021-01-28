@@ -1,0 +1,257 @@
+<xml xmlns="https://developers.google.com/blockly/xml">
+  <variables>
+    <variable id="bSKd?-3B@%K0_-FW~7w,">pose2</variable>
+  </variables>
+  <block type="variables_set" id="OSQS%P4,ab;rlb~[Desh" x="26" y="-81">
+    <field name="VAR" id="bSKd?-3B@%K0_-FW~7w,">pose2</field>
+    <value name="VALUE">
+      <block type="camera_get_object_pose_z_required" id="~j=xPA)j)M*Em%h=O#kn">
+        <field name="OPTIONS_IMAGES">blackbottle_sim.png</field>
+        <field name="OPTIONS_CAMS">camera_sim1</field>
+        <value name="Z_DISTANCE">
+          <block type="math_number" id="(;rY0D-lP%%4Lk?T[e5R">
+            <field name="NUM">0.73</field>
+          </block>
+        </value>
+      </block>
+    </value>
+    <next>
+      <block type="variables_set" id="y/?%_Q?O{Y}3UTw!@n8E">
+        <field name="VAR" id="bSKd?-3B@%K0_-FW~7w,">pose2</field>
+        <value name="VALUE">
+          <block type="camera_transform_pose_to_robot" id="z7tO9X~ql^{F9JAL)u-|">
+            <field name="OPTIONS_CAMS">camera_sim1</field>
+            <value name="POSE_IN_CAM">
+              <block type="variables_get" id="-dp(0V*9}r[Dh$*zimv}">
+                <field name="VAR" id="bSKd?-3B@%K0_-FW~7w,">pose2</field>
+              </block>
+            </value>
+          </block>
+        </value>
+        <next>
+          <block type="robot_jog_cartesian_not_relative" id="/vT_!%_~FM`$SxEa@Lyv" inline="false">
+            <field name="SPEED">100</field>
+            <value name="POSITION">
+              <block type="utils_position_in_pose" id="E}l$o{hGX/__xaL`1xM(">
+                <value name="POSE">
+                  <block type="variables_get" id="#idGmST@F:FEeJ2fhIyx">
+                    <field name="VAR" id="bSKd?-3B@%K0_-FW~7w,">pose2</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <value name="ORIENTATION">
+              <block type="utils_orientation_in_pose" id="Hy`yp*XuL_EK4qk?*)qv">
+                <value name="POSE">
+                  <block type="variables_get" id="6[~LK11Y.1xE/zcJBEh!">
+                    <field name="VAR" id="bSKd?-3B@%K0_-FW~7w,">pose2</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <next>
+              <block type="robot_wait" id="yDEU!zV5~yYsTNLYTkkS">
+                <field name="WAIT_TIME">3</field>
+                <next>
+                  <block type="robot_jog_cartesian_relative" id="NF~CON3;#L1~;NVUWSyt">
+                    <field name="SPEED">100</field>
+                    <value name="POSITION">
+                      <block type="utils_position" id="encYpsH%YD(N)g3u.t2X">
+                        <value name="X">
+                          <block type="math_number" id="geW|_b-Ra8NMVg)wj*L:">
+                            <field name="NUM">-0.1</field>
+                          </block>
+                        </value>
+                        <value name="Y">
+                          <block type="math_number" id="*0IB0mA49zIGtyD]K6F=">
+                            <field name="NUM">0</field>
+                          </block>
+                        </value>
+                        <value name="Z">
+                          <block type="math_number" id="UWN?G5E;IU`+@GB3DGg/">
+                            <field name="NUM">0</field>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                    <value name="ORIENTATION">
+                      <block type="utils_orientation" id="we61C2OSfw.{Ww-(C3C*">
+                        <value name="TX">
+                          <block type="math_number" id="vNBa#q306xQ,bYq@ql8t">
+                            <field name="NUM">0</field>
+                          </block>
+                        </value>
+                        <value name="TY">
+                          <block type="math_number" id="Jo6@fecvdQW+C5J0{-+C">
+                            <field name="NUM">0</field>
+                          </block>
+                        </value>
+                        <value name="TZ">
+                          <block type="math_number" id="gdq!;8*SXtdq2,Y8H+MB">
+                            <field name="NUM">0</field>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                    <next>
+                      <block type="robot_wait" id="9G2YsO:,GGz.rFMr8qJK">
+                        <field name="WAIT_TIME">1</field>
+                        <next>
+                          <block type="variables_set" id="9Q*N]3Kj:2cA7[!rdPTE">
+                            <field name="VAR" id="bSKd?-3B@%K0_-FW~7w,">pose2</field>
+                            <value name="VALUE">
+                              <block type="camera_get_object_pose_z_required" id="fk:M|Um[/nPBLU;Uk1/!">
+                                <field name="OPTIONS_IMAGES">box_sim.png</field>
+                                <field name="OPTIONS_CAMS">camera_sim1</field>
+                                <value name="Z_DISTANCE">
+                                  <block type="math_number" id="4B52dNt0gKFOCC`Eg3##">
+                                    <field name="NUM">0.73</field>
+                                  </block>
+                                </value>
+                              </block>
+                            </value>
+                            <next>
+                              <block type="variables_set" id="rXM.E)zpM@`AVu?Rd}u@">
+                                <field name="VAR" id="bSKd?-3B@%K0_-FW~7w,">pose2</field>
+                                <value name="VALUE">
+                                  <block type="camera_transform_pose_to_robot" id="jjZKV0lHQOJ]yjZ2Auv]">
+                                    <field name="OPTIONS_CAMS">camera_sim1</field>
+                                    <value name="POSE_IN_CAM">
+                                      <block type="variables_get" id="/)D}u3{elxQ4kPascKn(">
+                                        <field name="VAR" id="bSKd?-3B@%K0_-FW~7w,">pose2</field>
+                                      </block>
+                                    </value>
+                                  </block>
+                                </value>
+                                <next>
+                                  <block type="robot_jog_cartesian_not_relative" id="k0S0=mX6G{FXY6|x#`y6" inline="false">
+                                    <field name="SPEED">100</field>
+                                    <value name="POSITION">
+                                      <block type="utils_position_in_pose" id="trVrO]m#H$bgqS$_fMu.">
+                                        <value name="POSE">
+                                          <block type="variables_get" id="/q%eUz_jSy/)jRy+bFlQ">
+                                            <field name="VAR" id="bSKd?-3B@%K0_-FW~7w,">pose2</field>
+                                          </block>
+                                        </value>
+                                      </block>
+                                    </value>
+                                    <value name="ORIENTATION">
+                                      <block type="utils_orientation_in_pose" id="O$%Bt91_s(MQ2:MY4tHU">
+                                        <value name="POSE">
+                                          <block type="variables_get" id="RPU3o0r5G2Pt)5OvR1j3">
+                                            <field name="VAR" id="bSKd?-3B@%K0_-FW~7w,">pose2</field>
+                                          </block>
+                                        </value>
+                                      </block>
+                                    </value>
+                                    <next>
+                                      <block type="robot_wait" id="3RvN!=#/ec{qI@W.*p%3">
+                                        <field name="WAIT_TIME">3</field>
+                                        <next>
+                                          <block type="robot_jog_cartesian_relative" id="]m2_gwmD0lMVKA{?:au$">
+                                            <field name="SPEED">100</field>
+                                            <value name="POSITION">
+                                              <block type="utils_position" id="0If)=?eU-XE.],7F-l3U">
+                                                <value name="X">
+                                                  <block type="math_number" id="i8BSSD4|.?=3AL6|y:R+">
+                                                    <field name="NUM">-0.1</field>
+                                                  </block>
+                                                </value>
+                                                <value name="Y">
+                                                  <block type="math_number" id="n@Vgihw-m:YOiYN7V!`Y">
+                                                    <field name="NUM">0</field>
+                                                  </block>
+                                                </value>
+                                                <value name="Z">
+                                                  <block type="math_number" id="/$/8@-u~)1fCVL@Fu]rm">
+                                                    <field name="NUM">0</field>
+                                                  </block>
+                                                </value>
+                                              </block>
+                                            </value>
+                                            <value name="ORIENTATION">
+                                              <block type="utils_orientation" id="7,i$5:K@n7+4jApq9e?s">
+                                                <value name="TX">
+                                                  <block type="math_number" id="wH6z=pg7fZ8)41T5BtXz">
+                                                    <field name="NUM">0</field>
+                                                  </block>
+                                                </value>
+                                                <value name="TY">
+                                                  <block type="math_number" id="z4*31+jp+?)$s_B}tbn%">
+                                                    <field name="NUM">0</field>
+                                                  </block>
+                                                </value>
+                                                <value name="TZ">
+                                                  <block type="math_number" id="bfT6Ipr1P]7]we]u)^^W">
+                                                    <field name="NUM">0</field>
+                                                  </block>
+                                                </value>
+                                              </block>
+                                            </value>
+                                            <next>
+                                              <block type="robot_wait" id="q}rrW:f$MG}Ef|%b*#+!">
+                                                <field name="WAIT_TIME">1</field>
+                                                <next>
+                                                  <block type="robot_jog_joints_not_relative" id="GwQ/O1vRLV+*)C-iSj?,">
+                                                    <field name="SPEED">100</field>
+                                                    <value name="DEGREE_1">
+                                                      <block type="math_number" id="1r%|`cfLiaBekgxgGnm.">
+                                                        <field name="NUM">20.52</field>
+                                                      </block>
+                                                    </value>
+                                                    <value name="DEGREE_2">
+                                                      <block type="math_number" id="(VGn`hVbn.76u`$Jp`A1">
+                                                        <field name="NUM">-58.31</field>
+                                                      </block>
+                                                    </value>
+                                                    <value name="DEGREE_3">
+                                                      <block type="math_number" id="tAlFN{UuqK2toWW|[)JJ">
+                                                        <field name="NUM">-7.37</field>
+                                                      </block>
+                                                    </value>
+                                                    <value name="DEGREE_4">
+                                                      <block type="math_number" id="[U^pbcgI/aykNxE($v+Z">
+                                                        <field name="NUM">106.43</field>
+                                                      </block>
+                                                    </value>
+                                                    <value name="DEGREE_5">
+                                                      <block type="math_number" id="|fiJPkQi5]~Ms^UOai/v">
+                                                        <field name="NUM">6.13</field>
+                                                      </block>
+                                                    </value>
+                                                    <value name="DEGREE_6">
+                                                      <block type="math_number" id="(At/j.r2fo5|QH]DX2Vh">
+                                                        <field name="NUM">39.34</field>
+                                                      </block>
+                                                    </value>
+                                                    <value name="DEGREE_7">
+                                                      <block type="math_number" id="RiTG08]cyJ[L#)i)CvT)">
+                                                        <field name="NUM">-32.45</field>
+                                                      </block>
+                                                    </value>
+                                                  </block>
+                                                </next>
+                                              </block>
+                                            </next>
+                                          </block>
+                                        </next>
+                                      </block>
+                                    </next>
+                                  </block>
+                                </next>
+                              </block>
+                            </next>
+                          </block>
+                        </next>
+                      </block>
+                    </next>
+                  </block>
+                </next>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </next>
+  </block>
+</xml>
