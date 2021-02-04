@@ -25,6 +25,8 @@ class Blockly_impl(object):
         self.plugin_jogJointSpace = None
         self.plugin_jogCartesianSpace = None
         self.plugin_savePlayback = None
+        self.plugin_tool = None
+        self.plugin_toolLinkAttacher = None
 
         self.url_plugins_vision_lst = [] # The order will be :
         # url_plugin_cameraFeedback, url_plugin_cameraTraining, url_plugin_cameraCalibration, url_plugin_cameraTracking
@@ -48,6 +50,8 @@ class Blockly_impl(object):
         self.plugin_jogJointSpace = None
         self.plugin_jogCartesianSpace = None
         self.plugin_savePlayback = None
+        self.plugin_tool = None
+        self.plugin_toolLinkAttacher = None
 
         # Create a folder for saved blockly workspaces
         self.path = "./blockly-savedWorkspaces"
@@ -82,11 +86,16 @@ class Blockly_impl(object):
             print("robot plugin urls:")
             print(self.url_plugins_lst)
 
-            self.plugin_jogJointSpace = RRN.ConnectService(self.url_plugins_lst[0])
-            self.plugin_jogCartesianSpace = RRN.ConnectService(self.url_plugins_lst[1])
-            self.plugin_savePlayback = RRN.ConnectService(self.url_plugins_lst[2])
-
-            self.plugin_toolLinkAttacher = RRN.ConnectService(self.url_plugins_lst[3])
+            if not self.url_plugins_lst[0] == '':
+                self.plugin_jogJointSpace = RRN.ConnectService(self.url_plugins_lst[0])
+            if not self.url_plugins_lst[1] == '':
+                self.plugin_jogCartesianSpace = RRN.ConnectService(self.url_plugins_lst[1])
+            if not self.url_plugins_lst[2] == '':
+                self.plugin_savePlayback = RRN.ConnectService(self.url_plugins_lst[2])
+            if not self.url_plugins_lst[3] == '':
+                self.plugin_tool = RRN.ConnectService(self.url_plugins_lst[3])
+            if not self.url_plugins_lst[4] == '':
+                self.plugin_toolLinkAttacher = RRN.ConnectService(self.url_plugins_lst[4])
         else:
             # Give an error that says the robot plugins are already connected
             print("Robot plugins are already connected to Blockly service! Trying to connect again..")
@@ -100,10 +109,14 @@ class Blockly_impl(object):
             print("vision plugin urls:")
             print(self.url_plugins_vision_lst)
 
-            self.plugin_cameraFeedback = RRN.ConnectService(self.url_plugins_vision_lst[0])
-            self.plugin_cameraTraining = RRN.ConnectService(self.url_plugins_vision_lst[1])
-            self.plugin_cameraCalibration = RRN.ConnectService(self.url_plugins_vision_lst[2])
-            self.plugin_cameraTracking = RRN.ConnectService(self.url_plugins_vision_lst[3])
+            if not self.url_plugins_vision_lst[0] == '':
+                self.plugin_cameraFeedback = RRN.ConnectService(self.url_plugins_vision_lst[0])
+            if not self.url_plugins_vision_lst[1] == '':
+                self.plugin_cameraTraining = RRN.ConnectService(self.url_plugins_vision_lst[1])
+            if not self.url_plugins_vision_lst[2] == '':
+                self.plugin_cameraCalibration = RRN.ConnectService(self.url_plugins_vision_lst[2])
+            if not self.url_plugins_vision_lst[3] == '':
+                self.plugin_cameraTracking = RRN.ConnectService(self.url_plugins_vision_lst[3])
 
         else:
             # Give an error that says the robot plugins are already connected
@@ -365,7 +378,17 @@ class Blockly_impl(object):
             self.plugin_toolLinkAttacher.attach_link(str(text_robot_name),str(text_obj_name), int(dropdown_status))
         except:
             import traceback
-            print(traceback.format_exc()) 
+            print(traceback.format_exc())
+
+    def tool_gripper(self,dropdown_status):
+        try:
+            if bool(int(dropdown_status)):
+                self.plugin_tool.active_tool_open()
+            else:
+                self.plugin_tool.active_tool_close()
+        except:
+            import traceback
+            print(traceback.format_exc())     
     # --- TOOLS related implementation of blockly functions: END -----------
 
 

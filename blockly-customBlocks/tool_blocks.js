@@ -8,11 +8,11 @@ Blockly.defineBlocksWithJsonArray([{
       "options": [
         [
           "OPEN",
-          "ON"
+          "1"
         ],
         [
           "CLOSED",
-          "OFF"
+          "0"
         ]
       ]
     }
@@ -61,7 +61,7 @@ Blockly.defineBlocksWithJsonArray([{
 Blockly.Python['tool_gripper'] = function(block) {
   var dropdown_gripper_status = block.getFieldValue('GRIPPER_STATUS');
   // TODO: Assemble Python into code variable.
-  var code = '...\n';
+  var code = 'self.tool_gripper(' + dropdown_gripper_status + ')\n';
   return code;
 };
 Blockly.Python['tool_link_attacher'] = function(block) {

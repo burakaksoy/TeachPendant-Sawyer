@@ -1,0 +1,15 @@
+#Service to provide interface to RR-webBrowser-plugin-tool
+service experimental.pluginTool
+
+stdver 0.10
+
+object Tool
+    function void connect2robot(string url_robot)
+    function void connect2all_tools(string{list} tool_connection_urls_lst, string{list} tool_node_names_lst)
+
+    # Connects the active robot to the active tool of that robot by matching devices, returns the url of the 
+    function string connect2active_tool()
+
+    function void active_tool_open()
+    function void active_tool_close()
+end

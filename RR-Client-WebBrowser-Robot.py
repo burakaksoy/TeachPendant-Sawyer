@@ -881,12 +881,10 @@ async def client_drive():
         print_div('Selected Robot url: '+ url + '<br>')
         # ------------
 
-        # Set the url of the robot
-        # url = RobotConnectionURLs[1]
-        # print_div(str(url) + "<br>")
+        ToolConnectionURLs = await plugin_discovery.async_available_tool_ConnectionURLs(None)
+        tool_node_names_lst = await plugin_discovery.async_available_tool_NodeNames(None)
 
-        # await RRN.AsyncSleep(2,None)
-
+       
         #Connect to the service
         # global d # d is the robot object from RR
         # d = await RRN.AsyncConnectService(url,None,None,None,None)
@@ -962,16 +960,33 @@ async def client_drive():
         print_div('SavePlayback plugin is connected..<br>')
 
 
+        ## Tool plugin
+        print_div('Tool plugin is connecting..<br>')
+
+        url_plugin_tool = 'rr+ws://' + ip_plugins + ':8900?service=Tool'
+        # url_plugin_tool = ''
+        if not url_plugin_tool == '':
+            global plugin_tool
+            plugin_tool = await RRN.AsyncConnectService(url_plugin_tool,None,None,None,None)
+            await plugin_tool.async_connect2robot(url,None)
+            await plugin_tool.async_connect2all_tools(ToolConnectionURLs,tool_node_names_lst,None)
+            active_tool_url_debug = await plugin_tool.async_connect2active_tool(None)
+            
+            print_div("active_tool_url_debug: " + str(active_tool_url_debug) + "<br>")
+            print_div('Tool plugin is connected..<br>')
+
+        
         ## Simulation Tool Link Attacher plugin
         print_div('Simulation Tool Link Attacher plugin is connecting..<br>')
 
-        # url_plugin_toolLinkAttacher = 'rr+ws://localhost:8894?service=ToolLinkAttacher'
-        url_plugin_toolLinkAttacher = 'rr+ws://' + ip_plugins + ':8899?service=ToolLinkAttacher'
-        global plugin_toolLinkAttacher
-        plugin_toolLinkAttacher = await RRN.AsyncConnectService(url_plugin_toolLinkAttacher,None,None,None,None)
-        # # Make Tool attacher plugin to connect to all tools and make it get the all corresponding tool (node) names
-        # await plugin_toolLinkAttacher.async_connect2all_tools(ToolConnectionURLs,tool_node_names_lst,None) #--> ToolConnectionURLs,tool_node_names_lst will be obtained from auto discovery 
-        print_div('ToolLinkAttacher plugin is connected..<br>')
+        # url_plugin_toolLinkAttacher = 'rr+ws://' + ip_plugins + ':8899?service=ToolLinkAttacher'
+        url_plugin_toolLinkAttacher = ''
+        if not url_plugin_toolLinkAttacher == '':
+            global plugin_toolLinkAttacher
+            plugin_toolLinkAttacher = await RRN.AsyncConnectService(url_plugin_toolLinkAttacher,None,None,None,None)
+            print_div('ToolLinkAttacher plugin is connected..<br>')
+
+        
 
 
         ## Blockly plugin
@@ -980,8 +995,8 @@ async def client_drive():
         url_plugin_blockly = 'rr+ws://' + ip_plugins + ':8897?service=Blockly'
         global plugin_blockly
         plugin_blockly = await RRN.AsyncConnectService(url_plugin_blockly,None,None,None,None)
-        # url_plugins_lst = [url_plugin_jogJointSpace, url_plugin_jogCartesianSpace, url_plugin_savePlayback]
-        url_plugins_lst = [url_plugin_jogJointSpace, url_plugin_jogCartesianSpace, url_plugin_savePlayback, url_plugin_toolLinkAttacher]
+        
+        url_plugins_lst = [url_plugin_jogJointSpace, url_plugin_jogCartesianSpace, url_plugin_savePlayback, url_plugin_tool, url_plugin_toolLinkAttacher]
         await plugin_blockly.async_connect2plugins(url_plugins_lst,None)
         # Update blockly saved workspaces both on UI and RunTime
         await async_update_blockly_saved_workspaces() 

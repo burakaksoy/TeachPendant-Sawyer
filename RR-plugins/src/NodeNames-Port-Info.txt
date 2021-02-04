@@ -13,4 +13,5 @@
 ("experimental.plugin-blockly-service", 8897)
 ("experimental.plugin-cameraTracking-service", 8898)
 ("experimental.plugin-toolLinkAttacher-service", 8899)
+("experimental.plugin-tool-service", 8900)
 
