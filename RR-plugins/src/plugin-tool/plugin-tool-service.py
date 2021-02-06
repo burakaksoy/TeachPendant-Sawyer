@@ -61,6 +61,8 @@ class Tool_impl(object):
             try:
                 self.active_tool_identifier =  self.robot.robot_info.chains[0].current_tool.device_info.device
             except:
+                import traceback
+                print(traceback.format_exc())
                 print("active tool identifier could not found from the robot, check whether robot is connected to a tool")
             # log that the robot is successfully connected  
             print("Robot is connected to plugin tool service!")

@@ -41,6 +41,7 @@ class Discovery_impl(object):
     # -----------------------------------------------------------
     # For robots
     def autodiscover(self):
+        time.sleep(2)
         self.res=RRN.FindServiceByType(self.service_type, self.transportschemes)
         for serviceinfo2 in self.res:
             print(serviceinfo2.NodeID) 
@@ -89,6 +90,7 @@ class Discovery_impl(object):
     # -----------------------------------------------------------
     # For cameras 
     def autodiscover_cams(self):
+        time.sleep(2)
         self.res_cams = RRN.FindServiceByType(self.service_type_cams, self.transportschemes)
         for serviceinfo2 in self.res_cams:
             print(serviceinfo2.NodeID) 
@@ -137,6 +139,7 @@ class Discovery_impl(object):
     # -----------------------------------------------------------
     # For tools 
     def autodiscover_tools(self):
+        time.sleep(2)
         self.res_tools = RRN.FindServiceByType(self.service_type_tools, self.transportschemes)
         for serviceinfo2 in self.res_tools:
             print(serviceinfo2.NodeID) 

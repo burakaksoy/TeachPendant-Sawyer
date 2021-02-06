@@ -884,6 +884,9 @@ async def client_drive():
         ToolConnectionURLs = await plugin_discovery.async_available_tool_ConnectionURLs(None)
         tool_node_names_lst = await plugin_discovery.async_available_tool_NodeNames(None)
 
+        print_div("ToolConnectionURLs" + str(ToolConnectionURLs) + "<br>")
+        print_div("tool_node_names_lst" + str(tool_node_names_lst) + "<br>")
+
        
         #Connect to the service
         # global d # d is the robot object from RR
