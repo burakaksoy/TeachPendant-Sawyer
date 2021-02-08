@@ -98,18 +98,25 @@ class Tool_impl(object):
         if self.is_tools_connected and self.is_robot_connected:
             # match the identifiers between the all tools and the active robot tool to register the active tool
             for tool_name, tool_identifier in self.tool_identifiers_dict.items():
-                is_match = self._identifier_util.IsIdentifierMatch(tool_identifier, self.active_tool_identifier)
-                print("is_match: " + str(is_match))
-
                 # Note: IsIdentifierMatch is designed to consider wildcards
-                # so if one identifier has an empty name or all zero UUID, it will match any value
+                # so if one identifier has an empty name or all zero UUID (ie identifier is any), it will match any value
                 # if both are filled in, it will give a direct true or false
+                # So, Prevent Matching if Identifier is any
 
-                if is_match:
-                    self.active_tool = self.tool_objs_dict[tool_name]
-                    self.active_tool_url = self.tool_name_url_dict[tool_name]
-                    self.is_active_tool_connected = True
-                    return self.active_tool_url
+                is_any_identifier_tool = self._identifier_util.IsIdentifierAny(tool_identifier)
+                is_any_identifier_tool_active = self._identifier_util.IsIdentifierAny(self.active_tool_identifier)
+                if not is_any_identifier_tool and not is_any_identifier_tool_active:
+                    is_match = self._identifier_util.IsIdentifierMatch(tool_identifier, self.active_tool_identifier)
+                    print("is_match: " + str(is_match))
+
+                    if is_match:
+                        # tool_name = 'abb_gripper'
+                        self.active_tool = self.tool_objs_dict[tool_name]
+                        self.active_tool_url = self.tool_name_url_dict[tool_name]
+                        self.is_active_tool_connected = True
+                        return self.active_tool_url
+                else:
+                    print("One of the identifiers ("+ str(tool_name) ", or its robot active tool) is any, so skipping this tool for matching")
         else:
             # Give an error message to show that the robot or the tools are not connected
             print("Robot or the tools are not connected to plugin tool service yet!")

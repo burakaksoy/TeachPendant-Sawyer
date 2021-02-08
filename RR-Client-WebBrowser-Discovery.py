@@ -78,6 +78,9 @@ class ClientDiscovery(object):
         print_div("Auto discovering robots..")
         await self.plugin_discovery.async_autodiscover(None)
 
+        print_div("Auto discovering tools..")
+        await self.plugin_discovery.async_autodiscover_tools(None)
+
         try:
             # print_div("Clearing the previous available robot options..")
             length = self.available_robots_list.options.length
@@ -130,8 +133,7 @@ class ClientDiscovery(object):
 
 
 async def client_discovery():
-    # ip_plugins = 'localhost'
-    # ip_plugins = '192.168.50.152'
+    # ip_plugins = '192.168.50.51'
     ip_plugins = 'localhost'
     
     try:
