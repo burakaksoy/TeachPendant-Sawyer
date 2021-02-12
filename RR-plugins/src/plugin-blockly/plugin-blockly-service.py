@@ -286,9 +286,12 @@ class Blockly_impl(object):
 
             # Predefined pose of the camera wrt robot base
             # TODO: Will be selected via dropdown_cams later 
-            T0_c = np.asarray([0.5,0,0.73], dtype=np.float32) # Predefined when camera is fixed
-            # T0_c = np.asarray([0.5,0.5,0.73], dtype=np.float32) # Predefined when camera is fixed
-            R0_c = np.asarray([[0,1,0],[1,0,0],[0,0,-1]], dtype=np.float32) # Predefined when camera is fixed
+            
+            # T0_c = np.asarray([0.5,0,0.73], dtype=np.float32) # Predefined when camera is fixed
+            T0_c = np.asarray([0.6659,-0.8237,1.1862], dtype=np.float32) # Predefined when camera is fixed (LAB KINECT)
+
+            # R0_c = np.asarray([[0,1,0],[1,0,0],[0,0,-1]], dtype=np.float32) # Predefined when camera is fixed
+            R0_c = np.asarray([[0,-1,0],[-1,0,0],[0,0,-1]], dtype=np.float32) # Predefined when camera is fixed (LAB KINECT)
 
             # For sawyer, fixed rotation btw base to initial end effector
             R0_E0 = np.asarray([[1,0,0],[0,-1,0],[0,0,-1]], dtype=np.float32)
@@ -304,7 +307,7 @@ class Blockly_impl(object):
             # Return the same type pose with the new calculated values
             value_pose_in_cam.R = R0_E
             
-            position_offset = np.asarray([0,0,0.15], dtype=np.float32) # TODO: THIS HAS TO BE REMOVED AND HANDLED WITH THE POSE RELATED ARITHMATIC BLOCKS, THIS IS JUST TEMPORARY!!!
+            position_offset = np.asarray([0,0,0.1], dtype=np.float32) # TODO: THIS HAS TO BE REMOVED AND HANDLED WITH THE POSE RELATED ARITHMATIC BLOCKS, THIS IS JUST TEMPORARY!!!
             value_pose_in_cam.T = T0_obj + position_offset
 
             print("value_pose_in_cam.R" + str(value_pose_in_cam.R))
