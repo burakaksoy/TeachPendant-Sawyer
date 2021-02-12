@@ -936,7 +936,7 @@ async def client_vision():
     # ip_cam = 'localhost'
     # ip_cam = '192.168.50.40'
     
-    # ip_plugins = '192.168.50.51'
+    # ip_plugins = '192.168.50.20'
     ip_plugins = 'localhost'
     
     try:

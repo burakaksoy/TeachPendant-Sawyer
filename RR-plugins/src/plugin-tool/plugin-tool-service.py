@@ -105,18 +105,18 @@ class Tool_impl(object):
 
                 is_any_identifier_tool = self._identifier_util.IsIdentifierAny(tool_identifier)
                 is_any_identifier_tool_active = self._identifier_util.IsIdentifierAny(self.active_tool_identifier)
-                if not is_any_identifier_tool and not is_any_identifier_tool_active:
-                    is_match = self._identifier_util.IsIdentifierMatch(tool_identifier, self.active_tool_identifier)
-                    print("is_match: " + str(is_match))
+                # if not is_any_identifier_tool and not is_any_identifier_tool_active:
+                is_match = self._identifier_util.IsIdentifierMatch(tool_identifier, self.active_tool_identifier)
+                print("is_match: " + str(is_match))
 
-                    if is_match:
-                        # tool_name = 'abb_gripper'
-                        self.active_tool = self.tool_objs_dict[tool_name]
-                        self.active_tool_url = self.tool_name_url_dict[tool_name]
-                        self.is_active_tool_connected = True
-                        return self.active_tool_url
-                else:
-                    print("One of the identifiers ("+ str(tool_name) ", or its robot active tool) is any, so skipping this tool for matching")
+                if is_match:
+                    # tool_name = 'abb_gripper'
+                    self.active_tool = self.tool_objs_dict[tool_name]
+                    self.active_tool_url = self.tool_name_url_dict[tool_name]
+                    self.is_active_tool_connected = True
+                    return self.active_tool_url
+                # else:
+                #     print("One of the identifiers ("+ str(tool_name) + ", or its robot active tool) is any, so skipping this tool for matching")
         else:
             # Give an error message to show that the robot or the tools are not connected
             print("Robot or the tools are not connected to plugin tool service yet!")

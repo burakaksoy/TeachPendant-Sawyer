@@ -133,7 +133,7 @@ class ClientDiscovery(object):
 
 
 async def client_discovery():
-    # ip_plugins = '192.168.50.51'
+    # ip_plugins = '192.168.50.20'
     ip_plugins = 'localhost'
     
     try:

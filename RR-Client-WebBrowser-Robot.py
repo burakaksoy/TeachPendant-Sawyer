@@ -813,7 +813,7 @@ async def client_drive():
     # ip = 'localhost' # robot service ip
     # ip = 'localhost'
     
-    # ip_plugins = '192.168.50.51' # plugins ip
+    # ip_plugins = '192.168.50.20' # plugins ip
     ip_plugins = 'localhost' # plugins ip
 
     # url ='rr+ws://'+ ip +':58653?service=robot'   # Sawyer simulation
