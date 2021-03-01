@@ -10,7 +10,7 @@
 
         <!-- INCLUDE GOLDEN LAYOUT -->
         <!-- GoldenLayout needs jQuery to work -->
-        <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+        <!-- <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.1.min.js"></script> -->
         <!-- add GoldenLayout's main JS and CSS file, -->
         <script type="text/javascript" src="https://golden-layout.com/files/latest/js/goldenlayout.min.js"></script>
         <link type="text/css" rel="stylesheet" href="https://golden-layout.com/files/latest/css/goldenlayout-base.css" />
@@ -317,6 +317,16 @@
                     <td>
                         <div align="left" id="print_div_ik_info"></div>
                     </td>
+                </tr>
+            </table>
+        </template>
+
+        <template id="template_RobotPreview"> 
+            <table id="table_RobotPreview" border="1"  > <!-- CELLPADDING="4" CELLSPACING="3"> -->
+                <tr> 
+                    <td>
+                        <iframe src="http://localhost:8000" style="border:none; width: 100%; height: 100%" title="Robot Preview Iframe"  id="iframe_RobotPreview"></iframe>
+                    </td>          
                 </tr>
             </table>
         </template>

@@ -14,4 +14,6 @@
 ("experimental.plugin-cameraTracking-service", 8898)
 ("experimental.plugin-toolLinkAttacher-service", 8899)
 ("experimental.plugin-tool-service", 8900)
+("experimental.plugin-robotViewer-service", 8901)
+
 

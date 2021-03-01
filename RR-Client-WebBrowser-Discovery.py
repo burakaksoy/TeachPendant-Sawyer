@@ -133,8 +133,8 @@ class ClientDiscovery(object):
 
 
 async def client_discovery():
-    ip_plugins = '128.113.224.98'
-    # ip_plugins = 'localhost'
+    # ip_plugins = '128.113.224.98'
+    ip_plugins = 'localhost'
     
     try:
         # Run the client as a class to access client data in a more convenient way

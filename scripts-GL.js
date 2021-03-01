@@ -74,7 +74,7 @@ var config =
                     content: 
                     [
                         {
-                            width: 35,
+                            width: 25,
                             isClosable: false,
                             type:'component',
                             componentName: 'Joint Space Control',
@@ -88,11 +88,18 @@ var config =
                             componentState: {comp_name: 'task_space_control'}
                         },
                         {
-                            width: 40,
+                            width: 25,
                             isClosable: false,
                             type:'component',
                             componentName: 'Save Playback Poses',
                             componentState: {comp_name: 'save_playback_poses' }
+                        },
+                        {
+                            width: 25,
+                            isClosable: false,
+                            type:'component',
+                            componentName: 'Robot Preview',
+                            componentState: {comp_name: 'robot_preview' }
                         }
                     ]
                 },
@@ -226,6 +233,15 @@ function initializeLayout(){
         // container.getElement().append(table_SavePlaybackPoses);
 
         var temp = document.getElementById('template_SavePlaybackPoses');
+        var clon = temp.content.cloneNode(true);
+        container.getElement().append(clon);
+    });
+
+    myLayout.registerComponent( 'Robot Preview', function( container, state ){
+        // var table_RobotPreview = $('#table_RobotPreview'); 
+        // container.getElement().append(table_RobotPreview);
+
+        var temp = document.getElementById('template_RobotPreview');
         var clon = temp.content.cloneNode(true);
         container.getElement().append(clon);
     });
@@ -364,6 +380,7 @@ $(document).ready(function() {
     addMenuItem( 'Joint Space Control');
     addMenuItem( 'Task Space Control');
     addMenuItem( 'Save Playback Poses');
+    addMenuItem( 'Robot Preview');
     addMenuItem( 'Robot Status');
     addMenuItem( 'Debug Output Div');
     addMenuItem( 'VISION');

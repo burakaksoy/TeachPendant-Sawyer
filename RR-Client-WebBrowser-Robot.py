@@ -813,8 +813,8 @@ async def client_drive():
     # ip = 'localhost' # robot service ip
     # ip = 'localhost'
     
-    ip_plugins = '128.113.224.98' # plugins ip
-    # ip_plugins = 'localhost' # plugins ip
+    # ip_plugins = '128.113.224.98' # plugins ip
+    ip_plugins = 'localhost' # plugins ip
 
     # url ='rr+ws://'+ ip +':58653?service=robot'   # Sawyer simulation
     # url ='rr+ws://128.113.224.23:58654?service=robot' # sawyer in lab
@@ -960,12 +960,22 @@ async def client_drive():
         await plugin_savePlayback.async_connect2robot(url,None)
         print_div('SavePlayback plugin is connected..<br>')
 
+        ## RobotViewer plugin
+        print_div('RobotViewer plugin is connecting..<br>')
+
+        # url_plugin_robotViewer = 'rr+ws://localhost:8901?service=RobotViewer'
+        url_plugin_robotViewer = 'rr+ws://' + ip_plugins + ':8901?service=RobotViewer'
+        global plugin_robotViewer
+        plugin_robotViewer = await RRN.AsyncConnectService(url_plugin_robotViewer,None,None,None,None)
+        await plugin_robotViewer.async_connect2robot(url,None)
+        print_div('RobotViewer plugin is connected..<br>')
+
 
         ## Tool plugin
         print_div('Tool plugin is connecting..<br>')
 
-        url_plugin_tool = 'rr+ws://' + ip_plugins + ':8900?service=Tool'
-        # url_plugin_tool = ''
+        # url_plugin_tool = 'rr+ws://' + ip_plugins + ':8900?service=Tool'
+        url_plugin_tool = ''
         if not url_plugin_tool == '':
             global plugin_tool
             plugin_tool = await RRN.AsyncConnectService(url_plugin_tool,None,None,None,None)
@@ -1174,6 +1184,8 @@ async def client_drive():
             # _, joints_text = await update_joint_info() # Joint angles in radian ndarray, N x 1 and str
             joints_text = await update_joint_info() # Joint angles as str
             print_div_j_info(joints_text)
+
+            await plugin_robotViewer.async_update_current_view(None)
             
             # UPdate the end effector pose info
             await update_end_info()
@@ -1212,6 +1224,7 @@ async def client_drive():
         button_theta_Y_neg.removeEventListener("mousedown", tY_neg_func)
         button_theta_Z_pos.removeEventListener("mousedown", tZ_pos_func)
         button_theta_Z_neg.removeEventListener("mousedown", tZ_neg_func)
+        
         button_save_cur_pose.removeEventListener("click", save_cur_pose_func)
         button_go_sel_pose.removeEventListener("click", go_sel_pose_func)
         button_playback_poses.removeEventListener("click", playback_poses_func)
@@ -1220,6 +1233,7 @@ async def client_drive():
         button_del_sel_pose.removeEventListener("click", del_sel_pose_func)
         button_up_sel_pose.removeEventListener("click", up_sel_pose_func)
         button_down_sel_pose.removeEventListener("click", down_sel_pose_func)
+
         button_execute_blockly.removeEventListener("click", execute_blockly_func)
         button_load_blocks.removeEventListener("click", load_blocks_func)
         button_delete_blocks.removeEventListener("click", delete_blocks_func)

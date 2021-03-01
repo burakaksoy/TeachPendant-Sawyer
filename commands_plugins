@@ -3,6 +3,8 @@ gnome-terminal --tab --title="RR plugin_jogJointSpace service" --command "bash -
 gnome-terminal --tab --title="RR plugin_jogCartesianSpace service" --command "bash -c \"cd ./RR-plugins/src/plugin-jogCartesianSpace; python3 plugin-jogCartesianSpace-service.py; exec bash\"";
 gnome-terminal --tab --title="RR plugin_savePlayback service" --command "bash -c \"cd ./RR-plugins/src/plugin-savePlayback; python3 plugin-savePlayback-service.py; exec bash\"";
 
+gnome-terminal --tab --title="RR plugin_robotViewer service" --command "bash -c \"cd ./RR-plugins/src/plugin-robotViewer; python3 plugin-robotViewer-service.py; exec bash\"";
+
 # gnome-terminal --tab --title="RR plugin_toolLinkAttacher service" --command "bash -c \"cd ./RR-plugins/src/plugin-toolLinkAttacher; python3 plugin-toolLinkAttacher-service.py; exec bash\"";
 gnome-terminal --tab --title="RR plugin_tool service" --command "bash -c \"cd ./RR-plugins/src/plugin-tool; python3 plugin-tool-service.py; exec bash\"";
 
