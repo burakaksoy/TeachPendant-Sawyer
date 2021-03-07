@@ -17,10 +17,17 @@ from js import print_div_num_captured_calibration_imgs
 from js import print_div_selected_camera_calibration_error
 from js import clear_div_modal_body_CameraCalibration
 
+from js import print_div_selected_robotcamerapair_rotation_matrix
+from js import print_div_selected_robotcamerapair_translation_vector
+from js import print_div_robotcamera_calibration_selected_robot
+from js import print_div_robotcamera_calibration_selected_camera
+from js import print_div_robotcamera_calibration_aruco_test_results
+from js import clear_div_modal_body_RobotCameraCalibration
+
 from js import ImageData
 from RobotRaconteur.Client import *
 import numpy as np
-
+import asyncio
 import base64 # To convert img byte array to base64string
 
 from js import Cropper
@@ -43,6 +50,7 @@ class ClientVision(object):
         self.camera_node_names_lst = None # For storing camera names
         self.image_files_lst = None # For storing trained image file names
         self.calibration_files_lst = None # For storing the camera calibration file names
+        self.robotcamera_calibration_files_lst = None # For storing the robot-camera calibration file names
 
         self.is_updated_available_cameras = False # Created to update the available cameras only once 
 
@@ -57,12 +65,12 @@ class ClientVision(object):
         self.define_event_listeners()
 
         # Call the async main for async opetations on browser
-        self.loop_client = RR.WebLoop()
+        self.loop_client = asyncio.get_event_loop()
 
         self.restart()
         
     def restart(self):
-        self.loop_client.call_soon(self.async_client_main())
+        self.loop_client.create_task(self.async_client_main())
 
     async def async_client_main(self):
         # If a new camera is selected, disconnect from plugins to re-connect
@@ -213,6 +221,33 @@ class ClientVision(object):
 
         self.button_calibrate_n_save = document.getElementById("btn_calibrate_n_save")
 
+        # For ROBOT-Camera Calibration
+        self.select_calibrated_robotcamerapairs = document.getElementById("calibrated_robotcamerapairs")
+
+        self.button_calibrate_robotcamerapair = document.getElementById("calibrate_robotcamerapair_btn")
+        self.button_delete_robotcamerapair_calibration = document.getElementById("delete_robotcamerapair_calibration_btn")
+
+        self.modal_RobotCameraCalibration = document.getElementById("modal_RobotCameraCalibration")
+        self.span_close_robotcamera_calibration = document.getElementById("span_close_robotcamera_calibration")
+        self.button_close_robotcamera_calibration = document.getElementById("btn_close_robotcamera_calibration")
+
+        self.select_aruco_marker_dictionary = document.getElementById("dropdown_aruco_marker_dictionary")        
+        self.input_arucomarker_id = document.getElementById("arucomarker_id_input")
+        self.input_arucomarker_size = document.getElementById("arucomarker_size_input")
+        self.input_eef_to_aruco_Tx = document.getElementById("eef_to_aruco_Tx_input")
+        self.input_eef_to_aruco_Ty = document.getElementById("eef_to_aruco_Ty_input")
+        self.input_eef_to_aruco_Tz = document.getElementById("eef_to_aruco_Tz_input")
+        self.input_eef_to_aruco_Rx = document.getElementById("eef_to_aruco_Rx_input")
+        self.input_eef_to_aruco_Ry = document.getElementById("eef_to_aruco_Ry_input")
+        self.input_eef_to_aruco_Rz = document.getElementById("eef_to_aruco_Rz_input")
+        self.input_sweep_angle_j1_min = document.getElementById("sweep_angle_j1_min_input")
+        self.input_sweep_angle_j1_max = document.getElementById("sweep_angle_j1_max_input")
+
+        self.img_robotcamera_calibration_aruco_test = document.getElementById("robotcamera_calibration_aruco_test_image")
+
+        self.button_robotcamera_calibrate_n_save = document.getElementById("btn_robotcamera_calibrate_n_save")
+
+
 
 
     def define_event_listeners(self):
@@ -253,6 +288,18 @@ class ClientVision(object):
 
         self.select_calibrated_cameras.addEventListener("change", self.select_calibrated_camera_func)
         self.button_delete_calibration.addEventListener("click", self.delete_calibration_func)
+
+        # For ROBOT-Camera Calibration
+        self.button_calibrate_robotcamerapair.addEventListener("click", self.calibrate_robotcamera_func)
+
+        self.span_close_robotcamera_calibration.addEventListener("click", self.close_modal_robotcamera_calibration_func)
+        self.button_close_robotcamera_calibration.addEventListener("click", self.close_modal_robotcamera_calibration_func)
+
+        self.button_robotcamera_calibrate_n_save.addEventListener("click", self.robotcamera_calibrate_n_save_func)
+
+        self.select_calibrated_robotcamerapairs.addEventListener("change", self.select_calibrated_robotcamerapair_func)
+        self.button_delete_robotcamerapair_calibration.addEventListener("click", self.delete_robotcamerapair_calibration_func)
+
 
     # # -------------------------- BEGIN: Callback functions -------------------------- #
     # Callback functions For FEEDBACK
@@ -356,7 +403,7 @@ class ClientVision(object):
     # Callback functions For TRAINING
     def train_new_visual_func(self,data):
         print_div("Training a new image.. <br>")
-        self.loop_client.call_soon(self.async_train_new_visual())
+        self.loop_client.create_task(self.async_train_new_visual())
 
     async def async_img_for_canvas(self,image):
         # Makes "image" from RR suitable to put on Canvas as "image_data"
@@ -456,7 +503,7 @@ class ClientVision(object):
                 # Get the cropped image
                 self.cropped_canvas = self.cropper.getCroppedCanvas({"imageSmoothingEnabled":False})
                 # Save the image
-                self.loop_client.call_soon(self.async_save_image(fileName))
+                self.loop_client.create_task(self.async_save_image(fileName))
                 
             else:
                 window.alert("The file already exists! Try another file name")    
@@ -539,7 +586,7 @@ class ClientVision(object):
 
     def select_trained_visual_func(self,data):
         print_div("A Saved image is selected!<br>")
-        self.loop_client.call_soon(self.async_select_trained_visual())
+        self.loop_client.create_task(self.async_select_trained_visual())
 
     async def async_select_trained_visual(self):
         # Read the selected image index from the browser
@@ -580,7 +627,7 @@ class ClientVision(object):
 
     def delete_selected_trained_visual_func(self,data):
         print_div("Delete selected_trained_visual button is clicked!<br>")
-        self.loop_client.call_soon(self.async_delete_selected_trained_visual())
+        self.loop_client.create_task(self.async_delete_selected_trained_visual())
 
     async def async_delete_selected_trained_visual(self):
         # Read the selected image index from the browser
@@ -612,7 +659,7 @@ class ClientVision(object):
 
     def edit_name_selected_trained_visual_func(self,data):
         print_div("Edit selected_trained_visual name button is clicked!<br>")
-        self.loop_client.call_soon(self.async_edit_name_selected_trained_visual())
+        self.loop_client.create_task(self.async_edit_name_selected_trained_visual())
 
     async def async_edit_name_selected_trained_visual(self):
         # Read the selected image index from the browser
@@ -645,7 +692,7 @@ class ClientVision(object):
     # Callback functions For OBJECT DETECTION TRACKING
     def test_detection_func(self,data):
         print_div("test_detection button is clicked!<br>")
-        self.loop_client.call_soon(self.async_test_detection())
+        self.loop_client.create_task(self.async_test_detection())
 
     async def async_test_detection(self):
         try:
@@ -697,7 +744,7 @@ class ClientVision(object):
     # Callback functions for CAMERA CALIBRATION
     def calibrate_camera_func(self,data):
         print_div("Calibrating a new camera button is pressed.. <br>")
-        self.loop_client.call_soon(self.async_calibrate_camera())
+        self.loop_client.create_task(self.async_calibrate_camera())
 
     async def async_calibrate_camera(self):
         try: 
@@ -728,7 +775,7 @@ class ClientVision(object):
 
     def calibrate_n_save_func(self,data):
         print_div("Calibrate & Save button is clicked!<br>")
-        loop.call_soon(self.async_calibrate_n_save())
+        loop.create_task(self.async_calibrate_n_save())
 
     async def async_calibrate_n_save(self):
         try: 
@@ -792,7 +839,7 @@ class ClientVision(object):
 
     def select_calibrated_camera_func(self,data):
         print_div("A Saved Camera Calibration file is selected!<br>")
-        self.loop_client.call_soon(self.async_select_calibrated_camera())
+        self.loop_client.create_task(self.async_select_calibrated_camera())
 
     async def async_select_calibrated_camera(self):
         # Read the selected calibration file index from the browser
@@ -839,14 +886,14 @@ class ClientVision(object):
 
     def delete_calibration_func(self,data):
         print_div("Delete selected calibration file button is clicked!<br>")
-        self.loop_client.call_soon(self.async_delete_calibration())
+        self.loop_client.create_task(self.async_delete_calibration())
 
     async def async_delete_calibration(self):
         # Read the selected calibration file index from the browser
         index = self.select_calibrated_cameras.selectedIndex
         try:
             if index == -1 or len(self.calibration_files_lst) == 0:
-                print_div("No available trained images found or not selected")
+                print_div("No available calibration file found or not selected")
 
             else:
                 # if index == -1 and len(self.calibration_files_lst)> 0:
@@ -871,7 +918,7 @@ class ClientVision(object):
 
     def capture_img_calibration_func(self,data):
         print_div("Capturing an image for the calibration..<br>")
-        self.loop_client.call_soon(self.async_capture_img_calibration())
+        self.loop_client.create_task(self.async_capture_img_calibration())
 
     async def async_capture_img_calibration(self):
         # Capture the image at the server side of calibration
@@ -882,6 +929,175 @@ class ClientVision(object):
         # Print num of images for the user see
         print_div_num_captured_calibration_imgs(str(num_images))
 
+
+    # Callback functions for ROBOT-CAMERA CALIBRATION
+    def calibrate_robotcamera_func(self,data):
+        print_div("Calibrate a new robot-camera pair button is pressed.. <br>")
+        self.loop_client.create_task(self.async_calibrate_robotcamera())
+
+    async def async_calibrate_robotcamera(self):
+        try: 
+            # Show the modal
+            self.modal_RobotCameraCalibration.style.display = "block"
+
+            ## TODO
+        except:
+            import traceback
+            print_div(traceback.format_exc())
+            # raise
+
+    def close_modal_robotcamera_calibration_func(self,data):
+        # Hide the modal
+        self.modal_RobotCameraCalibration.style.display = "none"
+
+        # Clear the modal body content
+        clear_div_modal_body_RobotCameraCalibration()
+
+    def robotcamera_calibrate_n_save_func(self,data):
+        print_div("Robot-Camera Calibrate & Save button is clicked!<br>")
+        loop.create_task(self.async_robotcamera_calibrate_n_save())
+
+    async def async_robotcamera_calibrate_n_save(self):
+        try: 
+            # Hide cropping modal
+            self.modal_RobotCameraCalibration.style.display = "none"
+
+            ## TODO
+            # # Create the file name by looking at the selected camera name at camera feedback layout
+            # index = self.available_cams_list.selectedIndex
+            # if index == -1 or len(self.available_cams_list) == 0:
+            #     print_div("No available camera is found or none selected<br>")
+            # else:
+            #     camera_name = self.camera_node_names_lst[index]
+            #     fileName = camera_name + ".yml"
+
+            #     # Get checkerboard related info from the inputs
+            #     width = int(self.input_width_checkerboard.value)
+            #     height = int(self.input_height_checkerboard.value)
+            #     square_size = float(self.input_square_size.value)
+
+            #     # Assuming enough pictures are already taken by the user
+            #     # Send these information to camera calibration plugin
+            #     await self.plugin_cameraCalibration.async_calibrate_n_save(fileName, square_size, width, height, None)
+
+            #     # Update the available calibrated cameras list
+            #     await self.async_update_calibrated_cameras()
+            #     await self.async_select_calibrated_camera()
+                
+
+        except:
+            import traceback
+            print_div(traceback.format_exc())
+            # raise
+        
+    # async def async_update_calibrated_cameras(self):
+    #     try:
+    #         # print_div("Clearing the previous available calibrated cameras options..")
+    #         length = self.select_calibrated_cameras.options.length
+    #         i = length-1
+    #         while i >= 0:
+    #             # self.select_calibrated_cameras.options[i] = None
+    #             self.select_calibrated_cameras.remove(i)
+    #             i -= 1
+
+    #         print_div('Creating available calibrated cameras options..<br>')
+    #         self.robotcamera_calibration_files_lst = await self.plugin_cameraCalibration.async_saved_calibrations(None)
+    #         # print_div(str(self.robotcamera_calibration_files_lst) + "<br>") 
+    #         i = 0
+    #         for fileName in self.robotcamera_calibration_files_lst:
+    #             # Add the available calibration fileName to the select_calibrated_cameras list
+    #             option = document.createElement("option")
+    #             option.text = str(i) + ": " + str(fileName)
+    #             self.select_calibrated_cameras.add(option)
+    #             i += 1 
+
+    #         # self.rerender_workspace_blocks()
+    #     except:
+    #         import traceback
+    #         print_div(traceback.format_exc())
+
+    def select_calibrated_robotcamerapair_func(self,data):
+        print_div("A Saved Robot-Camera Calibration file is selected!<br>")
+        self.loop_client.create_task(self.async_select_calibrated_robotcamerapair())
+
+    async def async_select_calibrated_robotcamerapair(self):
+        # Read the selected calibration file index from the browser
+        index = self.select_calibrated_robotcamerapairs.selectedIndex
+        try:
+            if index == -1 and len(self.robotcamera_calibration_files_lst) == 0:
+                print_div("No available robot-camera calibration file is found<br>")
+                # Clear the selected robot camera calibration information areas
+                print_div_selected_robotcamerapair_rotation_matrix("")
+                print_div_selected_robotcamerapair_translation_vector("")
+
+            else:
+                pass
+                ## TODO
+                # if index == -1 and len(self.robotcamera_calibration_files_lst)> 0:
+                #     print_div("Selecting the first available calibration file")
+                #     index = 0
+
+                # file_name = self.robotcamera_calibration_files_lst[index]
+                # print_div(file_name)
+                # params = await self.plugin_cameraCalibration.async_load_calibration(file_name,None)
+
+                
+                # float_formatter_f = "{:.2f}".format
+                # float_formatter_e = "{:.2e}".format
+                
+                # np.set_printoptions(formatter={'float_kind':float_formatter_f})
+                # print_div_selected_camera_matrix(str(params.camera_matrix).replace('\n', '<br> '))
+
+                # np.set_printoptions(formatter={'float_kind':float_formatter_e})
+                # print_div_selected_camera_distortion_coefficients(str(params.distortion_coefficients).replace('\n', '<br> '))
+
+                # float_formatter_f = "{:.3f}".format
+                # np.set_printoptions(formatter={'float_kind':float_formatter_f})
+                # print_div_selected_camera_RnT(str(params.R_co).replace('\n', '<br> ') + "<br>" + str(params.T_co).replace('\n', '<br> '))
+
+                # print_div_selected_camera_calibration_error('{0: 1.3f}'.format(params.error))
+
+                # np.set_printoptions(formatter=None)
+        except:
+            import traceback
+            print_div(traceback.format_exc())
+            # raise
+            pass
+
+    def delete_robotcamerapair_calibration_func(self,data):
+        print_div("Delete selected robot-camera calibration file button is clicked!<br>")
+        self.loop_client.create_task(self.async_delete_robotcamerapair_calibration())
+
+    async def async_delete_robotcamerapair_calibration(self):
+        # Read the selected calibration file index from the browser
+        index = self.select_calibrated_robotcamerapairs.selectedIndex
+        try:
+            if index == -1 or len(self.robotcamera_calibration_files_lst) == 0:
+                print_div("No available robot-camera calibration file found or not selected")
+
+            else:
+                pass
+                ## TODO
+                # # if index == -1 and len(self.robotcamera_calibration_files_lst)> 0:
+                # #     print_div("Selecting the first available calibration file")
+                # #     index = 0
+
+                # file_name = self.robotcamera_calibration_files_lst[index]
+                # # Ask user: are you sure you want to delete 'file_name'
+                # resp = window.confirm("Sure you want to delete '" + file_name + "'?")
+                # # if sure delete, else ignore and return
+                # if resp:
+                #     await self.plugin_cameraCalibration.async_delete_calibration(file_name,None)
+        except:
+            import traceback
+            print_div(traceback.format_exc())
+            # raise
+            pass
+
+        ## TODO
+        # # Update the available calibrated cameras list
+        # await self.async_update_calibrated_cameras()
+        # await self.async_select_calibrated_camera()
     # # -------------------------- END: Callback functions -------------------------- #
 
 
@@ -951,8 +1167,7 @@ async def client_vision():
         print_div(traceback.format_exc())
         raise
 
-loop = RR.WebLoop()
-loop.call_soon(client_vision())
-# RR.WebLoop.run(client_vision())
+loop = asyncio.get_event_loop()
+loop.create_task(client_vision())
 
 # RRN.PostToThreadPool(client_vision()) 

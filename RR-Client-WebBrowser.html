@@ -527,6 +527,179 @@
             </div>
         </template>
 
+        <!-- ROBOT Calibration Area Template -->
+        <template id="template_RobotCameraCalibration"> 
+            <table id="table_RobotCameraCalibration" border="1"  > <!-- CELLPADDING="4" CELLSPACING="3"> -->
+                <col><col>
+                <tr> 
+                    <td colspan = "2" align="left">
+                        <form>
+                            <label for="calibrated_robotcamerapairs">Calibrated Robot-Camera pairs:</label>
+                            <select name="calibrated_robotcamerapairs" id="calibrated_robotcamerapairs">
+                                <!-- <option value="robot-cam0">Robot00--Camera_00</option> -->
+                            </select>
+                        </form>
+                    </td>          
+                </tr>
+
+                <tr> 
+                    <td align="right">R<sub>(robot-camera)</sub>: </td>   
+                    <td>
+                        <div align="left" id="print_div_selected_robotcamerapair_rotation_matrix"></div>
+                    </td>       
+                </tr>
+                <tr> 
+                    <td align="right">T<sub>(robot-camera)</sub>: </td>   
+                    <td>
+                        <div align="left" id="print_div_selected_robotcamerapair_translation_vector"></div>
+                    </td>       
+                </tr>
+                <!-- <tr> 
+                    <td align="right">Calibration error: </td>   
+                    <td>
+                        <div align="left" id="print_div_selected_robotcamerapair_calibration_error"></div>
+                    </td>          
+                </tr> -->
+                <tr>
+                    <td> <button id="delete_robotcamerapair_calibration_btn" type="button" style="width: 100%;">Delete</button> </td> 
+                    <td> <button id="calibrate_robotcamerapair_btn" type="button" style="width: 100%;">Calibrate New</button> </td>         
+                </tr>
+            </table>
+
+            <div id="modal_RobotCameraCalibration" class="modal">
+
+              <!-- Modal content -->
+              <div class="modal-content">
+
+                <div class="modal-header">
+                  <span id="span_close_robotcamera_calibration" class="close">&times;</span>
+                  <h2>Calibrate Robot-Camera Pair Extrinsic Parameters with an ArUco Marker</h2>
+                </div>
+
+                <div class="modal-body" id="modal_body_RobotCameraCalibration">
+                  <p>You need to attach an ArUco Marker as the calibration object to end effector of the robot</p>
+                  <p>If the selected Robot-Camera pair is already calibrated, it will be overwritten. Otherwise a new calibration will be added.</p>
+                  <table id="table_robotcamera_calibration_modal" border="1"> <!-- CELLPADDING="4" CELLSPACING="3"> -->
+                      <col width="60%"><col width="40%"> <!-- It does not work, see css -->
+                      <tr> 
+                          <td align="left">Selected Robot:</td>
+                          <td>
+                              <div align="left" id="print_div_robotcamera_calibration_selected_robot"></div>
+                          </td>
+                      </tr>
+                      <tr> 
+                          <td align="left">Selected Camera: </td>
+                          <td> 
+                              <div align="left" id="print_div_robotcamera_calibration_selected_camera"></div>
+                          </td>
+                      </tr>
+                      
+                      <tr>
+                        <td align="left">
+                            <label for="dropdown_aruco_marker_dictionary">Please select the used ArUco Marker Dictionary:</label>
+                        </td>
+                        <td align="left">
+                            <form >
+                                <select name="dropdown_aruco_marker_dictionary" id="dropdown_aruco_marker_dictionary" style="width: 100%;">
+                                    <option value="cv2.aruco.DICT_4X4_50">DICT_4X4_50</option>
+                                    <option value="cv2.aruco.DICT_4X4_100">DICT_4X4_100</option>
+                                    <option value="cv2.aruco.DICT_4X4_250">DICT_4X4_250</option>
+                                    <option value="cv2.aruco.DICT_4X4_1000">DICT_4X4_1000</option>
+                                    <option value="cv2.aruco.DICT_5X5_50">DICT_5X5_50</option>
+                                    <option value="cv2.aruco.DICT_5X5_100">DICT_5X5_100</option>
+                                    <option value="cv2.aruco.DICT_5X5_250">DICT_5X5_250</option>
+                                    <option value="cv2.aruco.DICT_5X5_1000">DICT_5X5_1000</option>
+                                    <option value="cv2.aruco.DICT_6X6_50">DICT_6X6_50</option>
+                                    <option value="cv2.aruco.DICT_6X6_100">DICT_6X6_100</option>
+                                    <option value="cv2.aruco.DICT_6X6_250">DICT_6X6_250</option>
+                                    <option value="cv2.aruco.DICT_6X6_1000">DICT_6X6_1000</option>
+                                    <option value="cv2.aruco.DICT_7X7_50">DICT_7X7_50</option>
+                                    <option value="cv2.aruco.DICT_7X7_100">DICT_7X7_100</option>
+                                    <option value="cv2.aruco.DICT_7X7_250">DICT_7X7_250</option>
+                                    <option value="cv2.aruco.DICT_7X7_1000">DICT_7X7_1000</option>
+                                    <option value="cv2.aruco.DICT_ARUCO_ORIGINAL">DICT_ARUCO_ORIGINAL</option>
+                                    <option value="cv2.aruco.DICT_APRILTAG_16h5">DICT_APRILTAG_16h5</option>
+                                    <option value="cv2.aruco.DICT_APRILTAG_25h9">DICT_APRILTAG_25h9</option>
+                                    <option value="cv2.aruco.DICT_APRILTAG_36h10">DICT_APRILTAG_36h10</option>
+                                    <option value="cv2.aruco.DICT_APRILTAG_36h11">DICT_APRILTAG_36h11</option>
+                                </select>
+                            </form>
+                        </td> 
+                      </tr>
+
+                      <tr> 
+                          <td align="left">Please enter the ID of the attached ArUco marker: </td>   
+                          <td>
+                              <input type="number" id="arucomarker_id_input" placeholder="ID" value="25" min="1" style="font-size: 25px;">
+                          </td>       
+                      </tr>
+                      <tr> 
+                          <td align="left">Please enter one side length of the ArUco marker (in millimeters): </td>   
+                          <td> 
+                            <input type="number" id="arucomarker_size_input" placeholder="one side length of the marker (mm)" value="50.0" min="0" step="1" style="font-size: 25px;"> 
+                          </td>     
+                      </tr>
+                      
+                      <tr> 
+                          <td align="left">Please enter position vector from End Effector to center of the ArUco marker (in meters): </td>   
+                          <td>
+                            <label for="eef_to_aruco_Tx">T<sub>X</sub>:</label> 
+                            <input type="number" id="eef_to_aruco_Tx_input" placeholder="(m)" value="0.0" step="0.01" style="font-size: 25px;">
+                            <label for="eef_to_aruco_Ty">T<sub>Y</sub>:</label>
+                            <input type="number" id="eef_to_aruco_Ty_input" placeholder="(m)" value="0.0" step="0.01" style="font-size: 25px;">
+                            <label for="eef_to_aruco_Tz">T<sub>Z</sub>:</label>
+                            <input type="number" id="eef_to_aruco_Tz_input" placeholder="(m)" value="0.0" step="0.01" style="font-size: 25px;"> 
+                          </td>     
+                      </tr>
+
+                      <tr> 
+                          <td align="left">Please enter RPY Euler angles from End Effector frame to the ArUco marker frame (in degrees): </td>   
+                          <td>
+                            <label for="eef_to_aruco_Rx">&theta;<sub>X</sub>:</label> 
+                            <input type="number" id="eef_to_aruco_Rx_input" placeholder="(deg)" value="0.0" step="1.0" style="font-size: 25px;">
+                            <label for="eef_to_aruco_Rz">&theta;<sub>Y</sub>:</label>
+                            <input type="number" id="eef_to_aruco_Ry_input" placeholder="(deg)" value="0.0" step="1.0" style="font-size: 25px;">
+                            <label for="eef_to_aruco_Rz">&theta;<sub>Z</sub>:</label>
+                            <input type="number" id="eef_to_aruco_Rz_input" placeholder="(deg)" value="0.0" step="1.0" style="font-size: 25px;"> 
+                          </td>     
+                      </tr>
+
+                      <tr> 
+                          <td align="left">Please define a range for the first joint of the robot to sweep. <br> Sweeping is needed for accurate calibration. (Make sure the defined range in the joint limits of the robot)</td>        
+                          <td>
+                            <label for="sweep_angle_j1_min">Min (deg):</label> 
+                            <input type="number" id="sweep_angle_j1_min_input" placeholder="(deg)" value="-30.0" step="5.0" style="font-size: 25px;">
+                            <label for="sweep_angle_j1_max">Max (deg):</label> 
+                            <input type="number" id="sweep_angle_j1_max_input" placeholder="(deg)" value="30.0" step="5.0" style="font-size: 25px;">
+                          </td>
+                      </tr>
+
+                      <tr> 
+                          <td colspan = "2" align="left">Now you can press "Calibrate & Save" button to start calibration.<br> During the process, marker detection results will be shown below.<br> Once the process completed this window will be automatically closed. </td>   
+                      </tr>
+
+                      <tr> 
+                          <td>
+                              <img id="robotcamera_calibration_aruco_test_image"></img>
+                          </td>   
+                          <td >
+                            <div align="center" id="print_div_robotcamera_calibration_aruco_test_results"></div> 
+                          </td>  
+                      </tr>
+                  </table>
+                </div>
+
+                <div class="modal-footer">
+                  <!-- <h2>Modal Footer</h2> -->
+                  <button type="button" id="btn_close_robotcamera_calibration">Cancel</button>
+                  <button type="button" id="btn_robotcamera_calibrate_n_save">Calibrate & Save</button>
+                </div>
+
+              </div>
+
+            </div>
+        </template>
+
         <!-- Camera Tracking Area Template -->
         <template id="template_CameraTracking"> 
             <table id="table_CameraTracking" border="1"  > <!-- CELLPADDING="4" CELLSPACING="3"> -->

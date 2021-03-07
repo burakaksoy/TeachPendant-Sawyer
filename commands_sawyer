@@ -8,4 +8,4 @@ gnome-terminal --tab --title="Gazebo Sawyer Sim with Sensor" --command "bash -c 
 
 sleep 5s;
 
-gnome-terminal --tab --title="RR Sawyer service" --command "bash -c \"source ~/TeachPendantSpace/ros_csharp_ws/devel_isolated/setup.bash; cd ~/TeachPendantSpace/sawyer_driver_csharp_2020-11-23/; dotnet SawyerRobotRaconteurDriver.dll --robot-info-file=sawyer_robot_default_config.yml; exec bash\" ";
+gnome-terminal --tab --title="RR Sawyer service" --command "bash -c \"source ~/TeachPendantSpace/ros_csharp_ws/devel_isolated/setup.bash; cd ~/TeachPendantSpace/sawyer_driver_csharp_2021-03-06/; dotnet SawyerRobotRaconteurDriver.dll --robot-info-file=sawyer_robot_default_config.yml; exec bash\" ";

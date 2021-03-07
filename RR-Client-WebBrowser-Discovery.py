@@ -4,6 +4,7 @@ from js import document
 
 from RobotRaconteur.Client import *
 import numpy as np
+import asyncio
 
 class ClientDiscovery(object):
     """Client Class to access client data in a more convenient way"""
@@ -24,8 +25,8 @@ class ClientDiscovery(object):
         self.define_event_listeners()
 
         # Call the async main for async opetations on browser
-        self.loop_client = RR.WebLoop()
-        self.loop_client.call_soon(self.async_client_main())
+        self.loop_client = asyncio.get_event_loop()
+        self.loop_client.create_task(self.async_client_main())
 
 
     def define_element_references(self):
@@ -145,5 +146,5 @@ async def client_discovery():
         print_div(traceback.format_exc())
         raise
 
-loop = RR.WebLoop()
-loop.call_soon(client_discovery())
+loop = asyncio.get_event_loop()
+loop.create_task(client_discovery())

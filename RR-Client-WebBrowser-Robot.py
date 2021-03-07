@@ -19,6 +19,7 @@ from RobotRaconteur.Client import *
 import numpy as np
 import sys
 # import math
+import asyncio
 
 # sys.path.append("./my_source.zip")
 # import general_robotics_toolbox as rox
@@ -49,7 +50,7 @@ def execute_blockly_func(self):
     global is_jogging
     if (not is_jogging): 
         is_jogging = True
-        loop.call_soon(async_execute_blockly(code_text))
+        loop.create_task(async_execute_blockly(code_text))
     else:
         print_div("Blockly execution has not finished yet..<br>")
 
@@ -85,7 +86,7 @@ async def async_update_blockly_saved_workspaces():
 
 def load_blocks_func(self):
     print_div("Load Blocks button is clicked!<br>")
-    loop.call_soon(async_load_blocks())
+    loop.create_task(async_load_blocks())
 
 async def async_load_blocks():
     workspace = Blockly.getMainWorkspace() # get the Blockly workspace
@@ -114,7 +115,7 @@ async def async_load_blocks():
 
 def delete_blocks_func(self):
     print_div("Delete Blocks button is clicked!<br>")
-    loop.call_soon(async_delete_blocks())
+    loop.create_task(async_delete_blocks())
 
 async def async_delete_blocks():
     # Read the selected pose index from the browser
@@ -144,7 +145,7 @@ async def async_delete_blocks():
 
 def edit_blocks_name_func(self):
         print_div("Edit Blocks' Name button is clicked!<br>")
-        loop.call_soon(async_edit_blocks_name())
+        loop.create_task(async_edit_blocks_name())
 
 async def async_edit_blocks_name():
     # Read the selected pose index from the browser
@@ -172,7 +173,7 @@ async def async_edit_blocks_name():
 
 def save_blocks_func(self):
         print_div("Save Blocks button is clicked!<br>")
-        loop.call_soon(async_save_blocks())
+        loop.create_task(async_save_blocks())
 
 async def async_save_blocks():
     # Read the selected pose index from the browser
@@ -208,7 +209,7 @@ async def async_save_blocks():
 
 def save_as_blocks_func(self):
     print_div("Save Blocks As button is clicked!<br>")
-    loop.call_soon(async_save_as_blocks())
+    loop.create_task(async_save_as_blocks())
 
 async def async_search_blockly_saved_workspaces(filename):
     element_id = "saved_blocks_list"
@@ -253,7 +254,7 @@ async def async_save_as_blocks():
 
 def clear_blocks_func(self):
         print_div("Clear Blocks button is clicked!<br>")
-        loop.call_soon(async_clear_blocks())
+        loop.create_task(async_clear_blocks())
 
 async def async_clear_blocks():
     # Ask user: Sure you want to clear the workspace 
@@ -276,7 +277,7 @@ def jog_joints_gamepad(joint_speed_constants):
     global is_jogging
     if (not is_jogging): 
         is_jogging = True
-        loop.call_soon(async_jog_joints_gamepad(joint_speed_constants))
+        loop.create_task(async_jog_joints_gamepad(joint_speed_constants))
     else:
         print_div("Jogging has not finished yet..<br>")
 
@@ -352,7 +353,7 @@ def jog_cartesian_gamepad(P_axis, R_axis):
     global is_jogging
     if (not is_jogging): 
         is_jogging = True
-        loop.call_soon(async_jog_cartesian_gamepad(P_axis, R_axis))
+        loop.create_task(async_jog_cartesian_gamepad(P_axis, R_axis))
     # else:
     #     print_div("Jogging has not finished yet..<br>")
 
@@ -383,7 +384,7 @@ def jog_joints(q_i, sign):
     global is_jogging
     if (not is_jogging): 
         is_jogging = True
-        loop.call_soon(async_jog_joints(q_i, sign))
+        loop.create_task(async_jog_joints(q_i, sign))
     else:
         print_div("Jogging has not finished yet..<br>")
 
@@ -475,7 +476,7 @@ def move_to_angles_func(self):
     
     if (not is_jogging): 
         is_jogging = True
-        loop.call_soon(async_move_to_angles_func())
+        loop.create_task(async_move_to_angles_func())
     else:
         print_div("Jogging has not finished yet..<br>")
     
@@ -510,7 +511,7 @@ def jog_cartesian(P_axis, R_axis):
     global is_jogging
     if (not is_jogging): 
         is_jogging = True
-        loop.call_soon(async_jog_cartesian(P_axis, R_axis))
+        loop.create_task(async_jog_cartesian(P_axis, R_axis))
     else:
         print_div("Jogging has not finished yet..<br>")
 
@@ -582,7 +583,7 @@ def tZ_neg_func(self):
 # ---------------------------BEGIN: SAVE PLAYBACK POSES --------------------------- #
 def save_cur_pose_func(self):
     print_div('Saving to "Saved Poses" list..<br>')
-    loop.call_soon(async_save_cur_pose_func())
+    loop.create_task(async_save_cur_pose_func())
     
 async def async_save_cur_pose_func():
     # Get the current joint angles as ndarray and str
@@ -606,7 +607,7 @@ def go_sel_pose_func(self):
     global is_jogging
     if (not is_jogging): 
         is_jogging = True
-        loop.call_soon(async_go_sel_pose_func())
+        loop.create_task(async_go_sel_pose_func())
     else:
         print_div("Jogging has not finished yet..<br>")
 
@@ -632,7 +633,7 @@ def playback_poses_func(self):
     global is_jogging
     if (not is_jogging): 
         is_jogging = True
-        loop.call_soon(async_playback_poses_func())
+        loop.create_task(async_playback_poses_func())
     else:
         print_div("Jogging has not finished yet..<br>")
 
@@ -659,7 +660,7 @@ async def async_playback_poses_func():
 
 def del_sel_pose_func(self):
     print_div("Deleting seleted Pose..<br>")
-    loop.call_soon(async_del_sel_pose_func())
+    loop.create_task(async_del_sel_pose_func())
 
 async def async_del_sel_pose_func():
     # Read the selected pose index from the browser
@@ -679,7 +680,7 @@ async def async_del_sel_pose_func():
         
 def up_sel_pose_func(self):
     print_div("Move up seleted Pose..<br>")
-    loop.call_soon(async_up_sel_pose_func())
+    loop.create_task(async_up_sel_pose_func())
 
 async def async_up_sel_pose_func():
     # Read the selected pose index from the browser
@@ -703,7 +704,7 @@ async def async_up_sel_pose_func():
 
 def down_sel_pose_func(self):
     print_div("Move down seleted Pose..<br>")
-    loop.call_soon(async_down_sel_pose_func())
+    loop.create_task(async_down_sel_pose_func())
 
 async def async_down_sel_pose_func():
     # Read the selected pose index from the browser
@@ -1249,7 +1250,6 @@ async def client_drive():
         print_div(traceback.format_exc())
         raise
 
-loop = RR.WebLoop()
-loop.call_soon(client_drive())
+loop = asyncio.get_event_loop()
+loop.create_task(client_drive())
 
-# RR.WebLoop.run(client_drive())

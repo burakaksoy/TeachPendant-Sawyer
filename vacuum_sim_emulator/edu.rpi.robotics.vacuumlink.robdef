@@ -1,6 +1,6 @@
 service edu.rpi.robotics.vacuumlink
 
-stdver 0.10
+stdver 0.15
 
 object vacuumlink
 	property int8{string} actions

@@ -1,7 +1,7 @@
 #Service to provide interface to RR-webBrowser-plugin-updateInfo
 service experimental.pluginUpdateInfo
 
-stdver 0.10
+stdver 0.15
 
 object UpdateInfo
     function void connect2robot(string url_robot)

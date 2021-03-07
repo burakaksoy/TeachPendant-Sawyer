@@ -1,7 +1,7 @@
 #Service to provide interface to RR-webBrowser-plugin-discovery
 service experimental.pluginDiscovery
 
-stdver 0.10
+stdver 0.15
 
 object Discovery
     function string{list} available_robot_ConnectionURLs()

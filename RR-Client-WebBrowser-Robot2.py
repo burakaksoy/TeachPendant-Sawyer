@@ -16,6 +16,7 @@ from RobotRaconteur.Client import *
 import numpy as np
 import sys
 # import math
+import asyncio
 
 # sys.path.append("./my_source.zip")
 # import general_robotics_toolbox as rox
@@ -55,8 +56,7 @@ async def client_robot():
         print_div(traceback.format_exc())
         raise
 
-loop = RR.WebLoop()
-loop.call_soon(client_robot())
-# RR.WebLoop.run(client_robot())
+loop = asyncio.get_event_loop()
+loop.create_task(client_robot())
 
 # RRN.PostToThreadPool(client_robot()) 

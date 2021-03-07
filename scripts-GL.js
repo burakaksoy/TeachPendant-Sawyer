@@ -127,7 +127,7 @@ var config =
                             content:
                             [
                                 {
-                                    width: 25,
+                                    width: 20,
                                     // reorderEnabled: false,
                                     isClosable: false,
                                     type:'component',
@@ -135,7 +135,7 @@ var config =
                                     componentState: {comp_name: 'camera_feedback'}
                                 },
                                 {
-                                    width: 25,
+                                    width: 20,
                                     // reorderEnabled: false,
                                     isClosable: false,
                                     type:'component',
@@ -143,7 +143,7 @@ var config =
                                     componentState: {comp_name: 'train_vision'}
                                 },
                                 {
-                                    width: 25,
+                                    width: 20,
                                     // reorderEnabled: false,
                                     isClosable: false,
                                     type:'component',
@@ -151,7 +151,15 @@ var config =
                                     componentState: {comp_name: 'camera_calibration'}
                                 },
                                 {
-                                    width: 25,
+                                    width: 20,
+                                    // reorderEnabled: false,
+                                    isClosable: false,
+                                    type:'component',
+                                    componentName: 'Robot Camera Calibration',
+                                    componentState: {comp_name: 'robotcamera_calibration'}
+                                },
+                                {
+                                    width: 20,
                                     // reorderEnabled: false,
                                     isClosable: false,
                                     type:'component',
@@ -282,6 +290,12 @@ function initializeLayout(){
         container.getElement().append(clon);
     });
 
+    myLayout.registerComponent( 'Robot Camera Calibration', function( container, state ){
+        var temp = document.getElementById('template_RobotCameraCalibration');
+        var clon = temp.content.cloneNode(true);
+        container.getElement().append(clon);
+    });
+
     myLayout.registerComponent( 'Object Detection Test', function( container, state ){
         var temp = document.getElementById('template_CameraTracking');
         var clon = temp.content.cloneNode(true);
@@ -387,6 +401,7 @@ $(document).ready(function() {
     addMenuItem( 'Camera Feedback');
     addMenuItem( 'Train Vision');
     addMenuItem( 'Camera Calibration');
+    addMenuItem( 'Robot Camera Calibration');
     addMenuItem( 'Object Detection Test');
     addMenuItem( 'BLOCKLY');
     addMenuItem( 'Blockly Workspace');

@@ -72,6 +72,39 @@ function clear_div_modal_body_CameraCalibration(){
     $("#modal_body_CameraCalibration div").empty()
 }
 
+// FOR ROBOT-CAMERA CALIBRATION
+function print_div_selected_robotcamerapair_rotation_matrix(message)
+{
+    $("#print_div_selected_robotcamerapair_rotation_matrix").html(message)
+} 
+function print_div_selected_robotcamerapair_translation_vector(message)
+{
+    $("#print_div_selected_robotcamerapair_translation_vector").html(message)
+}
+
+function print_div_robotcamera_calibration_selected_robot(message)
+{
+    $("#print_div_robotcamera_calibration_selected_robot").html(message)
+} 
+function print_div_robotcamera_calibration_selected_camera(message)
+{
+    $("#print_div_robotcamera_calibration_selected_camera").html(message)
+} 
+function print_div_robotcamera_calibration_aruco_test_results(message)
+{
+    $("#print_div_robotcamera_calibration_aruco_test_results").html(message)
+} 
+
+function clear_div_modal_body_RobotCameraCalibration(){
+    print_div("clearing modal<br>")
+    $("#modal_body_RobotCameraCalibration div").empty()
+}
+
+function copy_jogging_tables(){
+    print_div("Copying jogging tables into Robot Camera Calibration Modal<br>")
+    $("#table_JointSpaceControl").clone(true).appendTo("#modal_body_RobotCameraCalibration")
+}
+
 
 
 function run_vision(){
