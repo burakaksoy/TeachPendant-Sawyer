@@ -1,7 +1,7 @@
 #Service to provide interface to RR-webBrowser-plugin-cameraCalibration
 service experimental.pluginCameraCalibration
 
-stdver 0.15
+stdver 0.14.3
 
 struct CalibrationParameters
     field double[3,3] camera_matrix
