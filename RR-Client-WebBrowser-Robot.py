@@ -394,7 +394,8 @@ async def async_jog_joints(q_i, sign):
     global is_mousedown
     while (is_mousedown): 
         # Call Jog Joint Space Service funtion to handle this jogging
-        await plugin_jogJointSpace.async_jog_joints2(q_i, sign, None)
+        # await plugin_jogJointSpace.async_jog_joints2(q_i, sign, None)
+        await plugin_jogJointSpace.async_jog_joints3(q_i, sign, None)
 
     await plugin_jogJointSpace.async_stop_joints(None)
     global is_jogging

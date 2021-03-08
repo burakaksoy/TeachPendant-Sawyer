@@ -89,6 +89,34 @@ class JogJointSpace_impl(object):
             print("Robot is not connected to JogJointSpace service yet!")
 
 
+    def jog_joints3(self, q_i, sign):
+        print("Jog Joints3 is called")
+        if self.robot is not None:
+            try:
+                # Put the robot to jogging mode
+                self.robot.command_mode = self.halt_mode
+                # time.sleep(0.1)
+                self.robot.command_mode = self.jog_mode
+                # time.sleep(0.1)
+
+                # Jog the robot
+                # # get the current joint angles
+                cur_q = self.get_current_joint_positions()
+
+                if (self.num_joints < q_i):
+                    print("Currently Controlled Robot only have " + str(self.num_joints) + " joints..")
+                else:
+                    joint_vel = np.zeros((self.num_joints,))
+                    joint_vel[q_i-1] = sign*self.joint_vel_limits[q_i-1]
+
+                    self.jog_joints_with_limits2(cur_q, joint_vel,50*self.dt, False)
+            except:
+                # print("Specified joints might be out of range222")
+                import traceback
+                print(traceback.format_exc())
+        else:
+            # Give an error message to show that the robot is not connected
+            print("Robot is not connected to JogJointSpace service yet!")
 
 
     def jog_joints(self, q_i, sign):
@@ -132,6 +160,26 @@ class JogJointSpace_impl(object):
                 joint_position = joint_position[:self.num_joints]
                 # self.robot.jog_joint(joint_position, max_velocity, relative, wait)
                 self.robot.jog_freespace(joint_position, max_velocity, wait)
+            except:
+                # print("Specified joints might be out of range222")
+                import traceback
+                print(traceback.format_exc())
+
+    def jog_joints_with_limits2(self,joint_position, joint_velocity, timeout, wait=True):
+        if not (joint_position <= self.joint_upper_limits).all() or not (joint_position >= self.joint_lower_limits).all():
+            print("Specified joints might be out of range")
+        else:
+            try:
+                # Put the robot to jogging mode
+                self.robot.command_mode = self.halt_mode
+                # time.sleep(0.1)
+                self.robot.command_mode = self.jog_mode
+                # time.sleep(0.1)
+
+                # Trim joint positions according to number of joints
+                joint_velocity = joint_velocity[:self.num_joints]
+                # self.robot.jog_joint(joint_position, max_velocity, relative, wait)
+                self.robot.jog_joint(joint_velocity, timeout, wait)
             except:
                 # print("Specified joints might be out of range222")
                 import traceback
