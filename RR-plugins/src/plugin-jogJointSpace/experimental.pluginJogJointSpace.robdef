@@ -13,6 +13,7 @@ object JogJointSpace
     function void jog_joints2(int32 q_i, int32 sign)
     function void jog_joints3(int32 q_i, int32 sign)
     function void stop_joints()
+    function void stop_joints2()
 
     # For blockly
     function void jog_joints_to_angles_relative(double[] diff_joint_position, double speed_perc)

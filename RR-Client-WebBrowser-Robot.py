@@ -367,9 +367,11 @@ async def async_jog_cartesian_gamepad(P_axis, R_axis):
     while (is_gamepadaxisactive or is_gamepadbuttondown): 
         # Call Jog Cartesian Space Service funtion to handle this jogging
         # await plugin_jogCartesianSpace.async_jog_cartesian(P_axis, R_axis, None)
-        await plugin_jogCartesianSpace.async_jog_cartesian2(P_axis, R_axis, None)
+        # await plugin_jogCartesianSpace.async_jog_cartesian2(P_axis, R_axis, None)
+        await plugin_jogCartesianSpace.async_jog_cartesian3(P_axis, R_axis, None)
 
-    await plugin_jogCartesianSpace.async_stop_joints(None)
+    # await plugin_jogCartesianSpace.async_stop_joints(None)
+    # await plugin_jogCartesianSpace.async_stop_joints2(None)
     global is_jogging
     is_jogging = False
 
@@ -397,7 +399,8 @@ async def async_jog_joints(q_i, sign):
         # await plugin_jogJointSpace.async_jog_joints2(q_i, sign, None)
         await plugin_jogJointSpace.async_jog_joints3(q_i, sign, None)
 
-    await plugin_jogJointSpace.async_stop_joints(None)
+    # await plugin_jogJointSpace.async_stop_joints(None)
+    # await plugin_jogJointSpace.async_stop_joints2(None)
     global is_jogging
     is_jogging = False
 
@@ -465,7 +468,8 @@ def stop_func(self):
     print_div('STOP button pressed<br>')    
     
     global plugin_jogJointSpace
-    plugin_jogJointSpace.async_jog_joints_zeros(None)
+    # plugin_jogJointSpace.async_jog_joints_zeros(None)
+    plugin_jogJointSpace.async_stop_joints2(None)
 
     global is_jogging
     is_jogging = False
@@ -525,9 +529,11 @@ async def async_jog_cartesian(P_axis, R_axis):
     while (is_mousedown):
         # Call Jog Cartesian Space Service funtion to handle this jogging
         # await plugin_jogCartesianSpace.async_jog_cartesian(P_axis, R_axis, None)
-        await plugin_jogCartesianSpace.async_jog_cartesian2(P_axis, R_axis, None)
+        # await plugin_jogCartesianSpace.async_jog_cartesian2(P_axis, R_axis, None)
+        await plugin_jogCartesianSpace.async_jog_cartesian3(P_axis, R_axis, None)
 
-    await plugin_jogCartesianSpace.async_stop_joints(None)
+    # await plugin_jogCartesianSpace.async_stop_joints(None)
+    # await plugin_jogCartesianSpace.async_stop_joints2(None)
     global is_jogging
     is_jogging = False
         
