@@ -59,8 +59,10 @@ class JogCartesianSpace_impl(object):
                 self.robot.command_mode = self.position_mode
                 # time.sleep(0.1)
 
+            if self.is_enabled_velocity_mode == False:
                 #enable velocity mode
                 self.vel_ctrl.enable_velocity_mode()
+                self.is_enabled_velocity_mode = True            
 
             ## Jog the robot in cartesian space
             # Update the end effector pose info
@@ -155,7 +157,6 @@ class JogCartesianSpace_impl(object):
 
                 now=time.time()
                 while time.time()- now < self.dt:
-                    # self.vel_ctrl.set_velocity_command(qdot)
                     self.robot.jog_joint(qdot, 50*self.dt, False)
                 # self.robot.jog_joint(qdot, 50*self.dt, False)
             except:
@@ -317,14 +318,18 @@ class JogCartesianSpace_impl(object):
                 # time.sleep(0.1)
                 self.robot.command_mode = self.position_mode
                 # time.sleep(0.1)
+
+            if self.is_enabled_velocity_mode == False:
                 #enable velocity mode
                 self.vel_ctrl.enable_velocity_mode()
+                self.is_enabled_velocity_mode = True  
 
             # stop the robot
             self.vel_ctrl.set_velocity_command(np.zeros((self.num_joints,)))
 
             # disable velocity mode
             self.vel_ctrl.disable_velocity_mode() 
+            self.is_enabled_velocity_mode = False
         else:
             # Give an error message to show that the robot is not connected
             print("Robot is not connected to JogCartesianSpace service yet!")        
@@ -436,7 +441,7 @@ class JogCartesianSpace_impl(object):
             # ---------------------------
             # self.robot_sub=RRN.SubscribeService(self.url_robot)
             # self.state_w = self.robot_sub.SubscribeWire("robot_state")
-            
+            self.is_enabled_velocity_mode = False
             # self.cmd_w = self.robot_sub.SubscribeWire("position_command")
             # self.vel_ctrl = EmulatedVelocityControl(self.robot,self.state_w, self.cmd_w, self.dt)
 
