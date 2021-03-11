@@ -18,7 +18,7 @@ class JogCartesianSpace_impl(object):
         self.robot_rox = None #Robotics Toolbox robot object
 
         # Incremental difference amounts to jog in cartesian space
-        self.move_distance = 0.01 # meters
+        self.move_distance = 0.05 # meters
         self.rotate_angle = np.deg2rad(1) # radians
 
         self.pose_at_command = None 
@@ -52,18 +52,15 @@ class JogCartesianSpace_impl(object):
         if self.robot is not None:
             print("Jog in Cartesian Space with command P_axis" + str(P_axis) + "and R_axis"+ str(R_axis)) 
 
-            if self.is_enabled_velocity_mode == False:
+            if self.robot.command_mode != self.position_mode:
                 ## Put the robot to POSITION mode
                 self.robot.command_mode = self.halt_mode
                 # time.sleep(0.1)
                 self.robot.command_mode = self.position_mode
                 # time.sleep(0.1)
 
-            if self.is_enabled_velocity_mode == False:
                 #enable velocity mode
                 self.vel_ctrl.enable_velocity_mode()
-                self.is_enabled_velocity_mode = True
-                self.is_enabled_jog_mode = False
 
             ## Jog the robot in cartesian space
             # Update the end effector pose info
@@ -121,14 +118,12 @@ class JogCartesianSpace_impl(object):
         if self.robot is not None:
             print("Jog in Cartesian Space with command P_axis" + str(P_axis) + "and R_axis"+ str(R_axis)) 
 
-            if self.is_enabled_jog_mode == False:
+            if self.robot.command_mode != self.jog_mode:
                 # Put the robot to JOG mode
                 self.robot.command_mode = self.halt_mode
                 # time.sleep(0.1)
                 self.robot.command_mode = self.jog_mode
                 # time.sleep(0.1)
-                self.is_enabled_jog_mode = True
-                self.is_enabled_velocity_mode = False
 
             ## Jog the robot in cartesian space
             # Update the end effector pose info
@@ -186,14 +181,12 @@ class JogCartesianSpace_impl(object):
         if self.robot is not None:
             print("Jog in Cartesian Space with command P_axis" + str(P_axis) + "and R_axis_angles"+ str(R_axis_angles)) 
 
-            if self.is_enabled_jog_mode == False:
+            if self.robot.command_mode != self.jog_mode:
                 # Put the robot to jogging mode
                 self.robot.command_mode = self.halt_mode
                 # time.sleep(0.1)
                 self.robot.command_mode = self.jog_mode
                 # time.sleep(0.1)
-                self.is_enabled_jog_mode = True
-                self.is_enabled_velocity_mode = False
 
             ## Jog the robot in cartesian space
             # Update the end effector pose info
@@ -260,14 +253,12 @@ class JogCartesianSpace_impl(object):
         if self.robot is not None:
             print("Jog in Cartesian Space with command P_axis" + str(P_axis) + "and R_axis_angles"+ str(R_axis_angles)) 
 
-            if self.is_enabled_jog_mode == False:
+            if self.robot.command_mode != self.jog_mode:
                 # Put the robot to jogging mode
                 self.robot.command_mode = self.halt_mode
                 # time.sleep(0.1)
                 self.robot.command_mode = self.jog_mode
                 # time.sleep(0.1)
-                self.is_enabled_jog_mode = True
-                self.is_enabled_velocity_mode = False
 
             ## Jog the robot in cartesian space
             # Update the end effector pose info
@@ -320,25 +311,20 @@ class JogCartesianSpace_impl(object):
     def stop_joints(self):
         print("stop_joints is called")
         if self.robot is not None:
-            if self.is_enabled_velocity_mode == False:
+            if self.robot.command_mode != self.position_mode:
                 # Put the robot to POSITION mode
                 self.robot.command_mode = self.halt_mode
                 # time.sleep(0.1)
                 self.robot.command_mode = self.position_mode
                 # time.sleep(0.1)
-
-            if self.is_enabled_velocity_mode == False:
                 #enable velocity mode
                 self.vel_ctrl.enable_velocity_mode()
-                self.is_enabled_velocity_mode = True
-                self.is_enabled_jog_mode = False
 
             # stop the robot
             self.vel_ctrl.set_velocity_command(np.zeros((self.num_joints,)))
 
             # disable velocity mode
             self.vel_ctrl.disable_velocity_mode() 
-            self.is_enabled_velocity_mode = False
         else:
             # Give an error message to show that the robot is not connected
             print("Robot is not connected to JogCartesianSpace service yet!")        
@@ -346,14 +332,12 @@ class JogCartesianSpace_impl(object):
     def stop_joints2(self):
         print("stop_joints2 is called")
         if self.robot is not None:
-            if self.is_enabled_jog_mode == False:
+            if self.robot.command_mode != self.jog_mode:
                 # Put the robot to JOG mode
                 self.robot.command_mode = self.halt_mode
                 # time.sleep(0.1)
                 self.robot.command_mode = self.jog_mode
                 # time.sleep(0.1)
-                self.is_enabled_jog_mode = True
-                self.is_enabled_velocity_mode = False
 
             # stop the robot
             self.robot.jog_joint(np.zeros((self.num_joints,)), 50*self.dt, True)
@@ -376,14 +360,12 @@ class JogCartesianSpace_impl(object):
         if self.robot is not None:
             print("Jog in Cartesian Space with command P_axis" + str(P_axis) + "and R_axis"+ str(R_axis)) 
 
-            if self.is_enabled_jog_mode == False:
+            if self.robot.command_mode != self.jog_mode:
                 # Put the robot to jogging mode
                 self.robot.command_mode = self.halt_mode
                 # time.sleep(0.1)
                 self.robot.command_mode = self.jog_mode
                 # time.sleep(0.1)
-                self.is_enabled_jog_mode = True
-                self.is_enabled_velocity_mode = False
 
             ## Jog the robot in cartesian space
             # Update the end effector pose info
@@ -454,13 +436,12 @@ class JogCartesianSpace_impl(object):
             # ---------------------------
             # self.robot_sub=RRN.SubscribeService(self.url_robot)
             # self.state_w = self.robot_sub.SubscribeWire("robot_state")
-            self.is_enabled_velocity_mode = False
+            
             # self.cmd_w = self.robot_sub.SubscribeWire("position_command")
             # self.vel_ctrl = EmulatedVelocityControl(self.robot,self.state_w, self.cmd_w, self.dt)
 
             self.vel_ctrl = EmulatedVelocityControl(self.robot, self.dt)
             # ---------------------------
-            self.is_enabled_jog_mode = False 
 
             # log that the robot is successfully connected  
             print("Robot is connected to JogCartesianSpace service!")
