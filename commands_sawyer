@@ -4,7 +4,7 @@ sleep 1s;
 
 # gnome-terminal --tab --title="Gazebo Sawyer Sim with Sensor" --command "bash -c \"source ~/TeachPendantSpace/ros_ws/devel/setup.bash; roslaunch sawyer_gazebo sawyer_world2.launch; exec bash\""; 
 
-gnome-terminal --tab --title="Gazebo Sawyer Sim with Sensor" --command "bash -c \"source ~/TeachPendantSpace/ros_ws/devel/setup.bash; roslaunch sawyer_gazebo sawyer_world3.launch; exec bash\""; 
+gnome-terminal --tab --title="Gazebo Sawyer Sim with Sensor" --command "bash -c \"source ~/TeachPendantSpace/ros_ws/devel/setup.bash; roslaunch sawyer_gazebo sawyer_world4.launch; exec bash\""; 
 
 sleep 5s;
 

@@ -9,7 +9,7 @@ import general_robotics_toolbox as rox
 
 class SavePlayback_impl(object):
     def __init__(self):
-        self.url_robot = None
+        self.url_robot = ""
         self.robot = None ## RR robot object
         self.robot_rox = None #Robotics Toolbox robot object
 
@@ -25,6 +25,10 @@ class SavePlayback_impl(object):
         self.saved_endeff_poses_lst = [] # List to store corresponding end eff. pose rox pose objects
 
 
+    @property
+    def robot_url(self):
+        return self.url_robot
+        
 
     def save_cur_pose(self):
         print("save_cur_pose is called")
@@ -51,13 +55,31 @@ class SavePlayback_impl(object):
             q_desired = self.saved_joint_angles_lst[index]
             print("Desired angles:" + str(q_desired))
 
-            # Put the robot to jogging mode
-            self.robot.command_mode = self.halt_mode
-            self.robot.command_mode = self.jog_mode
+            if self.robot.command_mode != self.jog_mode:
+                # Put the robot to jogging mode
+                self.robot.command_mode = self.halt_mode
+                self.robot.command_mode = self.jog_mode
 
             # call jogging function to go to desired joint angles
             # self.robot.jog_joint(q_desired, self.joint_vel_limits, False, True)
             self.robot.jog_freespace(q_desired, self.joint_vel_limits, True)
+
+        else:
+            # Give an error message to show that the robot is not connected
+            print("Robot is not connected to SavePlayback service yet!")
+
+    def stop_joints(self):
+        print("stop_joints is called")
+        if self.robot is not None:
+            if self.robot.command_mode != self.jog_mode:
+                # Put the robot to JOG mode
+                self.robot.command_mode = self.halt_mode
+                # time.sleep(0.1)
+                self.robot.command_mode = self.jog_mode
+                # time.sleep(0.1)
+
+            # stop the robot
+            self.robot.jog_joint(np.zeros((self.num_joints,)), 50*self.dt, True)
 
         else:
             # Give an error message to show that the robot is not connected
@@ -157,6 +179,14 @@ class SavePlayback_impl(object):
         pose = rox.fwdkin(self.robot_rox, d_q) # Returns as pose.R and pose.p, look rox for details
         return pose
 
+    def current_robot_pose(self):
+        pose = self.get_current_pose()
+        pose_rr = RRN.NewStructure("experimental.pluginSavePlayback.Pose")
+        pose_rr.R = pose.R
+        pose_rr.T = pose.p
+        return pose_rr
+
+
     def playback_poses(self, num_loops, joint_vel_ratio, t_complete):
         print("Playback poses function is called.")
         # Import Necessary Structures
@@ -198,14 +228,18 @@ class SavePlayback_impl(object):
         wp.time_from_start = t
         waypoints.append(wp)
 
-        # Put robot to trajectory mode
-        self.robot.command_mode = self.halt_mode
-        self.robot.command_mode = self.trajectory_mode
+        if self.robot.command_mode != self.trajectory_mode:
+            # Put robot to trajectory mode
+            self.robot.command_mode = self.halt_mode
+            self.robot.command_mode = self.trajectory_mode
 
         # Create the trajectory
         traj = JointTrajectory()
         traj.joint_names = self.joint_names
         traj.waypoints = waypoints
+        # Store the speed ratio before the execution to restore later
+        prev_speed_ratio = self.robot.speed_ratio
+        # Assign the user specified speed ratio for the trajectory execution
         self.robot.speed_ratio = joint_vel_ratio
         try:
             # Execute the trajectory number of loops times
@@ -215,7 +249,11 @@ class SavePlayback_impl(object):
                 while (True):
                     t = time.time()
                     try:
-                        res = traj_gen.Next()        
+                        res = traj_gen.Next()     
+                        # print(res)   
+                        # print(str(res))
+                        # print(traj_gen.current_waypoint)      
+                        # print(traj_gen.trajectory.time)      
                     except RR.StopIterationException:
                         break
                 i += 1
@@ -224,6 +262,9 @@ class SavePlayback_impl(object):
             import traceback
             print(traceback.format_exc())
             print("Robot accelaration or velocity limits might be out of range. Increase the loop time or slow down the speed ratio<br>")
+
+        # Assign back to previous speed ratio to restore
+        self.robot.speed_ratio = prev_speed_ratio 
 
         # # ##############################################################
         # async def async_playback_poses_func():

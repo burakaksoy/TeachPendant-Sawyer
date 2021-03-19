@@ -90,9 +90,9 @@ function print_div_robotcamera_calibration_selected_camera(message)
 {
     $("#print_div_robotcamera_calibration_selected_camera").html(message)
 } 
-function print_div_robotcamera_calibration_aruco_test_results(message)
+function print_div_num_captured_robotcamera_calibration_imgs(message)
 {
-    $("#print_div_robotcamera_calibration_aruco_test_results").html(message)
+    $("#print_div_num_captured_robotcamera_calibration_imgs").html("Currently "+ message + " images are captured.")
 } 
 
 function clear_div_modal_body_RobotCameraCalibration(){
@@ -100,11 +100,15 @@ function clear_div_modal_body_RobotCameraCalibration(){
     $("#modal_body_RobotCameraCalibration div").empty()
 }
 
-function copy_jogging_tables(){
-    print_div("Copying jogging tables into Robot Camera Calibration Modal<br>")
-    $("#table_JointSpaceControl").clone(true).appendTo("#modal_body_RobotCameraCalibration")
+function copy_saved_poses(){
+    print_div("Copying saved poses list 'select' into Robot Camera Calibration Modal<br>");
+    var $clone = $("#saved_poses_list").clone(true).prop('id', 'saved_poses_list_clone' );
+    $clone.appendTo("#table_cell_for_saved_poses");
 }
-
+function remove_copied_saved_poses(){
+    // print_div("Copying saved poses list 'select' into Robot Camera Calibration Modal<br>")
+    $("#table_cell_for_saved_poses").find("#saved_poses_list_clone").remove()
+}
 
 
 function run_vision(){

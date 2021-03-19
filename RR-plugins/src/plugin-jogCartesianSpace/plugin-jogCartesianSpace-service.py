@@ -24,7 +24,7 @@ class JogCartesianSpace_impl(object):
         self.pose_at_command = None 
         self.num_jog_command = 0
 
-        self.dt = 0.01 #seconds, amount of time continuosly jog joints
+        self.dt = 0.02 #seconds, amount of time continuosly jog joints
 
 
     def reset(self):
@@ -157,7 +157,8 @@ class JogCartesianSpace_impl(object):
 
                 now=time.time()
                 while time.time()- now < self.dt:
-                    self.robot.jog_joint(qdot, 50*self.dt, False)
+                    self.robot.jog_joint(qdot, 10*self.dt, False)
+                    # self.robot.jog_joint(qdot*0.2, 5*self.dt, False)
                 # self.robot.jog_joint(qdot, 50*self.dt, False)
             except:
                 print("Specified joints might be out of range")

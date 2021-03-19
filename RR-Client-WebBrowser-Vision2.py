@@ -21,8 +21,10 @@ from js import print_div_selected_robotcamerapair_rotation_matrix
 from js import print_div_selected_robotcamerapair_translation_vector
 from js import print_div_robotcamera_calibration_selected_robot
 from js import print_div_robotcamera_calibration_selected_camera
-from js import print_div_robotcamera_calibration_aruco_test_results
+from js import print_div_num_captured_robotcamera_calibration_imgs
 from js import clear_div_modal_body_RobotCameraCalibration
+from js import copy_saved_poses
+from js import remove_copied_saved_poses
 
 from js import ImageData
 from RobotRaconteur.Client import *
@@ -51,6 +53,9 @@ class ClientVision(object):
         self.image_files_lst = None # For storing trained image file names
         self.calibration_files_lst = None # For storing the camera calibration file names
         self.robotcamera_calibration_files_lst = None # For storing the robot-camera calibration file names
+
+        self.camera_name = None # To store currently selected (active) camera name
+        self.robot_name = None # To store currently selected (active) robot name
 
         self.is_updated_available_cameras = False # Created to update the available cameras only once 
 
@@ -98,8 +103,11 @@ class ClientVision(object):
             self.port_pluginCameraTraining_service = '8892'
             self.port_pluginCameraCalibration_service = '8893'
             self.port_pluginCameraTracking_service = '8898'
+            self.port_pluginCameraRobotCalibration_service = '8902'
 
             self.port_pluginBlockly_service = '8897'
+
+            self.port_pluginSavePlayback_service = '8894'
             
             # Create Service and Plugin URLs 
             # rr+ws : WebSocket connection without encryption
@@ -108,8 +116,11 @@ class ClientVision(object):
             self.url_plugin_cameraTraining = 'rr+ws://' + self.ip_plugins + ':' + self.port_pluginCameraTraining_service + '?service=CameraTraining'
             self.url_plugin_cameraCalibration = 'rr+ws://'+ self.ip_plugins + ':' + self.port_pluginCameraCalibration_service+'?service=CameraCalibration'
             self.url_plugin_cameraTracking = 'rr+ws://'+ self.ip_plugins + ':' + self.port_pluginCameraTracking_service+'?service=CameraTracking'
+            self.url_plugin_cameraRobotCalibration = 'rr+ws://'+ self.ip_plugins + ':' + self.port_pluginCameraRobotCalibration_service+'?service=CameraRobotCalibration'
             
             self.url_plugin_blockly = 'rr+ws://'+ self.ip_plugins + ':' + self.port_pluginBlockly_service+'?service=Blockly'
+
+            self.url_plugin_savePlayback = 'rr+ws://'+ self.ip_plugins + ':' + self.port_pluginSavePlayback_service +'?service=SavePlayback'
 
 
             ## CameraFeedback plugin
@@ -148,12 +159,21 @@ class ClientVision(object):
             await self.plugin_cameraTracking.async_connect2all_cameras(self.CameraConnectionURLs,self.camera_node_names_lst,None) 
             print_div('CameraTrackin plugin is connected!<br>')
 
+            ## CameraRobotCalibration plugin
+            print_div('CameraCalibration plugin is connecting..<br>')
+            self.plugin_cameraRobotCalibration = await RRN.AsyncConnectService(self.url_plugin_cameraRobotCalibration,None,None,None,None)
+            await self.plugin_cameraRobotCalibration.async_connect2camera(self.url_cam,None)
+            await self.async_update_calibrated_camerarobot_pairs()
+            await self.async_select_calibrated_robotcamerapair()
+            print_div('CameraRobotCalibration plugin is connected!<br>')
+
             ## Blockly plugin
             print_div('Blockly plugin is connecting (from Vision)..<br>')
             self.plugin_blockly = await RRN.AsyncConnectService(self.url_plugin_blockly,None,None,None,None)
-            self.url_plugins_vision_lst = [self.url_plugin_cameraFeedback,self.url_plugin_cameraTraining,self.url_plugin_cameraCalibration,self.url_plugin_cameraTracking ]
+            self.url_plugins_vision_lst = [self.url_plugin_cameraFeedback,self.url_plugin_cameraTraining,self.url_plugin_cameraCalibration,self.url_plugin_cameraTracking,self.url_plugin_cameraRobotCalibration ] # TODO: self.url_plugin_cameraRobotCalibration for blockly 
             await self.plugin_blockly.async_connect2plugins_vision(self.url_plugins_vision_lst,None)            
             print_div('Blockly plugin is connected (from Vision)!<br>')
+
 
 
             return True
@@ -170,6 +190,13 @@ class ClientVision(object):
         await RRN.AsyncDisconnectService(self.plugin_cameraTraining, None)
         await RRN.AsyncDisconnectService(self.plugin_cameraCalibration, None)
         await RRN.AsyncDisconnectService(self.plugin_cameraTracking, None)
+        await RRN.AsyncDisconnectService(self.plugin_cameraRobotCalibration, None)
+
+        await RRN.AsyncDisconnectService(self.plugin_blockly, None)
+        await RRN.AsyncDisconnectService(self.plugin_savePlayback, None)
+
+    async def async_disconnect_from_plugin_savePlayback(self):
+        await RRN.AsyncDisconnectService(self.plugin_savePlayback, None)        
         
     def define_element_references(self):
         print_div("HTML Element references are being created..<br>")
@@ -240,10 +267,16 @@ class ClientVision(object):
         self.input_eef_to_aruco_Rx = document.getElementById("eef_to_aruco_Rx_input")
         self.input_eef_to_aruco_Ry = document.getElementById("eef_to_aruco_Ry_input")
         self.input_eef_to_aruco_Rz = document.getElementById("eef_to_aruco_Rz_input")
-        self.input_sweep_angle_j1_min = document.getElementById("sweep_angle_j1_min_input")
-        self.input_sweep_angle_j1_max = document.getElementById("sweep_angle_j1_max_input")
+        # self.input_sweep_angle_j1_min = document.getElementById("sweep_angle_j1_min_input")
+        # self.input_sweep_angle_j1_max = document.getElementById("sweep_angle_j1_max_input")
 
-        self.img_robotcamera_calibration_aruco_test = document.getElementById("robotcamera_calibration_aruco_test_image")
+        self.button_jog_sel_pose = document.getElementById("jog_sel_pose_btn")
+        self.button_jog_prev_pose = document.getElementById("jog_prev_pose_btn")
+        self.button_jog_next_pose = document.getElementById("jog_next_pose_btn")    
+        self.button_capture_img_robotcamera_calibration = document.getElementById("capture_img_robotcamera_calibration_btn")
+        self.button_stop_robot = document.getElementById("stop_robot_btn")
+
+        self.img_calibration_robotcamera = document.getElementById("calibration_robotcamera_image")
 
         self.button_robotcamera_calibrate_n_save = document.getElementById("btn_robotcamera_calibrate_n_save")
 
@@ -295,6 +328,12 @@ class ClientVision(object):
         self.span_close_robotcamera_calibration.addEventListener("click", self.close_modal_robotcamera_calibration_func)
         self.button_close_robotcamera_calibration.addEventListener("click", self.close_modal_robotcamera_calibration_func)
 
+        self.button_jog_sel_pose.addEventListener("click", self.jog_sel_pose_func)
+        self.button_jog_prev_pose.addEventListener("click", self.jog_prev_pose_func)
+        self.button_jog_next_pose.addEventListener("click", self.jog_next_pose_func)
+        self.button_capture_img_robotcamera_calibration.addEventListener("click", self.capture_img_robotcamera_calibration_func)
+        self.button_stop_robot.addEventListener("click", self.stop_robot_func)
+
         self.button_robotcamera_calibrate_n_save.addEventListener("click", self.robotcamera_calibrate_n_save_func)
 
         self.select_calibrated_robotcamerapairs.addEventListener("change", self.select_calibrated_robotcamerapair_func)
@@ -342,6 +381,7 @@ class ClientVision(object):
         try:
             if index == -1 and len(self.camera_node_names_lst) == 0:
                 print_div("No available cameras found")
+                self.camera_name = None
                 # Clear the selected camera image area
                 self.img_feedback.src = "''"
 
@@ -350,8 +390,8 @@ class ClientVision(object):
                     print_div("Selecting the first available camera")
                     index = 0
 
-                camera_name = self.camera_node_names_lst[index]
-                print_div("Selected camera name: " + camera_name + "<br>")
+                self.camera_name = self.camera_node_names_lst[index]
+                print_div("Selected camera name: " + self.camera_name + "<br>")
 
                 self.url_cam = self.CameraConnectionURLs[index]
                 print_div('Selected Camera url: '+ self.url_cam + '<br>')
@@ -398,6 +438,11 @@ class ClientVision(object):
             self.img_calibration_camera.src = self.img_feedback.src
             self.img_calibration_camera.width = self.img_feedback.width
             self.img_calibration_camera.height = self.img_feedback.height
+
+            # Add camera feedback image previews into opened ROBOT-camera calibration modal 
+            self.img_calibration_robotcamera.src = self.img_feedback.src
+            self.img_calibration_robotcamera.width = self.img_feedback.width
+            self.img_calibration_robotcamera.height = self.img_feedback.height
 
 
     # Callback functions For TRAINING
@@ -701,9 +746,10 @@ class ClientVision(object):
 
             if index == -1 or len(self.available_cams_list) == 0:
                 print_div_test_selected_camera("No available camera is found or none selected")
+                self.camera_name = None
             else:
-                camera_name = self.camera_node_names_lst[index]
-                print_div_test_selected_camera(camera_name)
+                self.camera_name = self.camera_node_names_lst[index]
+                print_div_test_selected_camera(self.camera_name)
 
             # Print Selected visual file name
             index = self.select_trained_visuals.selectedIndex
@@ -715,7 +761,7 @@ class ClientVision(object):
 
             # Execute the object detection
             return_result_image = True
-            detection_result = await self.plugin_cameraTracking.async_find_object_in_img_frame(obj_img_filename, camera_name, return_result_image, None)
+            detection_result = await self.plugin_cameraTracking.async_find_object_in_img_frame(obj_img_filename, self.camera_name, return_result_image, None)
 
             #Show the results
             image = detection_result.result_img
@@ -788,9 +834,10 @@ class ClientVision(object):
             index = self.available_cams_list.selectedIndex
             if index == -1 or len(self.available_cams_list) == 0:
                 print_div("No available camera is found or none selected<br>")
+                self.camera_name = None
             else:
-                camera_name = self.camera_node_names_lst[index]
-                fileName = camera_name + ".yml"
+                self.camera_name = self.camera_node_names_lst[index]
+                fileName = self.camera_name + ".yml"
 
                 # Get checkerboard related info from the inputs
                 width = int(self.input_width_checkerboard.value)
@@ -930,25 +977,76 @@ class ClientVision(object):
         print_div_num_captured_calibration_imgs(str(num_images))
 
 
-    # Callback functions for ROBOT-CAMERA CALIBRATION
+    # Callback functions for ROBOT-CAMERA CALIBRATION 
+    # ###############################################################################################################################
+    # ###############################################################################################################################
     def calibrate_robotcamera_func(self,data):
         print_div("Calibrate a new robot-camera pair button is pressed.. <br>")
         self.loop_client.create_task(self.async_calibrate_robotcamera())
 
     async def async_calibrate_robotcamera(self):
-        try: 
-            # Show the modal
-            self.modal_RobotCameraCalibration.style.display = "block"
+        # Ask user: are you sure you want to delete 'file_name'
+        resp = window.confirm("Make sure you have defined a safe path in 'Save & Playback' window for robot to travel during calibration. If you defined a safe path, press 'OK'. Otherwise press 'Cancel'.")
+        # if sure, else ignore and return
+        if resp:
+            try: 
+                # Show the modal
+                self.modal_RobotCameraCalibration.style.display = "block"
 
-            ## TODO
-        except:
-            import traceback
-            print_div(traceback.format_exc())
-            # raise
+                # Connect to: ## Save and Playback Plugin
+                print_div('SavePlayback plugin is connecting (from Vision)..<br>')
+                self.plugin_savePlayback = await RRN.AsyncConnectService(self.url_plugin_savePlayback,None,None,None,None)
+                print_div('SavePlayback plugin is connected (from Vision)!<br>')
+
+                # Remove the previously copied saved poses to prevent duplicate
+                remove_copied_saved_poses()
+
+                # Clear the calibration serverside captured images
+                await self.plugin_cameraRobotCalibration.async_remove_captured_images(None)
+
+                # Show current camera name and current robot name
+                # camera name
+                index = self.available_cams_list.selectedIndex
+                if index == -1 or len(self.available_cams_list) == 0:
+                    print_div_robotcamera_calibration_selected_camera("No available camera is found or none selected, SELECT A CAMERA AND TRY AGAIN")
+                    self.camera_name = None
+                else:
+                    self.camera_name = self.camera_node_names_lst[index]
+                    print_div_robotcamera_calibration_selected_camera(self.camera_name)
+
+                # robot name
+                # ASSUMING ROBOT ALREADY CONNECTED TO SAVEPLAYBACK plugin, get url of the current robot from there
+                self.url_robot = str(await self.plugin_savePlayback.async_get_robot_url(None))
+                print_div(self.url_robot+ "<br>") # Debug
+                # Get all Robot URLs and Robot NodeNames from Discovery Plugin
+                self.RobotConnectionURLs = await self.plugin_discovery.async_available_robot_ConnectionURLs(None)
+                self.robot_node_names_lst =  await self.plugin_discovery.async_available_robot_NodeNames(None)
+                # Create a dict & search for the node name corresponding to url_robot
+                self.robot_url_name_dict = dict(zip(self.RobotConnectionURLs,self.robot_node_names_lst))
+
+                self.robot_name = self.robot_url_name_dict.get(self.url_robot)
+                if self.robot_name is not None:
+                    # Finally Print current robot name
+                    print_div_robotcamera_calibration_selected_robot(self.robot_name)
+                else:
+                    print_div_robotcamera_calibration_selected_robot("No available robot is found or not connected, CONNECT TO A ROBOT AND TRY AGAIN")
+
+                # Copy the saved poses from Save & Playback window
+                copy_saved_poses()
+
+            except:
+                import traceback
+                print_div(traceback.format_exc())
+                # raise
 
     def close_modal_robotcamera_calibration_func(self,data):
         # Hide the modal
         self.modal_RobotCameraCalibration.style.display = "none"
+
+        # Disconnect from: ## Save and Playback Plugin
+        print_div('SavePlayback plugin is disconnecting (from Vision)..<br>')
+        loop.create_task(self.async_disconnect_from_plugin_savePlayback())
+        print_div('SavePlayback plugin is disconnected (from Vision)!<br>')
 
         # Clear the modal body content
         clear_div_modal_body_RobotCameraCalibration()
@@ -959,62 +1057,96 @@ class ClientVision(object):
 
     async def async_robotcamera_calibrate_n_save(self):
         try: 
-            # Hide cropping modal
-            self.modal_RobotCameraCalibration.style.display = "none"
-
-            ## TODO
-            # # Create the file name by looking at the selected camera name at camera feedback layout
-            # index = self.available_cams_list.selectedIndex
-            # if index == -1 or len(self.available_cams_list) == 0:
-            #     print_div("No available camera is found or none selected<br>")
-            # else:
-            #     camera_name = self.camera_node_names_lst[index]
-            #     fileName = camera_name + ".yml"
-
-            #     # Get checkerboard related info from the inputs
-            #     width = int(self.input_width_checkerboard.value)
-            #     height = int(self.input_height_checkerboard.value)
-            #     square_size = float(self.input_square_size.value)
-
-            #     # Assuming enough pictures are already taken by the user
-            #     # Send these information to camera calibration plugin
-            #     await self.plugin_cameraCalibration.async_calibrate_n_save(fileName, square_size, width, height, None)
-
-            #     # Update the available calibrated cameras list
-            #     await self.async_update_calibrated_cameras()
-            #     await self.async_select_calibrated_camera()
+            if self.camera_name is not None and self.robot_name is not None:
+                # Create the file name by looking at the selected camera name and robot name
+                fileName = self.robot_name + "--" + self.camera_name + ".yml"
+                print_div(fileName + "<br>") # debug
+                print_div(str(type(fileName)) + "<br>") # debug
                 
+                # Get the ArUco dictionary name from dropdown list
+                index = self.select_aruco_marker_dictionary.selectedIndex
+                aruco_dict = self.select_aruco_marker_dictionary[index].value
+                print_div(aruco_dict+ "<br>") # debug
+                print_div(str(type(aruco_dict)) + "<br>") # debug
+                
+                # Get the aruco id to be detected
+                aruco_id = int(self.input_arucomarker_id.value)
+                print_div(str(aruco_id)+ "<br>") # debug
+                print_div(str(type(aruco_id)) + "<br>") # debug
+
+                # Get the marker side length in millimeters
+                aruco_markersize = float(self.input_arucomarker_size.value)
+                print_div(str(aruco_markersize)+ "<br>") # debug
+                print_div(str(type(aruco_markersize)) + "<br>") # debug
+
+                # Get marker position vector from end effector to marker in end effector frame
+                Tx = float(self.input_eef_to_aruco_Tx.value)
+                Ty = float(self.input_eef_to_aruco_Ty.value)
+                Tz = float(self.input_eef_to_aruco_Tz.value)
+                T = np.array(([Tx,Ty,Tz]))
+                print_div(str(T)+ "<br>") # debug
+                print_div(str(type(T)) + "<br>") # debug
+
+                # Get marker orientation RPY Euler angles in degrees from end effector to marker
+                Rx = float(self.input_eef_to_aruco_Rx.value)
+                Ry = float(self.input_eef_to_aruco_Ry.value)
+                Rz = float(self.input_eef_to_aruco_Rz.value)
+                R_rpy = np.array(([Rx,Ry,Rz]))
+                print_div(str(R_rpy)+ "<br>") # debug
+                print_div(str(type(R_rpy)) + "<br>") # debug
+
+                # Get the camera matrix and distortion coefficients from camera Calibration Plugin (assuming camera intrinsic calibration is already done)
+                params = await self.plugin_cameraCalibration.async_load_calibration(self.camera_name + ".yml",None)
+
+                mtx = params.camera_matrix
+                print_div(str(mtx)+ "<br>") # debug
+                print_div(str(type(mtx)) + "<br>") # debug
+
+                dist = params.distortion_coefficients
+                print_div(str(dist)+ "<br>") # debug
+                print_div(str(type(dist)) + "<br>") # debug
+
+                # Assuming enough pictures are already taken by the user
+                # Send these informations to cameraRobot calibration plugin
+                await self.plugin_cameraRobotCalibration.async_calibrate_n_save(fileName, aruco_dict, aruco_id, aruco_markersize, T, R_rpy, mtx, dist, None)
+
+                # Update the available calibrated camera-robot pairs list
+                await self.async_update_calibrated_camerarobot_pairs()
+                await self.async_select_calibrated_robotcamerapair()
+
+            # Hide cropping modal
+            self.modal_RobotCameraCalibration.style.display = "none"   
 
         except:
             import traceback
             print_div(traceback.format_exc())
             # raise
         
-    # async def async_update_calibrated_cameras(self):
-    #     try:
-    #         # print_div("Clearing the previous available calibrated cameras options..")
-    #         length = self.select_calibrated_cameras.options.length
-    #         i = length-1
-    #         while i >= 0:
-    #             # self.select_calibrated_cameras.options[i] = None
-    #             self.select_calibrated_cameras.remove(i)
-    #             i -= 1
+    async def async_update_calibrated_camerarobot_pairs(self):
+        try:
+            # print_div("Clearing the previous available calibrated camera-robot pair options..")
+            length = self.select_calibrated_robotcamerapairs.options.length
+            i = length-1
+            while i >= 0:
+                # self.select_calibrated_robotcamerapairs.options[i] = None
+                self.select_calibrated_robotcamerapairs.remove(i)
+                i -= 1
 
-    #         print_div('Creating available calibrated cameras options..<br>')
-    #         self.robotcamera_calibration_files_lst = await self.plugin_cameraCalibration.async_saved_calibrations(None)
-    #         # print_div(str(self.robotcamera_calibration_files_lst) + "<br>") 
-    #         i = 0
-    #         for fileName in self.robotcamera_calibration_files_lst:
-    #             # Add the available calibration fileName to the select_calibrated_cameras list
-    #             option = document.createElement("option")
-    #             option.text = str(i) + ": " + str(fileName)
-    #             self.select_calibrated_cameras.add(option)
-    #             i += 1 
+            print_div('Creating available calibrated robot-camera pair options..<br>')
+            self.robotcamera_calibration_files_lst = await self.plugin_cameraRobotCalibration.async_saved_calibrations(None)
+            # print_div(str(self.robotcamera_calibration_files_lst) + "<br>") 
+            i = 0
+            for fileName in self.robotcamera_calibration_files_lst:
+                # Add the available calibration fileName to the select_calibrated_robotcamerapairs list
+                option = document.createElement("option")
+                option.text = str(i) + ": " + str(fileName)
+                self.select_calibrated_robotcamerapairs.add(option)
+                i += 1 
 
-    #         # self.rerender_workspace_blocks()
-    #     except:
-    #         import traceback
-    #         print_div(traceback.format_exc())
+            # self.rerender_workspace_blocks()
+        except:
+            import traceback
+            print_div(traceback.format_exc())
 
     def select_calibrated_robotcamerapair_func(self,data):
         print_div("A Saved Robot-Camera Calibration file is selected!<br>")
@@ -1031,33 +1163,20 @@ class ClientVision(object):
                 print_div_selected_robotcamerapair_translation_vector("")
 
             else:
-                pass
-                ## TODO
-                # if index == -1 and len(self.robotcamera_calibration_files_lst)> 0:
-                #     print_div("Selecting the first available calibration file")
-                #     index = 0
+                if index == -1 and len(self.robotcamera_calibration_files_lst)> 0:
+                    print_div("Selecting the first available calibration file")
+                    index = 0
 
-                # file_name = self.robotcamera_calibration_files_lst[index]
-                # print_div(file_name)
-                # params = await self.plugin_cameraCalibration.async_load_calibration(file_name,None)
+                file_name = self.robotcamera_calibration_files_lst[index]
+                print_div(file_name)
+                params = await self.plugin_cameraRobotCalibration.async_load_calibration(file_name,None)
 
-                
-                # float_formatter_f = "{:.2f}".format
-                # float_formatter_e = "{:.2e}".format
-                
-                # np.set_printoptions(formatter={'float_kind':float_formatter_f})
-                # print_div_selected_camera_matrix(str(params.camera_matrix).replace('\n', '<br> '))
+                float_formatter_f = "{:.3f}".format
+                np.set_printoptions(formatter={'float_kind':float_formatter_f})
+                print_div_selected_robotcamerapair_rotation_matrix(str(params.R_oc).replace('\n', '<br> ')) 
+                print_div_selected_robotcamerapair_translation_vector(str(params.T_oc).replace('\n', '<br> '))
 
-                # np.set_printoptions(formatter={'float_kind':float_formatter_e})
-                # print_div_selected_camera_distortion_coefficients(str(params.distortion_coefficients).replace('\n', '<br> '))
-
-                # float_formatter_f = "{:.3f}".format
-                # np.set_printoptions(formatter={'float_kind':float_formatter_f})
-                # print_div_selected_camera_RnT(str(params.R_co).replace('\n', '<br> ') + "<br>" + str(params.T_co).replace('\n', '<br> '))
-
-                # print_div_selected_camera_calibration_error('{0: 1.3f}'.format(params.error))
-
-                # np.set_printoptions(formatter=None)
+                np.set_printoptions(formatter=None)
         except:
             import traceback
             print_div(traceback.format_exc())
@@ -1076,28 +1195,124 @@ class ClientVision(object):
                 print_div("No available robot-camera calibration file found or not selected")
 
             else:
-                pass
-                ## TODO
-                # # if index == -1 and len(self.robotcamera_calibration_files_lst)> 0:
-                # #     print_div("Selecting the first available calibration file")
-                # #     index = 0
+                # if index == -1 and len(self.robotcamera_calibration_files_lst)> 0:
+                #     print_div("Selecting the first available robot-camera calibration pair file")
+                #     index = 0
 
-                # file_name = self.robotcamera_calibration_files_lst[index]
-                # # Ask user: are you sure you want to delete 'file_name'
-                # resp = window.confirm("Sure you want to delete '" + file_name + "'?")
-                # # if sure delete, else ignore and return
-                # if resp:
-                #     await self.plugin_cameraCalibration.async_delete_calibration(file_name,None)
+                file_name = self.robotcamera_calibration_files_lst[index]
+                # Ask user: are you sure you want to delete 'file_name'
+                resp = window.confirm("Sure you want to delete '" + file_name + "'?")
+                # if sure delete, else ignore and return
+                if resp:
+                    await self.plugin_cameraRobotCalibration.async_delete_calibration(file_name,None)
         except:
             import traceback
             print_div(traceback.format_exc())
             # raise
             pass
 
-        ## TODO
-        # # Update the available calibrated cameras list
-        # await self.async_update_calibrated_cameras()
-        # await self.async_select_calibrated_camera()
+        # Update the available calibrated cameras list
+        await self.async_update_calibrated_camerarobot_pairs()
+        await self.async_select_calibrated_robotcamerapair()
+
+    def jog_sel_pose_func(self,data):
+        print_div("Jogging to the selected pose..<br>")
+        self.loop_client.create_task(self.async_jog_sel_pose())
+
+    async def async_jog_sel_pose(self):
+        # Read the selected pose index from the browser
+        element_id = "saved_poses_list_clone"
+        poses_list = document.getElementById(element_id)
+        index = poses_list.selectedIndex
+        print_div("selected index: " + str(index) + "<br>") # debug
+        try:
+            if index == -1:
+                print_div("Please select a pose from Saved Poses.<br>")
+            else:
+                await self.plugin_savePlayback.async_go_sel_pose(index,None)
+        except:
+            pass
+
+    def jog_prev_pose_func(self,data):
+        print_div("Jogging to previous pose..<br>")
+        self.loop_client.create_task(self.async_jog_prev_pose())
+
+    async def async_jog_prev_pose(self):
+        # Read the selected pose index from the browser
+        element_id = "saved_poses_list_clone"
+        poses_list = document.getElementById(element_id)
+        if poses_list.length > 0:
+            index = poses_list.selectedIndex - 1
+            print_div("selected index: " + str(index) + "<br>") # debug
+            try:
+                if index == -1:
+                    index = 0 # select the first saved pose
+
+                poses_list.selectedIndex = index # on UI also select the previous pose
+                await self.plugin_savePlayback.async_go_sel_pose(index,None)
+            except:
+                import traceback
+                print_div(traceback.format_exc())
+                pass
+        else:
+            print_div("There is no saved pose. Save some poses and try again<br>")
+
+
+    def jog_next_pose_func(self,data):
+        print_div("Jogging to next pose..<br>")
+        self.loop_client.create_task(self.async_jog_next_pose())
+
+    async def async_jog_next_pose(self):
+        # Read the selected pose index from the browser
+        element_id = "saved_poses_list_clone"
+        poses_list = document.getElementById(element_id)
+        if poses_list.length > 0:
+            index = poses_list.selectedIndex + 1
+            print_div("selected index: " + str(index) + "<br>") # debug
+            try:
+                if index >= poses_list.length:
+                    index = poses_list.length-1 # select the last saved pose
+
+                poses_list.selectedIndex = index # on UI also select the next pose
+                await self.plugin_savePlayback.async_go_sel_pose(index,None)
+            except:
+                import traceback
+                print_div(traceback.format_exc())
+                pass
+        else:
+            print_div("There is no saved pose. Save some poses and try again<br>")
+
+    def capture_img_robotcamera_calibration_func(self,data):
+        print_div("Capturing an image for the robot-camera calibration..<br>")
+        self.loop_client.create_task(self.async_capture_img_robotcamera_calibration())
+
+    async def async_capture_img_robotcamera_calibration(self):
+        try:
+            # Get current robot pose from save & playback plugin
+            current_robot_pose = await self.plugin_savePlayback.async_current_robot_pose(None)
+
+            print_div(str(current_robot_pose.R) + "<br>" + str(current_robot_pose.T))
+
+            # Capture the image at the server side of calibration with the current robot pose
+            await self.plugin_cameraRobotCalibration.async_capture_image_with_robot_pose(current_robot_pose.R,current_robot_pose.T,None)
+
+            # Get how many images are taken in the server side of calibration
+            num_images = await self.plugin_cameraRobotCalibration.async_num_of_captured_images(None)
+            # Print num of images for the user see
+            print_div_num_captured_robotcamera_calibration_imgs(str(num_images))
+        except:
+            import traceback
+            print_div(traceback.format_exc())
+            pass
+
+
+    def stop_robot_func(self,data):
+        print_div("Stopping the robot..<br>")
+        self.loop_client.create_task(self.async_stop_robot())
+
+    async def async_stop_robot(self):
+        # Capture the image at the server side of calibration
+        await self.plugin_savePlayback.async_stop_joints(None)
     # # -------------------------- END: Callback functions -------------------------- #
 
 

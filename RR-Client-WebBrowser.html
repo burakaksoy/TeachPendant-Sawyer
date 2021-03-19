@@ -581,6 +581,9 @@
                   <p>If the selected Robot-Camera pair is already calibrated, it will be overwritten. Otherwise a new calibration will be added.</p>
                   <table id="table_robotcamera_calibration_modal" border="1"> <!-- CELLPADDING="4" CELLSPACING="3"> -->
                       <col width="60%"><col width="40%"> <!-- It does not work, see css -->
+                      <!-- <tr> 
+                          <td colspan = "2" align="left">Make sure you have defined a safe path in "Save & Playback" window for robot to travel during calibration. If you defined a safe path, press "OK". Otherwise press "Cancel". </td>   
+                      </tr> -->
                       <tr> 
                           <td align="left">Selected Robot:</td>
                           <td>
@@ -617,7 +620,7 @@
                                     <option value="cv2.aruco.DICT_7X7_100">DICT_7X7_100</option>
                                     <option value="cv2.aruco.DICT_7X7_250">DICT_7X7_250</option>
                                     <option value="cv2.aruco.DICT_7X7_1000">DICT_7X7_1000</option>
-                                    <option value="cv2.aruco.DICT_ARUCO_ORIGINAL">DICT_ARUCO_ORIGINAL</option>
+                                    <option value="cv2.aruco.DICT_ARUCO_ORIGINAL" selected>DICT_ARUCO_ORIGINAL</option>
                                     <option value="cv2.aruco.DICT_APRILTAG_16h5">DICT_APRILTAG_16h5</option>
                                     <option value="cv2.aruco.DICT_APRILTAG_25h9">DICT_APRILTAG_25h9</option>
                                     <option value="cv2.aruco.DICT_APRILTAG_36h10">DICT_APRILTAG_36h10</option>
@@ -630,7 +633,7 @@
                       <tr> 
                           <td align="left">Please enter the ID of the attached ArUco marker: </td>   
                           <td>
-                              <input type="number" id="arucomarker_id_input" placeholder="ID" value="25" min="1" style="font-size: 25px;">
+                              <input type="number" id="arucomarker_id_input" placeholder="ID" value="7" min="1" style="font-size: 25px;">
                           </td>       
                       </tr>
                       <tr> 
@@ -648,7 +651,7 @@
                             <label for="eef_to_aruco_Ty">T<sub>Y</sub>:</label>
                             <input type="number" id="eef_to_aruco_Ty_input" placeholder="(m)" value="0.0" step="0.01" style="font-size: 25px;">
                             <label for="eef_to_aruco_Tz">T<sub>Z</sub>:</label>
-                            <input type="number" id="eef_to_aruco_Tz_input" placeholder="(m)" value="0.0" step="0.01" style="font-size: 25px;"> 
+                            <input type="number" id="eef_to_aruco_Tz_input" placeholder="(m)" value="0.05" step="0.01" style="font-size: 25px;"> 
                           </td>     
                       </tr>
 
@@ -660,30 +663,42 @@
                             <label for="eef_to_aruco_Rz">&theta;<sub>Y</sub>:</label>
                             <input type="number" id="eef_to_aruco_Ry_input" placeholder="(deg)" value="0.0" step="1.0" style="font-size: 25px;">
                             <label for="eef_to_aruco_Rz">&theta;<sub>Z</sub>:</label>
-                            <input type="number" id="eef_to_aruco_Rz_input" placeholder="(deg)" value="0.0" step="1.0" style="font-size: 25px;"> 
+                            <input type="number" id="eef_to_aruco_Rz_input" placeholder="(deg)" value="-90.0" step="1.0" style="font-size: 25px;"> 
                           </td>     
                       </tr>
 
                       <tr> 
-                          <td align="left">Please define a range for the first joint of the robot to sweep. <br> Sweeping is needed for accurate calibration. (Make sure the defined range in the joint limits of the robot)</td>        
+                          <td colspan = "2" align="left">Now capture ArUco marker images from different positions and orientations </td>        
+                      </tr>
+                      <tr> 
+                          <td rowspan = "4" align="left" id="table_cell_for_saved_poses"></td>   
                           <td>
-                            <label for="sweep_angle_j1_min">Min (deg):</label> 
-                            <input type="number" id="sweep_angle_j1_min_input" placeholder="(deg)" value="-30.0" step="5.0" style="font-size: 25px;">
-                            <label for="sweep_angle_j1_max">Max (deg):</label> 
-                            <input type="number" id="sweep_angle_j1_max_input" placeholder="(deg)" value="30.0" step="5.0" style="font-size: 25px;">
+                            <button id="jog_sel_pose_btn" type="button" style="width: 100%;">GO to Selected Pose</button>
+                          </td>      
+                      </tr>
+                      <tr>
+                          <td style="white-space: nowrap;">  
+                            <button id="jog_prev_pose_btn" type="button" style="width: 49%;">&larr;</button> 
+                            <button id="jog_next_pose_btn" type="button" style="width: 49%;">&rarr;</button>        
+                            
                           </td>
                       </tr>
-
-                      <tr> 
-                          <td colspan = "2" align="left">Now you can press "Calibrate & Save" button to start calibration.<br> During the process, marker detection results will be shown below.<br> Once the process completed this window will be automatically closed. </td>   
+                      <tr>
+                          <td>
+                            <button id="stop_robot_btn" type="button" style="width: 100%;">STOP ROBOT</button>   
+                          </td>
                       </tr>
-
+                      <tr>
+                          <td>
+                            <button id="capture_img_robotcamera_calibration_btn" type="button" style="width: 100%;">Capture Image</button>
+                          </td>
+                      </tr>
                       <tr> 
                           <td>
-                              <img id="robotcamera_calibration_aruco_test_image"></img>
+                              <img id="calibration_robotcamera_image"></img>
                           </td>   
                           <td >
-                            <div align="center" id="print_div_robotcamera_calibration_aruco_test_results"></div> 
+                            <div align="center" id="print_div_num_captured_robotcamera_calibration_imgs"></div> 
                           </td>  
                       </tr>
                   </table>

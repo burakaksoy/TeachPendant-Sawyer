@@ -12,6 +12,7 @@ gnome-terminal --tab --title="RR plugin_tool service" --command "bash -c \"cd ./
 gnome-terminal --tab --title="RR plugin_cameraFeedback service" --command "bash -c \"cd ./RR-plugins/src/plugin-cameraFeedback; python3 plugin-cameraFeedback-service.py; exec bash\"";
 gnome-terminal --tab --title="RR plugin_cameraTraining service" --command "bash -c \"cd ./RR-plugins/src/plugin-cameraTraining; python3 plugin-cameraTraining-service.py; exec bash\"";
 gnome-terminal --tab --title="RR plugin_cameraCalibration service" --command "bash -c \"cd ./RR-plugins/src/plugin-cameraCalibration; python3 plugin-cameraCalibration-service.py; exec bash\"";
+gnome-terminal --tab --title="RR plugin_cameraRobotCalibration service" --command "bash -c \"cd ./RR-plugins/src/plugin-cameraRobotCalibration; export ROBOTRACONTEUR_PYTHON_TRACEBACK_PRINT_EXC=1; python3 plugin-cameraRobotCalibration-service.py; exec bash\"";
 gnome-terminal --tab --title="RR plugin_cameraTracking service" --command "bash -c \"cd ./RR-plugins/src/plugin-cameraTracking; python3 plugin-cameraTracking-service.py; exec bash\"";
 
 gnome-terminal --tab --title="RR plugin_updateInfo service" --command "bash -c \"cd ./RR-plugins/src/plugin-updateInfo; python3 plugin-updateInfo-service.py; exec bash\"";
