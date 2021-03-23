@@ -1241,9 +1241,213 @@
                                 <block type="utils_orientation_in_pose">
                                     
                                 </block>
-                                <block type="utils_arithmetic">
-                                    
+                                <block type="utils_sum_vectors">
+                                    <value name="position_1">
+                                        <block type="utils_position">
+                                            <value name="X">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                            <value name="Y">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                            <value name="Z">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                        </block>
+                                    </value>
+                                    <value name="position_2">
+                                        <block type="utils_position">
+                                            <value name="X">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                            <value name="Y">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                            <value name="Z">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                        </block>
+                                    </value>
                                 </block>
+                                <block type="utils_subtract_vectors">
+                                    <value name="position_1">
+                                        <block type="utils_position">
+                                            <value name="X">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                            <value name="Y">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                            <value name="Z">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                        </block>
+                                    </value>
+                                    <value name="position_2">
+                                        <block type="utils_position">
+                                            <value name="X">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                            <value name="Y">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                            <value name="Z">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                        </block>
+                                    </value>
+                                </block>
+
+                                <block type="utils_rotate_frame">
+                                    <value name="orientation_1">
+                                        <block type="utils_orientation">
+                                            <value name="TX">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                            <value name="TY">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                            <value name="TZ">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                        </block>
+                                    </value>
+                                    <value name="orientation_2">
+                                        <block type="utils_orientation">
+                                            <value name="TX">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                            <value name="TY">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                            <value name="TZ">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                        </block>
+                                    </value>
+                                </block>
+
+                                <block type="utils_rotate_vector">
+                                    <value name="orientation">
+                                        <block type="utils_orientation">
+                                            <value name="TX">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                            <value name="TY">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                            <value name="TZ">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                        </block>
+                                    </value>
+                                    <value name="position">
+                                        <block type="utils_position">
+                                            <value name="X">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                            <value name="Y">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                            <value name="Z">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                        </block>
+                                    </value>
+                                </block>
+
+                                <block type="utils_inverse_frame">
+                                    <value name="orientation">
+                                        <block type="utils_orientation">
+                                            <value name="TX">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                            <value name="TY">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                            <value name="TZ">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                        </block>
+                                    </value>
+                                </block>
+
+                                <block type="utils_minus_vector">
+                                    <value name="position">
+                                        <block type="utils_position">
+                                            <value name="X">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                            <value name="Y">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                            <value name="Z">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                        </block>
+                                    </value>
+                                </block>
+
                             </category>
                             <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
                             <sep></sep>

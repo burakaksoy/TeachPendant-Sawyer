@@ -3,6 +3,13 @@ service experimental.pluginBlockly
 
 stdver 0.14.3
 
+struct Pose
+    # Rotation matrix
+    field double[3,3] R
+    # Translation vector
+    field double[3] T
+end
+
 object Blockly
     function void connect2plugins(string{list} url_plugins_lst)
     function void connect2plugins_vision(string{list} url_plugins_vision_lst)

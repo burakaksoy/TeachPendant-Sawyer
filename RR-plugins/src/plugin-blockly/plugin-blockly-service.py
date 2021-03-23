@@ -347,8 +347,9 @@ class Blockly_impl(object):
             # Return the same type pose with the new calculated values
             value_pose_in_cam.R = R0_E
             
-            position_offset = np.asarray([0,0,0.1], dtype=np.float32) # TODO: THIS HAS TO BE REMOVED AND HANDLED WITH THE POSE RELATED ARITHMATIC BLOCKS, THIS IS JUST TEMPORARY!!!
-            value_pose_in_cam.T = T0_obj + position_offset
+            # position_offset = np.asarray([0,0,0.1], dtype=np.float32) # TODO: THIS HAS TO BE REMOVED AND HANDLED WITH THE POSE RELATED ARITHMATIC BLOCKS, THIS IS JUST TEMPORARY!!!
+            # value_pose_in_cam.T = T0_obj + position_offset
+            value_pose_in_cam.T = T0_obj
 
             print("value_pose_in_cam.R" + str(value_pose_in_cam.R))
             print("value_pose_in_cam.T" + str(value_pose_in_cam.T))
@@ -410,7 +411,94 @@ class Blockly_impl(object):
 
         except:
             import traceback
-            print(traceback.format_exc()) 
+            print(traceback.format_exc())
+
+    def utils_rotate_vector(self, value_orientation,value_position):
+        try:
+            rpy = np.asarray(value_orientation) # convert to numpy array from list
+            rpy = np.deg2rad(rpy) # convert from deg to radian
+            R = rox.rpy2R(rpy)# calculate corresponding rotation matrix
+
+            T = R @ np.asarray(value_position) # execute the rotation of the vector
+            
+            print("T(utils_inverse_frame): "+ str(T.tolist())) 
+            return T.tolist() # return as list 
+        except:
+            import traceback
+            print(traceback.format_exc())
+
+    def utils_rotate_frame(self, value_orientation_1,value_orientation_2):
+        try:
+            rpy = np.asarray(value_orientation_1) # convert to numpy array from list
+            rpy = np.deg2rad(rpy) # convert from deg to radian
+            R1 = rox.rpy2R(rpy)# calculate corresponding rotation matrix
+
+            rpy = np.asarray(value_orientation_2) # convert to numpy array from list
+            rpy = np.deg2rad(rpy) # convert from deg to radian
+            R2 = rox.rpy2R(rpy)# calculate corresponding rotation matrix
+
+            R = R1 @ R2 # execute the rotation
+
+            x,y,z = self.euler_angles_from_rotation_matrix(R) # convert back to RPY euler angles from rotation matrix
+            R_angles = np.rad2deg([x,y,z]) # convert back to degrees from radian
+            print("R(utils_rotate_frame): "+ str(R_angles.tolist())) 
+            return R_angles.tolist() # return as list 
+        except:
+            import traceback
+            print(traceback.format_exc())
+
+    def utils_sum_vectors(self, value_position_1,value_position_2):
+        try:
+            return (np.asarray(value_position_1)+np.asarray(value_position_2)).tolist()
+        except:
+            import traceback
+            print(traceback.format_exc())
+
+    def utils_subtract_vectors(self, value_position_1,value_position_2):
+        try:
+            return (np.asarray(value_position_1)-np.asarray(value_position_2)).tolist()
+        except:
+            import traceback
+            print(traceback.format_exc())
+
+    def utils_inverse_frame(self, value_orientation):
+        try:
+            rpy = np.asarray(value_orientation) # convert to numpy array from list
+            rpy = np.deg2rad(rpy) # convert from deg to radian
+            R = rox.rpy2R(rpy)# calculate corresponding rotation matrix
+            R = R.T # calculate the inverse i.e. transpose
+            x,y,z = self.euler_angles_from_rotation_matrix(R) # convert back to RPY euler angles from rotation matrix
+            R_angles = np.rad2deg([x,y,z]) # convert back to degrees from radian
+            print("R(utils_inverse_frame): "+ str(R_angles.tolist())) 
+            return R_angles.tolist() # return as list 
+        except:
+            import traceback
+            print(traceback.format_exc())
+
+    def utils_minus_vector(self, value_position):
+        try:
+            return (-np.asarray(value_position)).tolist()
+        except:
+            import traceback
+            print(traceback.format_exc())
+
+
+    def utils_pose_from_position_n_orientation(self, value_position, value_orientation):
+        try:
+            rpy = np.asarray(value_orientation) # convert to numpy array from list
+            rpy = np.deg2rad(rpy) # convert from deg to radian
+            R = rox.rpy2R(rpy)# calculate corresponding rotation matrix
+            T = R @ np.asarray(value_position)
+            
+            # Get the RR pose structure
+            pose = RRN.NewStructure("experimental.pluginBlockly.Pose")
+            pose.R = R
+            pose.T = T
+
+            return pose
+        except:
+            import traceback
+            print(traceback.format_exc())
 
     # --- UTILS related implementation of blockly functions: END -----------        
 

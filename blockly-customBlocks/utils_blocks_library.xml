@@ -313,70 +313,56 @@
     </value>
   </block><block type="factory_base" id="l:1~Pajh~UkRn|yn^IL9" deletable="false" movable="false" x="10" y="10">
     <mutation connections="LEFT"></mutation>
-    <field name="NAME">utils_arithmetic</field>
+    <field name="NAME">utils_sum_vectors</field>
     <field name="INLINE">INT</field>
     <field name="CONNECTIONS">LEFT</field>
     <statement name="INPUTS">
       <block type="input_value" id="e63li_Ed//@$^($P2MwP">
-        <field name="INPUTNAME">A</field>
+        <field name="INPUTNAME">position_1</field>
         <field name="ALIGN">LEFT</field>
+        <statement name="FIELDS">
+          <block type="field_static" id="=I@0xVbr`fd4lFPtK[lg">
+            <field name="TEXT">T1:</field>
+          </block>
+        </statement>
         <value name="TYPE">
           <shadow type="type_null" id="}W}RD-N(obye#ODro=l_"></shadow>
-          <block type="type_group" id="B8lB[e6I7?%}--^dRY~E">
-            <mutation types="2"></mutation>
-            <value name="TYPE0">
-              <block type="type_other" id="SGfYA3=WbHTm%7{|~.+i">
-                <field name="TYPE">position</field>
-              </block>
-            </value>
-            <value name="TYPE1">
-              <block type="type_other" id="8L,KPElQYwnuIi_$26mB">
-                <field name="TYPE">orientation</field>
-              </block>
-            </value>
+          <block type="type_other" id="SGfYA3=WbHTm%7{|~.+i">
+            <field name="TYPE">position</field>
           </block>
         </value>
         <next>
-          <block type="input_value" id="Z[)t^i_9vf)]:=oxH/8+">
-            <field name="INPUTNAME">B</field>
+          <block type="input_dummy" id="mqgOfc`u/}D5WEPOEYX)">
             <field name="ALIGN">LEFT</field>
             <statement name="FIELDS">
-              <block type="field_dropdown" id="4yyjhWx!@*0:T~g=h0ct">
-                <mutation options="[&quot;text&quot;,&quot;text&quot;,&quot;text&quot;,&quot;text&quot;]"></mutation>
-                <field name="FIELDNAME">NAME</field>
-                <field name="USER0">+</field>
-                <field name="CPU0">ADD</field>
-                <field name="USER1">-</field>
-                <field name="CPU1">MINUS</field>
-                <field name="USER2">×</field>
-                <field name="CPU2">MULTIPLY</field>
-                <field name="USER3">÷</field>
-                <field name="CPU3">DIVIDE</field>
+              <block type="field_static" id="OU@JhXpuv2cd^IF]Q}xu">
+                <field name="TEXT">+</field>
               </block>
             </statement>
-            <value name="TYPE">
-              <shadow type="type_null" id=":{S]ZqOBWVy6:**,XT`0"></shadow>
-              <block type="type_group" id="rM~`M/+*I?]*%Mun}*GW">
-                <mutation types="2"></mutation>
-                <value name="TYPE0">
+            <next>
+              <block type="input_value" id="Z[)t^i_9vf)]:=oxH/8+">
+                <field name="INPUTNAME">position_2</field>
+                <field name="ALIGN">LEFT</field>
+                <statement name="FIELDS">
+                  <block type="field_static" id=";Xul*4omd:DN3?v`6U0:">
+                    <field name="TEXT">T2:</field>
+                  </block>
+                </statement>
+                <value name="TYPE">
+                  <shadow type="type_null" id=":{S]ZqOBWVy6:**,XT`0"></shadow>
                   <block type="type_other" id="DL~kBu!V7H+FjY4o2dUO">
                     <field name="TYPE">position</field>
                   </block>
                 </value>
-                <value name="TYPE1">
-                  <block type="type_other" id="0MIdJ4|mOZAGhoct1=rM">
-                    <field name="TYPE">orientation</field>
-                  </block>
-                </value>
               </block>
-            </value>
+            </next>
           </block>
         </next>
       </block>
     </statement>
     <value name="TOOLTIP">
       <block type="text" id="#d9K!9.0~e!$43kp0lvr" deletable="false" movable="false">
-        <field name="TEXT">Arithmetic operations for 2 vectors of Position or Orientation</field>
+        <field name="TEXT">Sum for 2 vectors of Position</field>
       </block>
     </value>
     <value name="HELPURL">
@@ -386,24 +372,335 @@
     </value>
     <value name="OUTPUTTYPE">
       <shadow type="type_null" id="rGlY[pYWBY/FYOC[m0Qt"></shadow>
-      <block type="type_group" id="21zmyhWOZ8|jXt6r``U#">
-        <mutation types="2"></mutation>
-        <value name="TYPE0">
-          <block type="type_other" id="AE@?;wcaq~:Qs@}*1PZ5">
-            <field name="TYPE">position</field>
-          </block>
-        </value>
-        <value name="TYPE1">
-          <block type="type_other" id="N{WHWO0-S3oX%X0Zt/Z/">
-            <field name="TYPE">orientation</field>
-          </block>
-        </value>
+      <block type="type_other" id="AE@?;wcaq~:Qs@}*1PZ5">
+        <field name="TYPE">position</field>
       </block>
     </value>
     <value name="COLOUR">
       <block type="colour_hue" id="}g@~mIUqO(3{$a%olL%]">
-        <mutation colour="#5b8ca5"></mutation>
-        <field name="HUE">200</field>
+        <mutation colour="#5b86a5"></mutation>
+        <field name="HUE">205</field>
+      </block>
+    </value>
+  </block><block type="factory_base" id="l:1~Pajh~UkRn|yn^IL9" deletable="false" movable="false" x="10" y="10">
+    <mutation connections="LEFT"></mutation>
+    <field name="NAME">utils_subtract_vectors</field>
+    <field name="INLINE">INT</field>
+    <field name="CONNECTIONS">LEFT</field>
+    <statement name="INPUTS">
+      <block type="input_value" id="e63li_Ed//@$^($P2MwP">
+        <field name="INPUTNAME">position_1</field>
+        <field name="ALIGN">LEFT</field>
+        <statement name="FIELDS">
+          <block type="field_static" id="=I@0xVbr`fd4lFPtK[lg">
+            <field name="TEXT">T1:</field>
+          </block>
+        </statement>
+        <value name="TYPE">
+          <shadow type="type_null" id="}W}RD-N(obye#ODro=l_"></shadow>
+          <block type="type_other" id="SGfYA3=WbHTm%7{|~.+i">
+            <field name="TYPE">position</field>
+          </block>
+        </value>
+        <next>
+          <block type="input_dummy" id="mqgOfc`u/}D5WEPOEYX)">
+            <field name="ALIGN">LEFT</field>
+            <statement name="FIELDS">
+              <block type="field_static" id="OU@JhXpuv2cd^IF]Q}xu">
+                <field name="TEXT">-</field>
+              </block>
+            </statement>
+            <next>
+              <block type="input_value" id="Z[)t^i_9vf)]:=oxH/8+">
+                <field name="INPUTNAME">position_2</field>
+                <field name="ALIGN">LEFT</field>
+                <statement name="FIELDS">
+                  <block type="field_static" id=";Xul*4omd:DN3?v`6U0:">
+                    <field name="TEXT">T2:</field>
+                  </block>
+                </statement>
+                <value name="TYPE">
+                  <shadow type="type_null" id=":{S]ZqOBWVy6:**,XT`0"></shadow>
+                  <block type="type_other" id="DL~kBu!V7H+FjY4o2dUO">
+                    <field name="TYPE">position</field>
+                  </block>
+                </value>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </statement>
+    <value name="TOOLTIP">
+      <block type="text" id="#d9K!9.0~e!$43kp0lvr" deletable="false" movable="false">
+        <field name="TEXT">Subtract for 2 vectors of Position</field>
+      </block>
+    </value>
+    <value name="HELPURL">
+      <block type="text" id="Ke%egkq+2]@e52j]6+f_" deletable="false" movable="false">
+        <field name="TEXT"></field>
+      </block>
+    </value>
+    <value name="OUTPUTTYPE">
+      <shadow type="type_null" id="rGlY[pYWBY/FYOC[m0Qt"></shadow>
+      <block type="type_other" id="AE@?;wcaq~:Qs@}*1PZ5">
+        <field name="TYPE">position</field>
+      </block>
+    </value>
+    <value name="COLOUR">
+      <block type="colour_hue" id="}g@~mIUqO(3{$a%olL%]">
+        <mutation colour="#5b86a5"></mutation>
+        <field name="HUE">205</field>
+      </block>
+    </value>
+  </block><block type="factory_base" id="l:1~Pajh~UkRn|yn^IL9" deletable="false" movable="false" x="10" y="10">
+    <mutation connections="LEFT"></mutation>
+    <field name="NAME">utils_rotate_frame</field>
+    <field name="INLINE">INT</field>
+    <field name="CONNECTIONS">LEFT</field>
+    <statement name="INPUTS">
+      <block type="input_value" id="e63li_Ed//@$^($P2MwP">
+        <field name="INPUTNAME">orientation_1</field>
+        <field name="ALIGN">LEFT</field>
+        <statement name="FIELDS">
+          <block type="field_static" id="=I@0xVbr`fd4lFPtK[lg">
+            <field name="TEXT">R1:</field>
+          </block>
+        </statement>
+        <value name="TYPE">
+          <shadow type="type_null" id="}W}RD-N(obye#ODro=l_"></shadow>
+          <block type="type_other" id="SGfYA3=WbHTm%7{|~.+i">
+            <field name="TYPE">orientation</field>
+          </block>
+        </value>
+        <next>
+          <block type="input_dummy" id="mqgOfc`u/}D5WEPOEYX)">
+            <field name="ALIGN">LEFT</field>
+            <statement name="FIELDS">
+              <block type="field_static" id="OU@JhXpuv2cd^IF]Q}xu">
+                <field name="TEXT">×</field>
+              </block>
+            </statement>
+            <next>
+              <block type="input_value" id="Z[)t^i_9vf)]:=oxH/8+">
+                <field name="INPUTNAME">orientation_2</field>
+                <field name="ALIGN">LEFT</field>
+                <statement name="FIELDS">
+                  <block type="field_static" id=";Xul*4omd:DN3?v`6U0:">
+                    <field name="TEXT">R2:</field>
+                  </block>
+                </statement>
+                <value name="TYPE">
+                  <shadow type="type_null" id=":{S]ZqOBWVy6:**,XT`0"></shadow>
+                  <block type="type_other" id="DL~kBu!V7H+FjY4o2dUO">
+                    <field name="TYPE">orientation</field>
+                  </block>
+                </value>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </statement>
+    <value name="TOOLTIP">
+      <block type="text" id="#d9K!9.0~e!$43kp0lvr" deletable="false" movable="false">
+        <field name="TEXT">Combined Rotation for 2 Rotations</field>
+      </block>
+    </value>
+    <value name="HELPURL">
+      <block type="text" id="Ke%egkq+2]@e52j]6+f_" deletable="false" movable="false">
+        <field name="TEXT"></field>
+      </block>
+    </value>
+    <value name="OUTPUTTYPE">
+      <shadow type="type_null" id="rGlY[pYWBY/FYOC[m0Qt"></shadow>
+      <block type="type_other" id="AE@?;wcaq~:Qs@}*1PZ5">
+        <field name="TYPE">orientation</field>
+      </block>
+    </value>
+    <value name="COLOUR">
+      <block type="colour_hue" id="}g@~mIUqO(3{$a%olL%]">
+        <mutation colour="#5b93a5"></mutation>
+        <field name="HUE">195</field>
+      </block>
+    </value>
+  </block><block type="factory_base" id="l:1~Pajh~UkRn|yn^IL9" deletable="false" movable="false" x="10" y="10">
+    <mutation connections="LEFT"></mutation>
+    <field name="NAME">utils_rotate_vector</field>
+    <field name="INLINE">INT</field>
+    <field name="CONNECTIONS">LEFT</field>
+    <statement name="INPUTS">
+      <block type="input_value" id="e63li_Ed//@$^($P2MwP">
+        <field name="INPUTNAME">orientation</field>
+        <field name="ALIGN">LEFT</field>
+        <statement name="FIELDS">
+          <block type="field_static" id="=I@0xVbr`fd4lFPtK[lg">
+            <field name="TEXT">R:</field>
+          </block>
+        </statement>
+        <value name="TYPE">
+          <shadow type="type_null" id="}W}RD-N(obye#ODro=l_"></shadow>
+          <block type="type_other" id="SGfYA3=WbHTm%7{|~.+i">
+            <field name="TYPE">orientation</field>
+          </block>
+        </value>
+        <next>
+          <block type="input_dummy" id="mqgOfc`u/}D5WEPOEYX)">
+            <field name="ALIGN">LEFT</field>
+            <statement name="FIELDS">
+              <block type="field_static" id="OU@JhXpuv2cd^IF]Q}xu">
+                <field name="TEXT">×</field>
+              </block>
+            </statement>
+            <next>
+              <block type="input_value" id="Z[)t^i_9vf)]:=oxH/8+">
+                <field name="INPUTNAME">position</field>
+                <field name="ALIGN">LEFT</field>
+                <statement name="FIELDS">
+                  <block type="field_static" id=";Xul*4omd:DN3?v`6U0:">
+                    <field name="TEXT">T:</field>
+                  </block>
+                </statement>
+                <value name="TYPE">
+                  <shadow type="type_null" id=":{S]ZqOBWVy6:**,XT`0"></shadow>
+                  <block type="type_other" id="DL~kBu!V7H+FjY4o2dUO">
+                    <field name="TYPE">position</field>
+                  </block>
+                </value>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </statement>
+    <value name="TOOLTIP">
+      <block type="text" id="#d9K!9.0~e!$43kp0lvr" deletable="false" movable="false">
+        <field name="TEXT">Rotate a vector</field>
+      </block>
+    </value>
+    <value name="HELPURL">
+      <block type="text" id="Ke%egkq+2]@e52j]6+f_" deletable="false" movable="false">
+        <field name="TEXT"></field>
+      </block>
+    </value>
+    <value name="OUTPUTTYPE">
+      <shadow type="type_null" id="rGlY[pYWBY/FYOC[m0Qt"></shadow>
+      <block type="type_other" id="AE@?;wcaq~:Qs@}*1PZ5">
+        <field name="TYPE">position</field>
+      </block>
+    </value>
+    <value name="COLOUR">
+      <block type="colour_hue" id="}g@~mIUqO(3{$a%olL%]">
+        <mutation colour="#5b86a5"></mutation>
+        <field name="HUE">205</field>
+      </block>
+    </value>
+  </block><block type="factory_base" id="l:1~Pajh~UkRn|yn^IL9" deletable="false" movable="false" x="10" y="10">
+    <mutation connections="LEFT"></mutation>
+    <field name="NAME">utils_inverse_frame</field>
+    <field name="INLINE">INT</field>
+    <field name="CONNECTIONS">LEFT</field>
+    <statement name="INPUTS">
+      <block type="input_value" id="e63li_Ed//@$^($P2MwP">
+        <field name="INPUTNAME">orientation</field>
+        <field name="ALIGN">LEFT</field>
+        <statement name="FIELDS">
+          <block type="field_static" id="=I@0xVbr`fd4lFPtK[lg">
+            <field name="TEXT">(R:</field>
+          </block>
+        </statement>
+        <value name="TYPE">
+          <shadow type="type_null" id="}W}RD-N(obye#ODro=l_"></shadow>
+          <block type="type_other" id="SGfYA3=WbHTm%7{|~.+i">
+            <field name="TYPE">orientation</field>
+          </block>
+        </value>
+        <next>
+          <block type="input_dummy" id="mqgOfc`u/}D5WEPOEYX)">
+            <field name="ALIGN">LEFT</field>
+            <statement name="FIELDS">
+              <block type="field_static" id="OU@JhXpuv2cd^IF]Q}xu">
+                <field name="TEXT">)⁻¹</field>
+              </block>
+            </statement>
+          </block>
+        </next>
+      </block>
+    </statement>
+    <value name="TOOLTIP">
+      <block type="text" id="#d9K!9.0~e!$43kp0lvr" deletable="false" movable="false">
+        <field name="TEXT">Inverse a Rotation</field>
+      </block>
+    </value>
+    <value name="HELPURL">
+      <block type="text" id="Ke%egkq+2]@e52j]6+f_" deletable="false" movable="false">
+        <field name="TEXT"></field>
+      </block>
+    </value>
+    <value name="OUTPUTTYPE">
+      <shadow type="type_null" id="rGlY[pYWBY/FYOC[m0Qt"></shadow>
+      <block type="type_other" id="AE@?;wcaq~:Qs@}*1PZ5">
+        <field name="TYPE">orientation</field>
+      </block>
+    </value>
+    <value name="COLOUR">
+      <block type="colour_hue" id="}g@~mIUqO(3{$a%olL%]">
+        <mutation colour="#5b86a5"></mutation>
+        <field name="HUE">205</field>
+      </block>
+    </value>
+  </block><block type="factory_base" id="l:1~Pajh~UkRn|yn^IL9" deletable="false" movable="false" x="10" y="10">
+    <mutation connections="LEFT"></mutation>
+    <field name="NAME">utils_minus_vector</field>
+    <field name="INLINE">INT</field>
+    <field name="CONNECTIONS">LEFT</field>
+    <statement name="INPUTS">
+      <block type="input_value" id="e63li_Ed//@$^($P2MwP">
+        <field name="INPUTNAME">position</field>
+        <field name="ALIGN">LEFT</field>
+        <statement name="FIELDS">
+          <block type="field_static" id="=I@0xVbr`fd4lFPtK[lg">
+            <field name="TEXT">- (T:</field>
+          </block>
+        </statement>
+        <value name="TYPE">
+          <shadow type="type_null" id="}W}RD-N(obye#ODro=l_"></shadow>
+          <block type="type_other" id="SGfYA3=WbHTm%7{|~.+i">
+            <field name="TYPE">position</field>
+          </block>
+        </value>
+        <next>
+          <block type="input_dummy" id="3#Bz`I$JyKJBNNjMk!%o">
+            <field name="ALIGN">LEFT</field>
+            <statement name="FIELDS">
+              <block type="field_static" id="grU*Kz;$S)M*{1@?jmFj">
+                <field name="TEXT">)</field>
+              </block>
+            </statement>
+          </block>
+        </next>
+      </block>
+    </statement>
+    <value name="TOOLTIP">
+      <block type="text" id="#d9K!9.0~e!$43kp0lvr" deletable="false" movable="false">
+        <field name="TEXT">Minus vector</field>
+      </block>
+    </value>
+    <value name="HELPURL">
+      <block type="text" id="Ke%egkq+2]@e52j]6+f_" deletable="false" movable="false">
+        <field name="TEXT"></field>
+      </block>
+    </value>
+    <value name="OUTPUTTYPE">
+      <shadow type="type_null" id="rGlY[pYWBY/FYOC[m0Qt"></shadow>
+      <block type="type_other" id="AE@?;wcaq~:Qs@}*1PZ5">
+        <field name="TYPE">position</field>
+      </block>
+    </value>
+    <value name="COLOUR">
+      <block type="colour_hue" id="}g@~mIUqO(3{$a%olL%]">
+        <mutation colour="#5b86a5"></mutation>
+        <field name="HUE">205</field>
       </block>
     </value>
   </block></xml>
