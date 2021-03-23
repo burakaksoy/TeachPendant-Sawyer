@@ -92,6 +92,7 @@ def calibrate(path_imgs, prefix, image_format, path_poses, saved_poses_filename,
     print(len(images))
 
     for fname in images:
+        print(str(fname)) # debug
         img = cv2.imread(fname)
         
         # Find the aruco tag corners
@@ -147,7 +148,8 @@ def calibrate(path_imgs, prefix, image_format, path_poses, saved_poses_filename,
                 # Structure of this disctionary is "filename":[[R_base2marker],[T_base2marker],[R_cam2marker],[T_cam2marker]]
                 pose_pairs_dict[fname.split('/')[-1]] = [R_base2marker,T_base2marker,R_cam2marker,T_cam2marker]
     
-    cv2.destroyAllWindows() # Debug
+    # cv2.destroyAllWindows() # Debug
+    print("HERE") # debug
 
     # Now its time to execute calibration
     src_lst = []

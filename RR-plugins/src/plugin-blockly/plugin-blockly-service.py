@@ -20,8 +20,16 @@ import math
 
 class Blockly_impl(object):
     def __init__(self):
+        # Active robot related info
+        self.url_robot = None
+        self.RobotConnectionURLs = None
+        self.robot_node_names_lst = None
+        self.robot_url_name_dict = None
+        self.robot_name = None
+
         self.url_plugins_lst = [] # The order will be :
-        # url_plugin_jogJointSpace, url_plugin_jogCartesianSpace, url_plugin_savePlayback
+        # url_plugin_discovery, url_plugin_jogJointSpace, url_plugin_jogCartesianSpace, url_plugin_savePlayback
+        self.plugin_discovery = None
         self.plugin_jogJointSpace = None
         self.plugin_jogCartesianSpace = None
         self.plugin_savePlayback = None
@@ -34,6 +42,7 @@ class Blockly_impl(object):
         self.plugin_cameraTraining = None
         self.plugin_cameraCalibration = None
         self.plugin_cameraTracking = None
+        self.plugin_cameraRobotCalibration = None
 
         # Create a folder for saved blockly workspaces
         self.path = "./blockly-savedWorkspaces"
@@ -45,8 +54,15 @@ class Blockly_impl(object):
         self.blockly_saved_workspaces()
 
     def reset(self):
+        self.url_robot = None
+        self.RobotConnectionURLs = None
+        self.robot_node_names_lst = None
+        self.robot_url_name_dict = None
+        self.robot_name = None
+
         self.url_plugins_lst = []
 
+        self.plugin_discovery = None
         self.plugin_jogJointSpace = None
         self.plugin_jogCartesianSpace = None
         self.plugin_savePlayback = None
@@ -69,6 +85,7 @@ class Blockly_impl(object):
         self.plugin_cameraTraining = None
         self.plugin_cameraCalibration = None
         self.plugin_cameraTracking = None
+        self.plugin_cameraRobotCalibration = None
 
         # Create a folder for saved blockly workspaces
         self.path = "./blockly-savedWorkspaces"
@@ -87,15 +104,18 @@ class Blockly_impl(object):
             print(self.url_plugins_lst)
 
             if not self.url_plugins_lst[0] == '':
-                self.plugin_jogJointSpace = RRN.ConnectService(self.url_plugins_lst[0])
+                self.plugin_discovery = RRN.ConnectService(self.url_plugins_lst[0])
             if not self.url_plugins_lst[1] == '':
-                self.plugin_jogCartesianSpace = RRN.ConnectService(self.url_plugins_lst[1])
+                self.plugin_jogJointSpace = RRN.ConnectService(self.url_plugins_lst[1])
             if not self.url_plugins_lst[2] == '':
-                self.plugin_savePlayback = RRN.ConnectService(self.url_plugins_lst[2])
+                self.plugin_jogCartesianSpace = RRN.ConnectService(self.url_plugins_lst[2])
             if not self.url_plugins_lst[3] == '':
-                self.plugin_tool = RRN.ConnectService(self.url_plugins_lst[3])
+                self.plugin_savePlayback = RRN.ConnectService(self.url_plugins_lst[3])
+                self.find_active_robot_name()
             if not self.url_plugins_lst[4] == '':
-                self.plugin_toolLinkAttacher = RRN.ConnectService(self.url_plugins_lst[4])
+                self.plugin_tool = RRN.ConnectService(self.url_plugins_lst[4])
+            if not self.url_plugins_lst[5] == '':
+                self.plugin_toolLinkAttacher = RRN.ConnectService(self.url_plugins_lst[5])
         else:
             # Give an error that says the robot plugins are already connected
             print("Robot plugins are already connected to Blockly service! Trying to connect again..")
@@ -117,12 +137,32 @@ class Blockly_impl(object):
                 self.plugin_cameraCalibration = RRN.ConnectService(self.url_plugins_vision_lst[2])
             if not self.url_plugins_vision_lst[3] == '':
                 self.plugin_cameraTracking = RRN.ConnectService(self.url_plugins_vision_lst[3])
+            if not self.url_plugins_vision_lst[4] == '':
+                self.plugin_cameraRobotCalibration = RRN.ConnectService(self.url_plugins_vision_lst[4])
 
         else:
             # Give an error that says the robot plugins are already connected
             print("Vision plugins are already connected to Blockly service! Trying to connect again..")
             self.reset_vision()
             self.connect2plugins_vision(url_plugins_vision_lst)
+
+    def find_active_robot_name(self):
+        # robot name
+        # ASSUMING ROBOT ALREADY CONNECTED TO SAVEPLAYBACK plugin, get url of the current robot from there
+        self.url_robot = str(self.plugin_savePlayback.robot_url)
+        print(self.url_robot+ " is the url_robot") # Debug
+        # Get all Robot URLs and Robot NodeNames from Discovery Plugin
+        self.RobotConnectionURLs = self.plugin_discovery.available_robot_ConnectionURLs()
+        self.robot_node_names_lst = self.plugin_discovery.available_robot_NodeNames()
+        # Create a dict & search for the node name corresponding to url_robot
+        self.robot_url_name_dict = dict(zip(self.RobotConnectionURLs,self.robot_node_names_lst))
+
+        self.robot_name = self.robot_url_name_dict.get(self.url_robot)
+        if self.robot_name is not None:
+            # Finally Print current robot name
+            print(self.robot_name)
+        else:
+            print("No available robot is found or not connected, CONNECT TO A ROBOT AND TRY AGAIN")
 
     def blockly_saved_workspaces(self):
         # self.saved_workspaces_filenames = [f for f in listdir(self.path) if isfile(join(self.path, f))]
@@ -284,24 +324,24 @@ class Blockly_impl(object):
             Rc_obj = value_pose_in_cam.R
             Tc_obj = value_pose_in_cam.T
 
-            # Predefined pose of the camera wrt robot base
-            # TODO: Will be selected via dropdown_cams later 
-            
-            # T0_c = np.asarray([0.5,0,0.73], dtype=np.float32) # Predefined when camera is fixed
-            T0_c = np.asarray([0.6659,-0.8237,1.1862], dtype=np.float32) # Predefined when camera is fixed (LAB KINECT)
+            # Pose of the camera wrt robot base
 
-            # R0_c = np.asarray([[0,1,0],[1,0,0],[0,0,-1]], dtype=np.float32) # Predefined when camera is fixed
-            R0_c = np.asarray([[0,-1,0],[-1,0,0],[0,0,-1]], dtype=np.float32) # Predefined when camera is fixed (LAB KINECT)
+            # # T0_c = np.asarray([0.5,0,0.73], dtype=np.float32) # Predefined when camera is fixed
+            # T0_c = np.asarray([0.6659,-0.8237,1.1862], dtype=np.float32) # Predefined when camera is fixed (LAB KINECT)
 
-            # For sawyer, fixed rotation btw base to initial end effector
-            R0_E0 = np.asarray([[1,0,0],[0,-1,0],[0,0,-1]], dtype=np.float32)
+            # # R0_c = np.asarray([[0,1,0],[1,0,0],[0,0,-1]], dtype=np.float32) # Predefined when camera is fixed
+            # R0_c = np.asarray([[0,-1,0],[-1,0,0],[0,0,-1]], dtype=np.float32) # Predefined when camera is fixed (LAB KINECT)
+
+            filename = self.robot_name + "--" + dropdown_cams + ".yml"
+            params = self.plugin_cameraRobotCalibration.load_calibration(filename)
+            T0_c = params.T_oc/1000.0 # convert to meters
+            R0_c = params.R_oc
 
             # To grab the object via end effector, the orientation btw them should be:
             RE_obj = np.asarray([[0,0,-1],[-1,0,0],[0,1,0]], dtype=np.float32)
 
             # We need to find 
             T0_obj = (R0_c @ Tc_obj) + T0_c # Tranlastion from base frame to object origin in base frame
-            # RE0_E = R0_E0.T @ R0_c @ Rc_obj @ RE_obj.T # Rotation between the initial end eff. and the desired end effector
             R0_E = R0_c @ Rc_obj @ RE_obj.T # Rotation between the initial end eff. and the desired end effector
 
             # Return the same type pose with the new calculated values

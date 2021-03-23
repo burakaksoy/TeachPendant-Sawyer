@@ -1015,7 +1015,7 @@ async def client_drive():
         global plugin_blockly
         plugin_blockly = await RRN.AsyncConnectService(url_plugin_blockly,None,None,None,None)
         
-        url_plugins_lst = [url_plugin_jogJointSpace, url_plugin_jogCartesianSpace, url_plugin_savePlayback, url_plugin_tool, url_plugin_toolLinkAttacher]
+        url_plugins_lst = [url_plugin_discovery, url_plugin_jogJointSpace, url_plugin_jogCartesianSpace, url_plugin_savePlayback, url_plugin_tool, url_plugin_toolLinkAttacher]
         await plugin_blockly.async_connect2plugins(url_plugins_lst,None)
         # Update blockly saved workspaces both on UI and RunTime
         await async_update_blockly_saved_workspaces() 

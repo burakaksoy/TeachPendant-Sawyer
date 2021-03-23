@@ -170,7 +170,7 @@ class ClientVision(object):
             ## Blockly plugin
             print_div('Blockly plugin is connecting (from Vision)..<br>')
             self.plugin_blockly = await RRN.AsyncConnectService(self.url_plugin_blockly,None,None,None,None)
-            self.url_plugins_vision_lst = [self.url_plugin_cameraFeedback,self.url_plugin_cameraTraining,self.url_plugin_cameraCalibration,self.url_plugin_cameraTracking,self.url_plugin_cameraRobotCalibration ] # TODO: self.url_plugin_cameraRobotCalibration for blockly 
+            self.url_plugins_vision_lst = [self.url_plugin_cameraFeedback,self.url_plugin_cameraTraining,self.url_plugin_cameraCalibration,self.url_plugin_cameraTracking,self.url_plugin_cameraRobotCalibration ] 
             await self.plugin_blockly.async_connect2plugins_vision(self.url_plugins_vision_lst,None)            
             print_div('Blockly plugin is connected (from Vision)!<br>')
 
@@ -998,7 +998,7 @@ class ClientVision(object):
                 self.plugin_savePlayback = await RRN.AsyncConnectService(self.url_plugin_savePlayback,None,None,None,None)
                 print_div('SavePlayback plugin is connected (from Vision)!<br>')
 
-                # Remove the previously copied saved poses to prevent duplicate
+                # Remove the previously copied saved poses list element in the page to prevent duplicate
                 remove_copied_saved_poses()
 
                 # Clear the calibration serverside captured images
