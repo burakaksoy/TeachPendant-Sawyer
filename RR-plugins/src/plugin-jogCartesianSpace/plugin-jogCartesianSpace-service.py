@@ -6,6 +6,7 @@ import numpy as np
 
 import general_robotics_toolbox as rox
 from qpsolvers import solve_qp
+from scipy.optimize import lsq_linear
 
 from vel_emulate_sub import EmulatedVelocityControl
 import time
@@ -18,13 +19,16 @@ class JogCartesianSpace_impl(object):
         self.robot_rox = None #Robotics Toolbox robot object
 
         # Incremental difference amounts to jog in cartesian space
-        self.move_distance = 0.05 # meters
-        self.rotate_angle = np.deg2rad(1) # radians
+        # self.move_distance = 0.05 # meters
+        self.move_distance = 0.1 # meters
+        # self.rotate_angle = np.deg2rad(1) # radians
+        self.rotate_angle = np.deg2rad(45) # radians
 
         self.pose_at_command = None 
         self.num_jog_command = 0
 
-        self.dt = 0.02 #seconds, amount of time continuosly jog joints
+        # self.dt = 0.02 #seconds, amount of time continuosly jog joints
+        self.dt = 0.01 #seconds, amount of time continuosly jog joints
 
 
     def reset(self):
@@ -160,6 +164,37 @@ class JogCartesianSpace_impl(object):
                     self.robot.jog_joint(qdot, 10*self.dt, False)
                     # self.robot.jog_joint(qdot*0.2, 5*self.dt, False)
                 # self.robot.jog_joint(qdot, 50*self.dt, False)
+            except:
+                print("Specified joints might be out of range")
+                import traceback
+                print(traceback.format_exc())
+                # raise
+
+        else:
+            # Give an error message to show that the robot is not connected
+            print("Robot is not connected to JogCartesianSpace service yet!")
+
+    def jog_cartesian4(self, P_axis, R_axis):
+        print("Jog Joints4 is called")
+
+        if self.robot is not None:
+            print("Jog in Cartesian Space with command P_axis" + str(P_axis) + "and R_axis"+ str(R_axis)) 
+
+            if self.robot.command_mode != self.jog_mode:
+                # Put the robot to JOG mode
+                self.robot.command_mode = self.halt_mode
+                # time.sleep(0.1)
+                self.robot.command_mode = self.jog_mode
+                # time.sleep(0.1)
+
+            ## Jog the robot in cartesian space
+            try:
+                # calculate the required joint speeds (q_dot)
+                qdot = self.update_qdot2(R_axis,P_axis) 
+
+                now=time.time()
+                while time.time()- now < self.dt:
+                    self.robot.jog_joint(qdot, 10*self.dt, False)
             except:
                 print("Specified joints might be out of range")
                 import traceback
@@ -524,7 +559,6 @@ class JogCartesianSpace_impl(object):
 
     def get_current_pose(self):
         d_q = self.get_current_joint_positions()
-
         
         pose = rox.fwdkin(self.robot_rox, d_q) # Returns as pose.R and pose.p, loo rox for details
         return pose
@@ -774,6 +808,54 @@ class JogCartesianSpace_impl(object):
         # q[:-1]=0.5*q[:-1]/(np.linalg.norm(q[:-1])) 
         q=q/(np.linalg.norm(q)) 
         return q 
+
+
+    def update_qdot2(self, R_axis, P_axis): # inverse velocity kinematics that uses LSQ Linear solver        
+
+        # Get the corresponding joint angles at that time
+        d_q = self.get_current_joint_positions()
+        q_cur = d_q.reshape((self.num_joints,1)) 
+
+        # Update the end effector pose info    
+        pose = rox.fwdkin(self.robot_rox,q_cur)
+        R_cur = pose.R
+        p_cur = pose.p
+        
+        #calculate current Jacobian
+        J0T = rox.robotjacobian(self.robot_rox,q_cur)
+        
+        # Transform Jacobian to End effector frame from the base frame
+        Tr = np.zeros((6,6))
+        Tr[:3,:3] = R_cur.T 
+        Tr[3:,3:] = R_cur.T
+        J0T = Tr @ J0T
+        
+        # Normalize R_axis and P_axis
+        R_axis = R_axis/(np.linalg.norm(R_axis))
+        P_axis = P_axis/(np.linalg.norm(P_axis))
+
+        # Create the corresponding velocities
+        w = R_axis * self.rotate_angle
+        v = P_axis * self.move_distance
+
+        b = np.concatenate([w,v])
+        np.nan_to_num(b, copy=False, nan=0.0, posinf=None, neginf=None)
+        # print(b)
+        # print(J0T)
+
+        res = lsq_linear(J0T,b,bounds=(-1.0*self.joint_vel_limits,self.joint_vel_limits)) 
+        qdot_star = res.x 
+        # qdot_star = lsq_linear(J0T,b)
+
+        print("qdot_star:")
+        print(qdot_star)
+        # print("self.joint_vel_limits")
+        # print(self.joint_vel_limits)
+
+        # q_dot = self.normalize_dq(qdot_star)
+        q_dot = qdot_star
+        
+        return q_dot
 
 
     def prepare_jog(self):

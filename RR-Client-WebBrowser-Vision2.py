@@ -721,7 +721,7 @@ class ClientVision(object):
                 file_name = self.image_files_lst[index]
 
                 # Ask user: New name for 'file_name'
-                file_name_new = window.prompt("Please enter the new file name (Don't forget .png file extension)", file_name);
+                file_name_new = window.prompt("Please enter the new file name (Don't forget .png file extension)", file_name)
                 if (file_name_new != None and file_name_new != ""):
                     await self.plugin_cameraTraining.async_edit_image_name(file_name,file_name_new, None)
         except:
@@ -1351,7 +1351,7 @@ class ClientVision(object):
         workspace_xml = Blockly.Xml.workspaceToDom(workspace)
         workspace.clear()
         Blockly.Xml.domToWorkspace(workspace_xml, workspace)
-        workspace.refreshToolboxSelection();
+        workspace.refreshToolboxSelection()
 
 
 

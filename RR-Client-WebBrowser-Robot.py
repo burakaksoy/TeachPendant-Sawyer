@@ -158,7 +158,7 @@ async def async_edit_blocks_name():
         else:
             file_name = blocks_list.options[index].value
             # Ask user: New name for 'file_name'
-            file_name_new = window.prompt("Please enter the new file name (Don't forget .xml file extension)", file_name);
+            file_name_new = window.prompt("Please enter the new file name (Don't forget .xml file extension)", file_name)
             if (file_name_new != None and file_name_new != ""):
                 global plugin_blockly
                 await plugin_blockly.async_blockly_edit_workspace_name(file_name, file_name_new, None)
@@ -226,7 +226,7 @@ async def async_search_blockly_saved_workspaces(filename):
 async def async_save_as_blocks():
     try:
         # Ask user: New name for 'file_name'
-        file_name_new = window.prompt("Please enter the new file name to save workspace (Don't forget .xml file extension)", "new_workspace.xml");
+        file_name_new = window.prompt("Please enter the new file name to save workspace (Don't forget .xml file extension)", "new_workspace.xml")
         if (file_name_new != None and file_name_new != ""):
             # Search the existing filenames to check for coincidence
             is_found = await async_search_blockly_saved_workspaces(file_name_new)
@@ -359,7 +359,7 @@ def jog_cartesian_gamepad(P_axis, R_axis):
 
 async def async_jog_cartesian_gamepad(P_axis, R_axis):
     global plugin_jogCartesianSpace
-    await plugin_jogCartesianSpace.async_prepare_jog(None)
+    # await plugin_jogCartesianSpace.async_prepare_jog(None)
         
     global is_gamepadaxisactive
     global is_gamepadbuttondown
@@ -368,7 +368,8 @@ async def async_jog_cartesian_gamepad(P_axis, R_axis):
         # Call Jog Cartesian Space Service funtion to handle this jogging
         # await plugin_jogCartesianSpace.async_jog_cartesian(P_axis, R_axis, None)
         # await plugin_jogCartesianSpace.async_jog_cartesian2(P_axis, R_axis, None)
-        await plugin_jogCartesianSpace.async_jog_cartesian3(P_axis, R_axis, None)
+        # await plugin_jogCartesianSpace.async_jog_cartesian3(P_axis, R_axis, None)
+        await plugin_jogCartesianSpace.async_jog_cartesian4(P_axis, R_axis, None)
 
     # await plugin_jogCartesianSpace.async_stop_joints(None)
     # await plugin_jogCartesianSpace.async_stop_joints2(None)
@@ -522,7 +523,7 @@ def jog_cartesian(P_axis, R_axis):
 
 async def async_jog_cartesian(P_axis, R_axis):
     global plugin_jogCartesianSpace
-    await plugin_jogCartesianSpace.async_prepare_jog(None)
+    # await plugin_jogCartesianSpace.async_prepare_jog(None)
     # await plugin_jogCartesianSpace.async_jog_cartesian(P_axis, R_axis, None)
     
     global is_mousedown
@@ -530,7 +531,8 @@ async def async_jog_cartesian(P_axis, R_axis):
         # Call Jog Cartesian Space Service funtion to handle this jogging
         # await plugin_jogCartesianSpace.async_jog_cartesian(P_axis, R_axis, None)
         # await plugin_jogCartesianSpace.async_jog_cartesian2(P_axis, R_axis, None)
-        await plugin_jogCartesianSpace.async_jog_cartesian3(P_axis, R_axis, None)
+        # await plugin_jogCartesianSpace.async_jog_cartesian3(P_axis, R_axis, None)
+        await plugin_jogCartesianSpace.async_jog_cartesian4(P_axis, R_axis, None)
 
     # await plugin_jogCartesianSpace.async_stop_joints(None)
     # await plugin_jogCartesianSpace.async_stop_joints2(None)
@@ -681,7 +683,7 @@ async def async_del_sel_pose_func():
             global plugin_savePlayback
             await plugin_savePlayback.async_del_sel_pose(index,None)
             # Delete from UI too.
-            poses_list.remove(index); 
+            poses_list.remove(index)
     except:
         pass
         
@@ -702,8 +704,8 @@ async def async_up_sel_pose_func():
             await plugin_savePlayback.async_up_sel_pose(index,None)
             # Up it from UI too.
             if index > 0:
-                option = poses_list.options[index];
-                poses_list.remove(index);
+                option = poses_list.options[index]
+                poses_list.remove(index)
                 poses_list.add(option,index-1)
 
     except:
@@ -726,8 +728,8 @@ async def async_down_sel_pose_func():
             await plugin_savePlayback.async_down_sel_pose(index,None)
             # Down it from UI too.
             if index < poses_list.length-1:
-                option = poses_list.options[index];
-                poses_list.remove(index);
+                option = poses_list.options[index]
+                poses_list.remove(index)
                 poses_list.add(option,index+1)
 
     except:
