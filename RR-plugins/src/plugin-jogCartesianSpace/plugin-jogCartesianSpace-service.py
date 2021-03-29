@@ -843,9 +843,13 @@ class JogCartesianSpace_impl(object):
         # print(b)
         # print(J0T)
 
-        res = lsq_linear(J0T,b,bounds=(-1.0*self.joint_vel_limits,self.joint_vel_limits)) 
-        qdot_star = res.x 
-        # qdot_star = lsq_linear(J0T,b)
+        res = lsq_linear(J0T,b,bounds=(-1.0*self.joint_vel_limits,self.joint_vel_limits))
+
+        if res.success: 
+            qdot_star = res.x 
+        else:
+            print("Any solution could not found")
+            qdot_star = np.zeros(self.num_joints)
 
         print("qdot_star:")
         print(qdot_star)
