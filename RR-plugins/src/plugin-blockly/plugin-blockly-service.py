@@ -253,7 +253,7 @@ class Blockly_impl(object):
 
     def jog_cartesian(self, P_lst, R_angles_lst, speed_perc):
         try:
-            self.plugin_jogCartesianSpace.prepare_jog()
+            # self.plugin_jogCartesianSpace.prepare_jog()
             
             P = np.asarray(P_lst, dtype=np.float)
             R_angles = np.asarray(R_angles_lst, dtype=np.float)
@@ -266,7 +266,7 @@ class Blockly_impl(object):
 
     def jog_cartesian_relative(self, P_lst, R_angles_lst, speed_perc):
         try:
-            self.plugin_jogCartesianSpace.prepare_jog()
+            # self.plugin_jogCartesianSpace.prepare_jog()
             
             P = np.asarray(P_lst, dtype=np.float)
             R_angles = np.asarray(R_angles_lst, dtype=np.float)
