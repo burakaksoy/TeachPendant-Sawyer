@@ -27,8 +27,8 @@ class JogCartesianSpace_impl(object):
         self.pose_at_command = None 
         self.num_jog_command = 0
 
-        # self.dt = 0.02 #seconds, amount of time continuosly jog joints
-        self.dt = 0.01 #seconds, amount of time continuosly jog joints
+        self.dt = 0.02 #seconds, amount of time continuosly jog joints
+        # self.dt = 0.01 #seconds, amount of time continuosly jog joints
 
 
     def reset(self):

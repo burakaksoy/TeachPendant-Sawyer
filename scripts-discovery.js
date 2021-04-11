@@ -10,6 +10,9 @@ function print_div(message)
 
 }   
 async function run_discovery(){
+    //document.addEventListener("contextmenu", function() {return false;}  );
+    // document.oncontextmenu = function() {return false;};
+
     // Start the python code of auto discovery of the available robots
     await languagePluginLoader;
     await pyodide.loadPackage(["numpy"]);

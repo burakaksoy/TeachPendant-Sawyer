@@ -43,9 +43,9 @@ async def client_robot():
     # ip_robot = '192.168.50.40'
     ip_robot = 'localhost'
     
-    # ip_plugins = 'localhost'
+    # ip_plugins = '128.113.224.109'
     # ip_plugins = '192.168.50.152'
-    ip_plugins = 'localhost'
+    ip_plugins = '128.113.224.109'
     
     try:
         # Run the client as a class to access client data in a more convenient way

@@ -1,0 +1,336 @@
+<xml xmlns="https://developers.google.com/blockly/xml">
+  <block type="robot_jog_joints_not_relative" id="gnze85rW(E7C`{.9q|aM" x="41" y="-29">
+    <field name="SPEED">40</field>
+    <value name="DEGREE_1">
+      <block type="math_number" id="8PewLmU@s^v%NH$tI|Ez">
+        <field name="NUM">-74.54</field>
+      </block>
+    </value>
+    <value name="DEGREE_2">
+      <block type="math_number" id="-O-}g|qmIHW^t[B.}rjc">
+        <field name="NUM">-33.99</field>
+      </block>
+    </value>
+    <value name="DEGREE_3">
+      <block type="math_number" id=":Tzr6+481+o62Riu$:zw">
+        <field name="NUM">-7.73</field>
+      </block>
+    </value>
+    <value name="DEGREE_4">
+      <block type="math_number" id="|$Y@_c3kNNMrDm.,9w_r">
+        <field name="NUM">85.01</field>
+      </block>
+    </value>
+    <value name="DEGREE_5">
+      <block type="math_number" id="J.1A:$M2]?ABv#h8nTsz">
+        <field name="NUM">10.07</field>
+      </block>
+    </value>
+    <value name="DEGREE_6">
+      <block type="math_number" id="H_PMB@BWo4$v#~uz:GNB">
+        <field name="NUM">35.75</field>
+      </block>
+    </value>
+    <value name="DEGREE_7">
+      <block type="math_number" id="U%1i`uU_ES[`;eB)_!ac">
+        <field name="NUM">0.02</field>
+      </block>
+    </value>
+    <next>
+      <block type="robot_wait" id="z?VS.1{#:mo.F%oNB~Hi">
+        <field name="WAIT_TIME">1</field>
+        <next>
+          <block type="robot_jog_joints_not_relative" id="UWGhK/6%~.._kMh1c,3)">
+            <field name="SPEED">40</field>
+            <value name="DEGREE_1">
+              <block type="math_number" id="ooHL*}p|iBHO+[9_FL5F">
+                <field name="NUM">-72.04</field>
+              </block>
+            </value>
+            <value name="DEGREE_2">
+              <block type="math_number" id="(aR~t8dEuH1?Bwqwwqg9">
+                <field name="NUM">-19.58</field>
+              </block>
+            </value>
+            <value name="DEGREE_3">
+              <block type="math_number" id="E,j}pA^j::{=^7Ax5Rdf">
+                <field name="NUM">-11.72</field>
+              </block>
+            </value>
+            <value name="DEGREE_4">
+              <block type="math_number" id="Abl}bU%23=*cqZ_SZ+dv">
+                <field name="NUM">81.17</field>
+              </block>
+            </value>
+            <value name="DEGREE_5">
+              <block type="math_number" id="-VvoWmjkB#Gy|QLcdZqO">
+                <field name="NUM">21.46</field>
+              </block>
+            </value>
+            <value name="DEGREE_6">
+              <block type="math_number" id=")na?`+7{-YeMgztKXebJ">
+                <field name="NUM">29.42</field>
+              </block>
+            </value>
+            <value name="DEGREE_7">
+              <block type="math_number" id=",K#egvE)$(MjssL5,!YC">
+                <field name="NUM">-4.15</field>
+              </block>
+            </value>
+            <next>
+              <block type="robot_wait" id="};:@uUUwX%7Nf_)jiOqm">
+                <field name="WAIT_TIME">1</field>
+                <next>
+                  <block type="tool_gripper" id="J.QZ?=/ImFn!K9^}~@ad">
+                    <field name="GRIPPER_STATUS">0</field>
+                    <next>
+                      <block type="robot_wait" id="7u.7Mh/SzHhR+KDv3jtV">
+                        <field name="WAIT_TIME">1</field>
+                        <next>
+                          <block type="robot_jog_cartesian_relative" id="*D{~Jw.T)9n^jFk4OS+`" inline="false">
+                            <field name="SPEED">20</field>
+                            <value name="POSITION">
+                              <block type="utils_position" id="2C{x%#oKH.p7J{p18[TL">
+                                <value name="X">
+                                  <block type="math_number" id="-qiCJkR{hPBp:),V(OK5">
+                                    <field name="NUM">-0.2</field>
+                                  </block>
+                                </value>
+                                <value name="Y">
+                                  <block type="math_number" id=":~J,}pfg7D$r(j?bW0c9">
+                                    <field name="NUM">0</field>
+                                  </block>
+                                </value>
+                                <value name="Z">
+                                  <block type="math_number" id="T?bM1sobvn1yi^m!F8P6">
+                                    <field name="NUM">0</field>
+                                  </block>
+                                </value>
+                              </block>
+                            </value>
+                            <value name="ORIENTATION">
+                              <block type="utils_orientation" id=";m8b[)oB*ll_oj]m-w/#">
+                                <value name="TX">
+                                  <block type="math_number" id="w_{A]AzQro%A*j,V/T9#">
+                                    <field name="NUM">0</field>
+                                  </block>
+                                </value>
+                                <value name="TY">
+                                  <block type="math_number" id="5wPJ82-2#v^de;9M[C@P">
+                                    <field name="NUM">0</field>
+                                  </block>
+                                </value>
+                                <value name="TZ">
+                                  <block type="math_number" id="0(3lBj{0l_u?A$mwuqN0">
+                                    <field name="NUM">0</field>
+                                  </block>
+                                </value>
+                              </block>
+                            </value>
+                            <next>
+                              <block type="robot_wait" id="4U!|FWoFuM[.U_+$;sA@">
+                                <field name="WAIT_TIME">1</field>
+                                <next>
+                                  <block type="robot_jog_joints_not_relative" id="Zgcn~c1^PYksG(r8O~h,">
+                                    <field name="SPEED">40</field>
+                                    <value name="DEGREE_1">
+                                      <block type="math_number" id="F*`$UDeiZ8TezC;(u%)B">
+                                        <field name="NUM">-75.72</field>
+                                      </block>
+                                    </value>
+                                    <value name="DEGREE_2">
+                                      <block type="math_number" id="1{%E7U0]^,%12LRD2cJs">
+                                        <field name="NUM">-41.35</field>
+                                      </block>
+                                    </value>
+                                    <value name="DEGREE_3">
+                                      <block type="math_number" id="COp(RUM-7{9F|1e]~O7l">
+                                        <field name="NUM">-28.49</field>
+                                      </block>
+                                    </value>
+                                    <value name="DEGREE_4">
+                                      <block type="math_number" id="`0~Y`$7+{5k,@}EG1N|z">
+                                        <field name="NUM">99.83</field>
+                                      </block>
+                                    </value>
+                                    <value name="DEGREE_5">
+                                      <block type="math_number" id="Kf;Lks.2+3}}is=/rMv]">
+                                        <field name="NUM">31.73</field>
+                                      </block>
+                                    </value>
+                                    <value name="DEGREE_6">
+                                      <block type="math_number" id="{-dqsF5nEIyf-r*Kynro">
+                                        <field name="NUM">37.62</field>
+                                      </block>
+                                    </value>
+                                    <value name="DEGREE_7">
+                                      <block type="math_number" id="d[w)eI`oZVhZD.:j6x2?">
+                                        <field name="NUM">-29.17</field>
+                                      </block>
+                                    </value>
+                                    <next>
+                                      <block type="robot_wait" id="Ox3$*!p%Q$a,g9eN7V(7">
+                                        <field name="WAIT_TIME">1</field>
+                                        <next>
+                                          <block type="robot_jog_joints_not_relative" id="~mAX_R=kBs-A|Tws!F(.">
+                                            <field name="SPEED">40</field>
+                                            <value name="DEGREE_1">
+                                              <block type="math_number" id=")*F`5h3~EA,Xay%6t6(#">
+                                                <field name="NUM">-76.81</field>
+                                              </block>
+                                            </value>
+                                            <value name="DEGREE_2">
+                                              <block type="math_number" id="({FK?,%[oO.m-R3N-BmZ">
+                                                <field name="NUM">-18.26</field>
+                                              </block>
+                                            </value>
+                                            <value name="DEGREE_3">
+                                              <block type="math_number" id="Pa~hqthX3H$;*qTi7YmF">
+                                                <field name="NUM">-16.09</field>
+                                              </block>
+                                            </value>
+                                            <value name="DEGREE_4">
+                                              <block type="math_number" id="`N$IT=-1W_VeX-pEXpgG">
+                                                <field name="NUM">102.41</field>
+                                              </block>
+                                            </value>
+                                            <value name="DEGREE_5">
+                                              <block type="math_number" id="~?_TK#83{wz;yG*;,)jv">
+                                                <field name="NUM">64.45</field>
+                                              </block>
+                                            </value>
+                                            <value name="DEGREE_6">
+                                              <block type="math_number" id="H=d(|4L,^UsrNfb#,COm">
+                                                <field name="NUM">14.54</field>
+                                              </block>
+                                            </value>
+                                            <value name="DEGREE_7">
+                                              <block type="math_number" id="dxw[y0Gsna{zS8I1za1U">
+                                                <field name="NUM">-49.58</field>
+                                              </block>
+                                            </value>
+                                            <next>
+                                              <block type="robot_wait" id="}Kvkx!m|9GnBO#s|%a9V">
+                                                <field name="WAIT_TIME">1</field>
+                                                <next>
+                                                  <block type="tool_gripper" id="D2u`RxB^}[l{Dx*BVMlt">
+                                                    <field name="GRIPPER_STATUS">1</field>
+                                                    <next>
+                                                      <block type="robot_wait" id="n/^iq$cu.eboy%)G4Gf^">
+                                                        <field name="WAIT_TIME">1</field>
+                                                        <next>
+                                                          <block type="robot_jog_cartesian_relative" id=";V7=oQ.L;vQA{3K0D-:g" inline="false">
+                                                            <field name="SPEED">40</field>
+                                                            <value name="POSITION">
+                                                              <block type="utils_position" id="$]yeD@ZS@AS^h9@g#/U!">
+                                                                <value name="X">
+                                                                  <block type="math_number" id="x_R`WXmxA)/1|/s2$8+8">
+                                                                    <field name="NUM">-0.2</field>
+                                                                  </block>
+                                                                </value>
+                                                                <value name="Y">
+                                                                  <block type="math_number" id="6TkS,RE^0`(6%Jy-{z`Y">
+                                                                    <field name="NUM">0</field>
+                                                                  </block>
+                                                                </value>
+                                                                <value name="Z">
+                                                                  <block type="math_number" id="6!^v,dT-h*2fVu4@Goh2">
+                                                                    <field name="NUM">0</field>
+                                                                  </block>
+                                                                </value>
+                                                              </block>
+                                                            </value>
+                                                            <value name="ORIENTATION">
+                                                              <block type="utils_orientation" id="=/bPX#/iKw_jwQaK~1Be">
+                                                                <value name="TX">
+                                                                  <block type="math_number" id="y[NJI)uCtdp_::Ut,K4-">
+                                                                    <field name="NUM">0</field>
+                                                                  </block>
+                                                                </value>
+                                                                <value name="TY">
+                                                                  <block type="math_number" id="]N.t(1lTad[p-pr9ds(N">
+                                                                    <field name="NUM">0</field>
+                                                                  </block>
+                                                                </value>
+                                                                <value name="TZ">
+                                                                  <block type="math_number" id="6@]8$17X#JD5w6e?6=_}">
+                                                                    <field name="NUM">0</field>
+                                                                  </block>
+                                                                </value>
+                                                              </block>
+                                                            </value>
+                                                            <next>
+                                                              <block type="robot_wait" id="S9oN*m::WR(+OI!q5OI9">
+                                                                <field name="WAIT_TIME">1</field>
+                                                                <next>
+                                                                  <block type="robot_jog_joints_not_relative" id="iGGXuoFI9Pz@SJacmmbT">
+                                                                    <field name="SPEED">40</field>
+                                                                    <value name="DEGREE_1">
+                                                                      <block type="math_number" id="LUaWPj|g6X;g*IL[JKL3">
+                                                                        <field name="NUM">-42.62</field>
+                                                                      </block>
+                                                                    </value>
+                                                                    <value name="DEGREE_2">
+                                                                      <block type="math_number" id="pcAmpSP06q@u/z4*4eA:">
+                                                                        <field name="NUM">-44.39</field>
+                                                                      </block>
+                                                                    </value>
+                                                                    <value name="DEGREE_3">
+                                                                      <block type="math_number" id="Zb{$%zM^fj5paNaANd|m">
+                                                                        <field name="NUM">-47.62</field>
+                                                                      </block>
+                                                                    </value>
+                                                                    <value name="DEGREE_4">
+                                                                      <block type="math_number" id="jDPGW;mC.emb{~xp.$N0">
+                                                                        <field name="NUM">84.61</field>
+                                                                      </block>
+                                                                    </value>
+                                                                    <value name="DEGREE_5">
+                                                                      <block type="math_number" id="I|q!3fKCy^Y.t?Xc!hgF">
+                                                                        <field name="NUM">34.51</field>
+                                                                      </block>
+                                                                    </value>
+                                                                    <value name="DEGREE_6">
+                                                                      <block type="math_number" id="/S8t67cN{2.?{chBBs31">
+                                                                        <field name="NUM">67.3</field>
+                                                                      </block>
+                                                                    </value>
+                                                                    <value name="DEGREE_7">
+                                                                      <block type="math_number" id="+?e=MXfGA7[v*L[H`kIi">
+                                                                        <field name="NUM">-11.15</field>
+                                                                      </block>
+                                                                    </value>
+                                                                  </block>
+                                                                </next>
+                                                              </block>
+                                                            </next>
+                                                          </block>
+                                                        </next>
+                                                      </block>
+                                                    </next>
+                                                  </block>
+                                                </next>
+                                              </block>
+                                            </next>
+                                          </block>
+                                        </next>
+                                      </block>
+                                    </next>
+                                  </block>
+                                </next>
+                              </block>
+                            </next>
+                          </block>
+                        </next>
+                      </block>
+                    </next>
+                  </block>
+                </next>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </next>
+  </block>
+</xml>

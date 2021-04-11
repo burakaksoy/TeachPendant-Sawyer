@@ -1,4 +1,5 @@
 #Example Drive client in Python
+import js
 from js import self as window
 from js import document
 from js import print_div
@@ -10,6 +11,7 @@ from js import print_div_num_info
 from js import print_div_end_info
 from js import print_div_ik_info
 from js import print_div_cur_pose
+from js import viewer_update
 
 from js import Blockly
 
@@ -824,7 +826,7 @@ async def client_drive():
     # ip = 'localhost'
     
     # ip_plugins = '128.113.224.98' # plugins ip
-    ip_plugins = 'localhost' # plugins ip
+    ip_plugins = '128.113.224.109' # plugins ip
 
     # url ='rr+ws://'+ ip +':58653?service=robot'   # Sawyer simulation
     # url ='rr+ws://128.113.224.23:58654?service=robot' # sawyer in lab
@@ -984,8 +986,8 @@ async def client_drive():
         ## Tool plugin
         print_div('Tool plugin is connecting..<br>')
 
-        # url_plugin_tool = 'rr+ws://' + ip_plugins + ':8900?service=Tool'
-        url_plugin_tool = ''
+        url_plugin_tool = 'rr+ws://' + ip_plugins + ':8900?service=Tool'
+        # url_plugin_tool = ''
         if not url_plugin_tool == '':
             global plugin_tool
             plugin_tool = await RRN.AsyncConnectService(url_plugin_tool,None,None,None,None)
@@ -1192,11 +1194,27 @@ async def client_drive():
         while not is_stop_robot:
             # Update joint angles
             # _, joints_text = await update_joint_info() # Joint angles in radian ndarray, N x 1 and str
-            joints_text = await update_joint_info() # Joint angles as str
+            joints_text = await update_joint_info() # Joint angles as str and in degrees
             print_div_j_info(joints_text)
 
-            await plugin_robotViewer.async_update_current_view(None)
+            # Prepare data for Tesseract viewer update of joint angles
+            joints_text = joints_text[:-1] # Delete the last comma
+            joints_text = joints_text.split(",") # List of strings of joints angles      
+            joints_positions = [float(i) for i in joints_text]
             
+            joints_positions = np.asarray(joints_positions)
+            joints_positions = np.deg2rad(joints_positions)
+            joints_positions = joints_positions.tolist()
+
+            # Sawyer joint names in Viewer URDF
+            joint_names = [f"right_j{i}" for i in range(7)] # Note: "head_pan" joint is not included 
+
+            try:
+                # UPdate tesseract viewer
+                viewer_update(js.python_to_js(joint_names),js.python_to_js(joints_positions))
+            except:
+                pass
+
             # UPdate the end effector pose info
             await update_end_info()
             
