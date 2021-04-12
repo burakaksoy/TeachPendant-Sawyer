@@ -1,7 +1,7 @@
 #Service to provide interface to RR-webBrowser-plugin-blockly
 service experimental.pluginBlockly
 
-stdver 0.14.3
+stdver 0.10
 
 struct Pose
     # Rotation matrix

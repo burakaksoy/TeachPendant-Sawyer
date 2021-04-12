@@ -1,7 +1,7 @@
 #Service to provide interface to RR-webBrowser-plugin-tool
 service experimental.pluginTool
 
-stdver 0.14.3
+stdver 0.10
 
 object Tool
     function void connect2robot(string url_robot)

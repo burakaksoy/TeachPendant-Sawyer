@@ -826,7 +826,7 @@ async def client_drive():
     # ip = 'localhost'
     
     # ip_plugins = '128.113.224.98' # plugins ip
-    ip_plugins = '128.113.224.109' # plugins ip
+    ip_plugins = '128.113.224.98' # plugins ip
 
     # url ='rr+ws://'+ ip +':58653?service=robot'   # Sawyer simulation
     # url ='rr+ws://128.113.224.23:58654?service=robot' # sawyer in lab
