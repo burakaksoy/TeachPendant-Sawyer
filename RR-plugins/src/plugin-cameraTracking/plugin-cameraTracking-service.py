@@ -7,7 +7,8 @@ import numpy as np
 import cv2
 import math 
 
-from opencv_template_matching import TemplateMatchingMultiAngle
+# from opencv_template_matching import TemplateMatchingMultiAngle
+from opencv_template_matching_ROI import TemplateMatchingMultiAngleWithROI
 
 class CameraTracking_impl(object):
     def __init__(self):
@@ -139,7 +140,22 @@ class CameraTracking_impl(object):
             # get the camera parameters from camera calibration (later) TODO
 
             # execute the image detection using opencv
-            matcher = TemplateMatchingMultiAngle(img_obj,img_compressed_cam)
+            # matcher = TemplateMatchingMultiAngle(img_obj,img_compressed_cam)
+
+            # ROI parameters
+            # ROI_x = 640
+            # ROI_y = 140
+            # ROI_w = 420
+            # ROI_h = 310
+            # ROI_theta = 45.0 # degree
+            # ROI_parameters = (ROI_x,ROI_y,ROI_w,ROI_h,ROI_theta)
+            # min_ROI_intersection_area = 20.0 # Default is 20.0
+
+            # If you want to make ROI the whole camera image
+            ROI_parameters = None
+
+            matcher = TemplateMatchingMultiAngleWithROI(img_obj,img_compressed_cam,ROI_parameters,min_ROI_intersection_area)
+            
             # return_result_image = True
             if return_result_image:
                 self.center, self.wh, self.angle, self.detection_result_img = matcher.detect_object(return_result_image)

@@ -1,0 +1,77 @@
+https://shapely.readthedocs.io/en/stable/manual.html#shapely.affinity.rotate
+shapely.affinity.rotate(geom, angle, origin='center', use_radians=False)
+
+>>> from shapely import affinity
+>>> line = LineString([(1, 3), (1, 1), (4, 1)])
+>>> rotated_a = affinity.rotate(line, 90)
+>>> rotated_b = affinity.rotate(line, 90, origin='centroid')
+
+-----------------------------------------------------------------------------
+https://shapely.readthedocs.io/en/stable/manual.html#shapely.geometry.box
+shapely.geometry.box(minx, miny, maxx, maxy, ccw=True)
+
+>>> from shapely.geometry import box
+>>> b = box(0.0, 0.0, 1.0, 1.0)
+>>> b
+<shapely.geometry.polygon.Polygon object at 0x...>
+>>> list(b.exterior.coords)
+[(1.0, 0.0), (1.0, 1.0), (0.0, 1.0), (0.0, 0.0), (1.0, 0.0)]
+
+-----------------------------------------------------------------------------
+https://shapely.readthedocs.io/en/stable/manual.html#Polygon
+class Polygon(shell[, holes=None])
+
+>>> from shapely.geometry import Polygon
+>>> polygon = Polygon([(0, 0), (1, 1), (1, 0)])
+>>> polygon.area
+0.5
+>>> polygon.length
+3.4142135623730949
+Its x-y bounding box is a (minx, miny, maxx, maxy) tuple.
+
+
+object.area
+	Returns the area (float) of the object.
+
+object.bounds
+>>> polygon.bounds
+(0.0, 0.0, 1.0, 1.0)
+Returns a (minx, miny, maxx, maxy) tuple (float values) that bounds the object.
+
+object.is_empty
+Returns True if the feature’s interior and boundary (in point set terms) coincide with the empty set.
+
+>>> Point().is_empty
+True
+>>> Point(0, 0).is_empty
+False
+
+-----------------------------------------------------------------------------
+https://shapely.readthedocs.io/en/stable/manual.html#binary-predicates
+Binary Predicates
+
+object.contains(other)
+Returns True if no points of other lie in the exterior of the object and at least one point of the interior of other lies in the interior of object.
+
+object.within(other)
+Returns True if the object’s boundary and interior intersect only with the interior of the other (not its boundary or exterior).
+
+-----------------------------------------------------------------------------
+https://shapely.readthedocs.io/en/stable/manual.html#object.intersection
+
+object.intersection(other)
+Returns a representation of the intersection of this object with the other geometric object.
+
+>>> a = Point(1, 1).buffer(1.5)
+>>> b = Point(2, 1).buffer(1.5)
+>>> a.intersection(b)
+<shapely.geometry.polygon.Polygon object at 0x...>
+
+-----------------------------------------------------------------------------
+object.envelope
+Returns a representation of the point or smallest rectangular polygon (with sides parallel to the coordinate axes) that contains the object.
+
+>>> Point(0, 0).envelope
+<shapely.geometry.point.Point object at 0x...>
+>>> MultiPoint([(0, 0), (1, 1)]).envelope
+<shapely.geometry.polygon.Polygon object at 0x...>
