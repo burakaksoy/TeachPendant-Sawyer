@@ -45,7 +45,7 @@ class TemplateMatchingMultiAngle(object):
 
         # There are 6 Template Matching methods 
         # self.method = cv2.TM_CCOEFF # good
-        self.method = cv2.TM_CCORR_NORMED   # best
+        self.method = cv2.TM_CCOEFF_NORMED  # best
         # self.method = cv2.TM_CCORR # not good # Seems to be best w/out canny
         # self.method = cv2.TM_CCORR_NORMED # second best
         # self.method = cv2.TM_SQDIFF # terrible

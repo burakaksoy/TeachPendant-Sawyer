@@ -14,26 +14,26 @@ import numpy as np
 from opencv_template_matching_ROI import TemplateMatchingMultiAngleWithROI
 
 
-#obj_img_filenames = ["test_template0.png","test_template1.png","test_template2.png","test_template3.png"]
-obj_img_filenames = ["template_match_test_template_image_real2.png"]
+obj_img_filenames = ["test_template0.png","test_template1.png","test_template2.png","test_template3.png"]
+#obj_img_filenames = ["template_match_test_template_image_real2.png"]
 #obj_img_filenames = ["template_match_test_template_image.png"]
 
-#compressed_cam_img_filenames = ["test_objects0.png","test_objects1.png","test_objects2.png","test_objects3.png","test_objects4.png"] # Camera image
-compressed_cam_img_filenames = ["template_match_test_image_real.png"] # Camera image
+compressed_cam_img_filenames = ["test_objects0.png","test_objects1.png","test_objects2.png","test_objects3.png","test_objects4.png"] # Camera image
+#compressed_cam_img_filenames = ["template_match_test_image_real.png"] # Camera image
 #compressed_cam_img_filenames = ["template_match_test_image.png"] # Camera image
 
 # deifne # ROI parameters
-#ROI_x = 600
-#ROI_y = 300 
-#ROI_w = 700
-#ROI_h = 700
-#ROI_theta = 0.0 # degree
-
-ROI_x = 460
-ROI_y = 500 # try 100 for upper perfume
-ROI_w = 320
-ROI_h = 300
+ROI_x = 600
+ROI_y = 300 
+ROI_w = 700
+ROI_h = 700
 ROI_theta = 0.0 # degree
+
+#ROI_x = 460
+#ROI_y = 500 # try 100 for upper perfume
+#ROI_w = 320
+#ROI_h = 300
+#ROI_theta = 0.0 # degree
             
 #ROI_x = 950
 #ROI_y = 680
