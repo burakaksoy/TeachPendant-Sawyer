@@ -137,8 +137,6 @@ class CameraTracking_impl(object):
             # cv2.waitKey(0)
             # cv2.destroyAllWindows()
 
-            # get the camera parameters from camera calibration (later) TODO
-
             # execute the image detection using opencv
             # matcher = TemplateMatchingMultiAngle(img_obj,img_compressed_cam)
 
@@ -149,7 +147,7 @@ class CameraTracking_impl(object):
             # ROI_h = 310
             # ROI_theta = 45.0 # degree
             # ROI_parameters = (ROI_x,ROI_y,ROI_w,ROI_h,ROI_theta)
-            # min_ROI_intersection_area = 20.0 # Default is 20.0
+            min_ROI_intersection_area = 20.0 # Default is 20.0
 
             # If you want to make ROI the whole camera image
             ROI_parameters = None
