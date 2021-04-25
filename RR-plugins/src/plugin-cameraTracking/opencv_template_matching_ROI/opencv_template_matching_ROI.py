@@ -133,12 +133,12 @@ class TemplateMatchingMultiAngleWithROI(object):
         self.num_angles = 19 # number of different angles (has to be integer)
 
         # There are 6 Template Matching methods 
-        # self.method = cv2.TM_CCOEFF
-        # self.method = cv2.TM_CCOEFF_NORMED 
-        self.method = cv2.TM_CCORR # Seems to be best w/out canny
-        # self.method = cv2.TM_CCORR_NORMED
-        # self.method = cv2.TM_SQDIFF
-        # self.method = cv2.TM_SQDIFF_NORMED
+        # self.method = cv2.TM_CCOEFF # good
+        self.method = cv2.TM_CCOEFF_NORMED  # best
+        # self.method = cv2.TM_CCORR # not good # Seems to be best w/out canny
+        # self.method = cv2.TM_CCORR_NORMED # second best
+        # self.method = cv2.TM_SQDIFF # terrible
+        # self.method = cv2.TM_SQDIFF_NORMED # terrible
     
         self.show_visuals = False
 
@@ -227,7 +227,7 @@ class TemplateMatchingMultiAngleWithROI(object):
             self.templates[i] = cv2.copyMakeBorder(img,top,bottom,left,right,cv2.BORDER_CONSTANT,None,[0,0,0])
             img_name = "debug_rotate_template_angle_{}_padded.png".format(self.template_angles[i])
             # cv2.imwrite(img_name, templates[i])
-            print(img_name, self.templates[i].shape)
+            # print(img_name, self.templates[i].shape)
             # # Save number of non-zero pixels in the rotated template to normalize later
             # self.template_pixel_counts.append(cv2.countNonZero(self.templates[i]))
 
@@ -237,7 +237,9 @@ class TemplateMatchingMultiAngleWithROI(object):
 
         # gray = cv2.cvtColor(self.camera_img, cv2.COLOR_BGR2GRAY) # This may not be necessary since opencv can handle rgb images directly for canny edge detection today (09jan2021) But converting to gray helps for faster template matching so keep it 
         gray = cv2.cvtColor(self.masked_cropped_image, cv2.COLOR_BGR2GRAY) # This may not be necessary since opencv can handle rgb images directly for canny edge detection today (09jan2021) But converting to gray helps for faster template matching so keep it 
-        
+        # gray = cv2.equalizeHist(gray) # You can comment out this, not really improves accuracy
+        # clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+        # gray = clahe.apply(gray)
 
         # gray  = img
 

@@ -14,15 +14,21 @@ import numpy as np
 from opencv_template_matching_ROI import TemplateMatchingMultiAngleWithROI
 
 #obj_img_filename = "template_match_test_template_image.png" # Template image
-obj_img_filename = "template_match_test_template_image_real.png" # Template image
+#obj_img_filename = "template_match_test_template_image_real.png" # Template image
+obj_img_filename = "test_template2.png" # Template image
+
 
 #compressed_cam_img_filename = "template_match_test_image.png" # Camera image
-compressed_cam_img_filename = "template_match_test_image_real.png" # Camera image
+#compressed_cam_img_filename = "template_match_test_image_real.png" # Camera image
+compressed_cam_img_filename = "test_objects0.png" # Camera image
 
 return_result_image = True
 
 # Load test image
 img_obj = cv2.imread(obj_img_filename)
+
+#img_obj = cv2.cvtColor(img_obj, cv2.COLOR_BGR2GRAY)
+#img_obj = cv2.equalizeHist(img_obj)
 
 # Show the template image
 cv2.imshow("template image",img_obj)
@@ -31,6 +37,9 @@ cv2.waitKey(0)
 
 #Load camera image
 img_compressed_cam = cv2.imread(compressed_cam_img_filename)
+
+#img_compressed_cam = cv2.cvtColor(img_compressed_cam, cv2.COLOR_BGR2GRAY)
+#img_compressed_cam = cv2.equalizeHist(img_compressed_cam)
 
 # Show the camera image
 cv2.imshow("camera image",img_compressed_cam)
@@ -45,10 +54,16 @@ cv2.waitKey(0)
 #ROI_h = 200
 #ROI_theta = 0.0 # degree
 
-ROI_x = 460
-ROI_y = 500 # try 100 for upper perfume
-ROI_w = 320
-ROI_h = 300
+#ROI_x = 460
+#ROI_y = 500 # try 100 for upper perfume
+#ROI_w = 320
+#ROI_h = 300
+#ROI_theta = 0.0 # degree
+
+ROI_x = 600
+ROI_y = 300 # try 100 for upper perfume
+ROI_w = 700
+ROI_h = 700
 ROI_theta = 0.0 # degree
 
 ROI_parameters = (ROI_x,ROI_y,ROI_w,ROI_h,ROI_theta)
