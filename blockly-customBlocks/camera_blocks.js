@@ -243,7 +243,8 @@ function register_vision_extensions_blockly(){
   console.log("i am in register_vision_extensions in blockly");
 
   function options_cams(){
-    options = pyodide.globals.cli_vision.camera_node_names_lst_for_blockly();
+    options = pyodide.globals.cli_vision.camera_node_names_lst_for_blockly(); 
+    // options = [["com.robotraconteur.imaging.camera","com.robotraconteur.imaging.camera"]] // TODO: REMOVE THIS LINE
     console.log(options);
     return options
   }

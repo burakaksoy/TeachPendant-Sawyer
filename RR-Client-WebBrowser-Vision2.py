@@ -1,4 +1,5 @@
 # Client for vision 
+import js
 from js import self as window
 from js import document
 from js import print_div
@@ -1328,7 +1329,8 @@ class ClientVision(object):
                 optionss.append([fileName, fileName])
                 # print_div(str([fileName, fileName.upper()]))
 
-        return optionss
+        # return optionss
+        return js.python_to_js(optionss)
 
     def camera_node_names_lst_for_blockly(self):
         if self.camera_node_names_lst is None or len(self.camera_node_names_lst) < 1:
@@ -1340,7 +1342,8 @@ class ClientVision(object):
                 optionss.append([nodeName, nodeName])
                 # print_div(str([nodeName, nodeName.upper()]))
 
-        return optionss
+        # return optionss
+        return js.python_to_js(optionss)
     # Extension Registration Functions END
 
     def rerender_workspace_blocks(self):

@@ -84,6 +84,7 @@ T_far_corner = np.asarray([[(width-1)*square_size],[(height-1)*square_size],[0.]
 # Transform this point into camera frame
 T_far_corner = tvec + R_co @ T_far_corner
 value_z_distance = T_far_corner[2,0] # ~704 mm
+#value_z_distance = 730.27569446
 
 # The farthest corner is the last elemen of the corners, ie corners2[-1]
 corner = corners2[-1][0]
