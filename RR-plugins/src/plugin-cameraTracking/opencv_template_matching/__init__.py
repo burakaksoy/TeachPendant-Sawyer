@@ -1,0 +1,1 @@
+from .opencv_template_matching import *

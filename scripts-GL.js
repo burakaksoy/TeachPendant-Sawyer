@@ -48,7 +48,7 @@ var config =
     },
     dimensions: 
     {
-        borderWidth: 5,
+        borderWidth: 15,
         minItemHeight: 10,
         minItemWidth: 10,
         headerHeight: 30,
@@ -74,7 +74,7 @@ var config =
                     content: 
                     [
                         {
-                            width: 35,
+                            width: 25,
                             isClosable: false,
                             type:'component',
                             componentName: 'Joint Space Control',
@@ -88,11 +88,18 @@ var config =
                             componentState: {comp_name: 'task_space_control'}
                         },
                         {
-                            width: 40,
+                            width: 25,
                             isClosable: false,
                             type:'component',
                             componentName: 'Save Playback Poses',
                             componentState: {comp_name: 'save_playback_poses' }
+                        },
+                        {
+                            width: 25,
+                            isClosable: false,
+                            type:'component',
+                            componentName: 'Robot Preview',
+                            componentState: {comp_name: 'robot_preview' }
                         }
                     ]
                 },
@@ -113,7 +120,7 @@ var config =
                             componentState: {message: 'Debug Output will be shown here..'}
                         },
                         {   
-                            reorderEnabled: false,                                 
+                            // reorderEnabled: false,                                 
                             isClosable: false,
                             title: 'VISION',
                             type:'row',
@@ -121,14 +128,14 @@ var config =
                             [
                                 {
                                     width: 20,
-                                    reorderEnabled: false,
+                                    // reorderEnabled: false,
                                     isClosable: false,
                                     type:'component',
                                     componentName: 'Camera Feedback',
                                     componentState: {comp_name: 'camera_feedback'}
                                 },
                                 {
-                                    width: 45,
+                                    width: 20,
                                     // reorderEnabled: false,
                                     isClosable: false,
                                     type:'component',
@@ -136,38 +143,62 @@ var config =
                                     componentState: {comp_name: 'train_vision'}
                                 },
                                 {
-                                    width: 35,
+                                    width: 20,
                                     // reorderEnabled: false,
                                     isClosable: false,
                                     type:'component',
                                     componentName: 'Camera Calibration',
                                     componentState: {comp_name: 'camera_calibration'}
+                                },
+                                {
+                                    width: 20,
+                                    // reorderEnabled: false,
+                                    isClosable: false,
+                                    type:'component',
+                                    componentName: 'Robot Camera Calibration',
+                                    componentState: {comp_name: 'robotcamera_calibration'}
+                                },
+                                {
+                                    width: 20,
+                                    // reorderEnabled: false,
+                                    isClosable: false,
+                                    type:'component',
+                                    componentName: 'Object Detection Test',
+                                    componentState: {comp_name: 'camera_tracking'}
                                 }
                             ]
                         },
                         {
-                            reorderEnabled: false,
+                            // reorderEnabled: false,
                             isClosable: false,
                             title:'BLOCKLY',
                             type:'row',
                             content: 
                             [
                                 {
-                                    width: 70,
-                                    reorderEnabled: false,
+                                    width: 60,
+                                    // reorderEnabled: false,
                                     isClosable: false,
                                     type:'component',
                                     componentName: 'Blockly Workspace',
                                     componentState: {comp_name: 'blockly_workspace'}
                                 },
                                 {
-                                    width: 30,
+                                    width: 20,
                                     // reorderEnabled: false,
                                     isClosable: false,
                                     type:'component',
                                     componentName: 'Blockly Code',
                                     componentState: {comp_name: 'blockly_code'}
                                 },
+                                {
+                                    width: 20,
+                                    // reorderEnabled: false,
+                                    isClosable: false,
+                                    type:'component',
+                                    componentName: 'Blockly Browser',
+                                    componentState: {comp_name: 'blockly_browser'}
+                                }
                             ]
                         },
                     ]
@@ -214,6 +245,15 @@ function initializeLayout(){
         container.getElement().append(clon);
     });
 
+    myLayout.registerComponent( 'Robot Preview', function( container, state ){
+        // var table_RobotPreview = $('#table_RobotPreview'); 
+        // container.getElement().append(table_RobotPreview);
+
+        var temp = document.getElementById('template_RobotPreview');
+        var clon = temp.content.cloneNode(true);
+        container.getElement().append(clon);
+    });
+
     myLayout.registerComponent( 'Robot Status', function( container, state ){
         // var table_RobotStatus = $('#table_RobotStatus'); 
         // container.getElement().append(table_RobotStatus);
@@ -250,6 +290,18 @@ function initializeLayout(){
         container.getElement().append(clon);
     });
 
+    myLayout.registerComponent( 'Robot Camera Calibration', function( container, state ){
+        var temp = document.getElementById('template_RobotCameraCalibration');
+        var clon = temp.content.cloneNode(true);
+        container.getElement().append(clon);
+    });
+
+    myLayout.registerComponent( 'Object Detection Test', function( container, state ){
+        var temp = document.getElementById('template_CameraTracking');
+        var clon = temp.content.cloneNode(true);
+        container.getElement().append(clon);
+    });
+
     myLayout.registerComponent( 'Blockly Workspace', function( container, state ){
         var temp = document.getElementById('template_BlocklyWorkspace');
         var clon = temp.content.cloneNode(true);
@@ -258,6 +310,12 @@ function initializeLayout(){
 
     myLayout.registerComponent( 'Blockly Code', function( container, state ){
         var temp = document.getElementById('template_BlocklyCode');
+        var clon = temp.content.cloneNode(true);
+        container.getElement().append(clon);
+    });
+
+    myLayout.registerComponent( 'Blockly Browser', function( container, state ){
+        var temp = document.getElementById('template_BlocklyBrowser');
         var clon = temp.content.cloneNode(true);
         container.getElement().append(clon);
     });
@@ -336,15 +394,19 @@ $(document).ready(function() {
     addMenuItem( 'Joint Space Control');
     addMenuItem( 'Task Space Control');
     addMenuItem( 'Save Playback Poses');
+    addMenuItem( 'Robot Preview');
     addMenuItem( 'Robot Status');
     addMenuItem( 'Debug Output Div');
     addMenuItem( 'VISION');
     addMenuItem( 'Camera Feedback');
     addMenuItem( 'Train Vision');
     addMenuItem( 'Camera Calibration');
+    addMenuItem( 'Robot Camera Calibration');
+    addMenuItem( 'Object Detection Test');
     addMenuItem( 'BLOCKLY');
     addMenuItem( 'Blockly Workspace');
     addMenuItem( 'Blockly Code');
+    addMenuItem( 'Blockly Browser');
 
     $(window).resize(function(){
         myLayout.updateSize();

@@ -8,4 +8,15 @@ object Discovery
     function string{list} available_robot_Names()
     function string{list} available_robot_NodeNames()
     function void autodiscover()
+
+    function string{list} available_camera_ConnectionURLs()
+    function string{list} available_camera_Names()
+    function string{list} available_camera_NodeNames()
+    function void autodiscover_cams()
+
+    function string{list} available_tool_ConnectionURLs()
+    function string{list} available_tool_Names()
+    function string{list} available_tool_NodeNames()
+    function string{list} available_tool_Attributes_devices()
+    function void autodiscover_tools()
 end

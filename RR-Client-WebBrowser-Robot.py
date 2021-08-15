@@ -1,4 +1,5 @@
 #Example Drive client in Python
+import js
 from js import self as window
 from js import document
 from js import print_div
@@ -10,59 +11,263 @@ from js import print_div_num_info
 from js import print_div_end_info
 from js import print_div_ik_info
 from js import print_div_cur_pose
+from js import viewer_update
+
+from js import Blockly
+
 
 from RobotRaconteur.Client import *
 # import time
 import numpy as np
 import sys
 # import math
+import asyncio
 
 # sys.path.append("./my_source.zip")
 # import general_robotics_toolbox as rox
 
 # # ---------------------------BEGIN: BLOCKLY FUNCTIONS  --------------------------- #
-# def jog_joints2(q_i, degree_diff, is_relative):
-#     global is_jogging
-#     if (not is_jogging): 
-#         is_jogging = True
-#         loop.call_soon(async_jog_joints2(q_i, degree_diff, is_relative))
-#     else:
-#         print_div("Jogging has not finished yet..<br>")
+def execute_blockly_func(self):
+    print_div("Blockly Execute button is clicked!<br><br>")
+    workspace = Blockly.getMainWorkspace()
+    code_text = Blockly.Python.workspaceToCode(workspace)
 
+    # # Encode the block tree as XML Dom
+    # workspace_xml = Blockly.Xml.workspaceToDom(workspace)
+    # # Convert XML Dom to string representation (ugly)
+    # workspace_xml_str = Blockly.Xml.domToText(workspace_xml)
+    # # Convert XML Dom to string representation (pretty)
+    # workspace_xml_pretty_str = Blockly.Xml.domToPrettyText(workspace_xml)
 
-# async def async_jog_joints2(q_i, degree_diff, is_relative):
-#     global d, num_joints, joint_lower_limits, joint_upper_limits, joint_vel_limits
-
-#     # Update joint angles
-#     d_q, _ = await update_joint_info() # Joint angles in radian ndarray, N x 1
+    # print_div("<br>workspace_xml:<br>")
+    # print_div(workspace_xml)
+    # print_div("<br>workspace_xml_str:<br>")
+    # print_div(workspace_xml_str)
+    # print_div("<br>workspace_xml_pretty_str:<br>")
+    # print_div(workspace_xml_pretty_str)
     
-#     await update_state_flags()
 
-#     if (num_joints < q_i):
-#         print_div("Currently Controlled Robot only have " + str(num_joints) + " joints..<br>")
-#     else:
-        
-#         if (is_relative):
-#             joint_diff = np.zeros((num_joints,))
-#             joint_diff[q_i-1] = np.deg2rad(degree_diff)
-#         else:
-#             joint_diff = d_q
-#             joint_diff[q_i-1] = np.deg2rad(degree_diff)
-        
-#         if not ((d_q + joint_diff) < joint_upper_limits).all() or not ((d_q + joint_diff) > joint_lower_limits).all():
-#             print_div("Specified joints might be out of range<br>")
-#         else:
-#             try:
-#                 await d.async_jog_joint(joint_diff, joint_vel_limits, is_relative, True,None)
-#                 # await RRN.AsyncSleep(2,None)
-#             except:
-#                 print_div("Specified joints might be out of range2<br>")
-#                 # import traceback
-#                 # print_div(traceback.format_exc())
-#                 # raise
+    # print_div(code_text)
 
-#     global is_jogging
-#     is_jogging = False
+    global is_jogging
+    if (not is_jogging): 
+        is_jogging = True
+        loop.create_task(async_execute_blockly(code_text))
+    else:
+        print_div("Blockly execution has not finished yet..<br>")
+
+    
+async def async_execute_blockly(code_text):
+    global plugin_blockly
+    output = await plugin_blockly.async_execute_blockly(code_text, None)
+    print_div(output) # print the output of the execution
+    
+    print_div("<br>Blockly execution is completed.<br>") # Print a blank space after ecexution
+    global is_jogging
+    is_jogging = False
+
+async def async_update_blockly_saved_workspaces():
+    global plugin_blockly
+    workspace_files_lst = await plugin_blockly.async_blockly_saved_workspaces(None)
+
+    element_id = "saved_blocks_list"
+    blocks_list = document.getElementById(element_id)
+    
+    # Clear the UI saved workspaces list before the update
+    length = blocks_list.options.length
+    i = length - 1
+    while i >= 0:
+        blocks_list.remove(i)
+        i -= 1
+
+    # Update the UI list with the new elements
+    for file_name in workspace_files_lst:
+        option = document.createElement("option")
+        option.text = file_name
+        blocks_list.add(option)
+
+def load_blocks_func(self):
+    print_div("Load Blocks button is clicked!<br>")
+    loop.create_task(async_load_blocks())
+
+async def async_load_blocks():
+    workspace = Blockly.getMainWorkspace() # get the Blockly workspace
+
+    # Read the selected pose index from the browser
+    element_id = "saved_blocks_list"
+    blocks_list = document.getElementById(element_id)
+    index = blocks_list.selectedIndex
+    try:
+        if index == -1:
+            print_div("Please select a file from Saved Blocks.<br>")
+        else:
+            file_name = blocks_list.options[index].value
+            global plugin_blockly
+            xml_text = await plugin_blockly.async_blockly_load_workspace(file_name,None)
+            xml = Blockly.Xml.textToDom(xml_text)
+            Blockly.Xml.domToWorkspace(xml, workspace)
+    except:
+        import traceback
+        print_div(traceback.format_exc())
+        # raise
+        pass
+
+    # Update the available saved workspaces list
+    await async_update_blockly_saved_workspaces()
+
+def delete_blocks_func(self):
+    print_div("Delete Blocks button is clicked!<br>")
+    loop.create_task(async_delete_blocks())
+
+async def async_delete_blocks():
+    # Read the selected pose index from the browser
+    element_id = "saved_blocks_list"
+    blocks_list = document.getElementById(element_id)
+    index = blocks_list.selectedIndex
+    try:
+        if index == -1:
+            print_div("Please select a file from Saved Blocks.<br>")
+        else:
+            file_name = blocks_list.options[index].value
+            # Ask user: are you sure you want to delete 'file_name'
+            resp = window.confirm("Sure you want to delete '" + file_name + "'?")
+            # if sure delete, else ignore and return
+            if resp:
+                global plugin_blockly
+                await plugin_blockly.async_blockly_delete_workspace(file_name,None)
+    except:
+        import traceback
+        print_div(traceback.format_exc())
+        # raise
+        pass
+
+    # Update the available saved workspaces list
+    await async_update_blockly_saved_workspaces()
+
+
+def edit_blocks_name_func(self):
+        print_div("Edit Blocks' Name button is clicked!<br>")
+        loop.create_task(async_edit_blocks_name())
+
+async def async_edit_blocks_name():
+    # Read the selected pose index from the browser
+    element_id = "saved_blocks_list"
+    blocks_list = document.getElementById(element_id)
+    index = blocks_list.selectedIndex
+    try:
+        if index == -1:
+            print_div("Please select a file from Saved Blocks.<br>")
+        else:
+            file_name = blocks_list.options[index].value
+            # Ask user: New name for 'file_name'
+            file_name_new = window.prompt("Please enter the new file name (Don't forget .xml file extension)", file_name)
+            if (file_name_new != None and file_name_new != ""):
+                global plugin_blockly
+                await plugin_blockly.async_blockly_edit_workspace_name(file_name, file_name_new, None)
+    except:
+        import traceback
+        print_div(traceback.format_exc())
+        # raise
+        pass
+
+    # Update the available saved workspaces list
+    await async_update_blockly_saved_workspaces()
+
+def save_blocks_func(self):
+        print_div("Save Blocks button is clicked!<br>")
+        loop.create_task(async_save_blocks())
+
+async def async_save_blocks():
+    # Read the selected pose index from the browser
+    element_id = "saved_blocks_list"
+    blocks_list = document.getElementById(element_id)
+    index = blocks_list.selectedIndex
+    try:
+        if index == -1:
+            print_div("Please select a file from Saved Blocks.<br>")
+        else:
+            file_name = blocks_list.options[index].value
+            # Ask user: Sure you want to overwrite "file_name"
+            resp = window.confirm("Sure you want to overwrite '" + file_name + "'?")
+            # if sure overwrite, else ignore and return
+            if resp:
+                workspace = Blockly.getMainWorkspace() # get the Blockly workspace
+                # Encode the block tree as XML Dom
+                workspace_xml = Blockly.Xml.workspaceToDom(workspace)
+                # Convert XML Dom to string representation (pretty)
+                workspace_xml_pretty_str = Blockly.Xml.domToPrettyText(workspace_xml)
+
+                global plugin_blockly
+                await plugin_blockly.async_blockly_save_workspace(file_name,workspace_xml_pretty_str,None)
+    except:
+        import traceback
+        print_div(traceback.format_exc())
+        # raise
+        pass
+
+    # Update the available saved workspaces list
+    await async_update_blockly_saved_workspaces()
+
+
+def save_as_blocks_func(self):
+    print_div("Save Blocks As button is clicked!<br>")
+    loop.create_task(async_save_as_blocks())
+
+async def async_search_blockly_saved_workspaces(filename):
+    element_id = "saved_blocks_list"
+    blocks_list = document.getElementById(element_id)
+    length = blocks_list.options.length  # Number of existing files
+    i = length - 1
+    while i >= 0:
+        if blocks_list.options[i].value == filename:
+            return True # filename is found in the options
+        i -= 1
+
+    return False
+
+async def async_save_as_blocks():
+    try:
+        # Ask user: New name for 'file_name'
+        file_name_new = window.prompt("Please enter the new file name to save workspace (Don't forget .xml file extension)", "new_workspace.xml")
+        if (file_name_new != None and file_name_new != ""):
+            # Search the existing filenames to check for coincidence
+            is_found = await async_search_blockly_saved_workspaces(file_name_new)
+
+            if not is_found:
+                workspace = Blockly.getMainWorkspace() # get the Blockly workspace
+                # Encode the block tree as XML Dom
+                workspace_xml = Blockly.Xml.workspaceToDom(workspace)
+                # Convert XML Dom to string representation (pretty)
+                workspace_xml_pretty_str = Blockly.Xml.domToPrettyText(workspace_xml)
+
+                global plugin_blockly
+                await plugin_blockly.async_blockly_save_workspace_as(file_name_new, workspace_xml_pretty_str, None)
+            else:
+                # print_div("The file already exists! Try another file name or use Save button to save on an existing file<br>")
+                window.alert("The file already exists! Try another file name or use SAVE button to save on an existing file")
+    except:
+        import traceback
+        print_div(traceback.format_exc())
+        # raise
+        pass
+
+    # Update the available saved workspaces list
+    await async_update_blockly_saved_workspaces()
+
+def clear_blocks_func(self):
+        print_div("Clear Blocks button is clicked!<br>")
+        loop.create_task(async_clear_blocks())
+
+async def async_clear_blocks():
+    # Ask user: Sure you want to clear the workspace 
+    resp = window.confirm("Sure you want to clear the current workspace?")
+    # if sure overwrite, else ignore and return
+    if resp:
+        workspace = Blockly.getMainWorkspace() # get the Blockly workspace
+        workspace.clear() # Dispose of all blocks and comments in workspace.
+
+    # Update the available saved workspaces list
+    await async_update_blockly_saved_workspaces()
 
 # # ---------------------------END: BLOCKLY FUNCTIONS --------------------------- #
 
@@ -74,7 +279,7 @@ def jog_joints_gamepad(joint_speed_constants):
     global is_jogging
     if (not is_jogging): 
         is_jogging = True
-        loop.call_soon(async_jog_joints_gamepad(joint_speed_constants))
+        loop.create_task(async_jog_joints_gamepad(joint_speed_constants))
     else:
         print_div("Jogging has not finished yet..<br>")
 
@@ -150,13 +355,13 @@ def jog_cartesian_gamepad(P_axis, R_axis):
     global is_jogging
     if (not is_jogging): 
         is_jogging = True
-        loop.call_soon(async_jog_cartesian_gamepad(P_axis, R_axis))
+        loop.create_task(async_jog_cartesian_gamepad(P_axis, R_axis))
     # else:
     #     print_div("Jogging has not finished yet..<br>")
 
 async def async_jog_cartesian_gamepad(P_axis, R_axis):
     global plugin_jogCartesianSpace
-    await plugin_jogCartesianSpace.async_prepare_jog(None)
+    # await plugin_jogCartesianSpace.async_prepare_jog(None)
         
     global is_gamepadaxisactive
     global is_gamepadbuttondown
@@ -164,9 +369,12 @@ async def async_jog_cartesian_gamepad(P_axis, R_axis):
     while (is_gamepadaxisactive or is_gamepadbuttondown): 
         # Call Jog Cartesian Space Service funtion to handle this jogging
         # await plugin_jogCartesianSpace.async_jog_cartesian(P_axis, R_axis, None)
-        await plugin_jogCartesianSpace.async_jog_cartesian2(P_axis, R_axis, None)
+        # await plugin_jogCartesianSpace.async_jog_cartesian2(P_axis, R_axis, None)
+        # await plugin_jogCartesianSpace.async_jog_cartesian3(P_axis, R_axis, None)
+        await plugin_jogCartesianSpace.async_jog_cartesian4(P_axis, R_axis, None)
 
-    await plugin_jogCartesianSpace.async_stop_joints(None)
+    # await plugin_jogCartesianSpace.async_stop_joints(None)
+    # await plugin_jogCartesianSpace.async_stop_joints2(None)
     global is_jogging
     is_jogging = False
 
@@ -181,7 +389,7 @@ def jog_joints(q_i, sign):
     global is_jogging
     if (not is_jogging): 
         is_jogging = True
-        loop.call_soon(async_jog_joints(q_i, sign))
+        loop.create_task(async_jog_joints(q_i, sign))
     else:
         print_div("Jogging has not finished yet..<br>")
 
@@ -191,9 +399,11 @@ async def async_jog_joints(q_i, sign):
     global is_mousedown
     while (is_mousedown): 
         # Call Jog Joint Space Service funtion to handle this jogging
-        await plugin_jogJointSpace.async_jog_joints2(q_i, sign, None)
+        # await plugin_jogJointSpace.async_jog_joints2(q_i, sign, None)
+        await plugin_jogJointSpace.async_jog_joints3(q_i, sign, None)
 
-    await plugin_jogJointSpace.async_stop_joints(None)
+    # await plugin_jogJointSpace.async_stop_joints(None)
+    # await plugin_jogJointSpace.async_stop_joints2(None)
     global is_jogging
     is_jogging = False
 
@@ -261,7 +471,8 @@ def stop_func(self):
     print_div('STOP button pressed<br>')    
     
     global plugin_jogJointSpace
-    plugin_jogJointSpace.async_jog_joints_zeros(None)
+    # plugin_jogJointSpace.async_jog_joints_zeros(None)
+    plugin_jogJointSpace.async_stop_joints2(None)
 
     global is_jogging
     is_jogging = False
@@ -273,7 +484,7 @@ def move_to_angles_func(self):
     
     if (not is_jogging): 
         is_jogging = True
-        loop.call_soon(async_move_to_angles_func())
+        loop.create_task(async_move_to_angles_func())
     else:
         print_div("Jogging has not finished yet..<br>")
     
@@ -308,22 +519,25 @@ def jog_cartesian(P_axis, R_axis):
     global is_jogging
     if (not is_jogging): 
         is_jogging = True
-        loop.call_soon(async_jog_cartesian(P_axis, R_axis))
+        loop.create_task(async_jog_cartesian(P_axis, R_axis))
     else:
         print_div("Jogging has not finished yet..<br>")
 
 async def async_jog_cartesian(P_axis, R_axis):
     global plugin_jogCartesianSpace
-    await plugin_jogCartesianSpace.async_prepare_jog(None)
+    # await plugin_jogCartesianSpace.async_prepare_jog(None)
     # await plugin_jogCartesianSpace.async_jog_cartesian(P_axis, R_axis, None)
     
     global is_mousedown
     while (is_mousedown):
         # Call Jog Cartesian Space Service funtion to handle this jogging
         # await plugin_jogCartesianSpace.async_jog_cartesian(P_axis, R_axis, None)
-        await plugin_jogCartesianSpace.async_jog_cartesian2(P_axis, R_axis, None)
+        # await plugin_jogCartesianSpace.async_jog_cartesian2(P_axis, R_axis, None)
+        # await plugin_jogCartesianSpace.async_jog_cartesian3(P_axis, R_axis, None)
+        await plugin_jogCartesianSpace.async_jog_cartesian4(P_axis, R_axis, None)
 
-    await plugin_jogCartesianSpace.async_stop_joints(None)
+    # await plugin_jogCartesianSpace.async_stop_joints(None)
+    # await plugin_jogCartesianSpace.async_stop_joints2(None)
     global is_jogging
     is_jogging = False
         
@@ -380,7 +594,7 @@ def tZ_neg_func(self):
 # ---------------------------BEGIN: SAVE PLAYBACK POSES --------------------------- #
 def save_cur_pose_func(self):
     print_div('Saving to "Saved Poses" list..<br>')
-    loop.call_soon(async_save_cur_pose_func())
+    loop.create_task(async_save_cur_pose_func())
     
 async def async_save_cur_pose_func():
     # Get the current joint angles as ndarray and str
@@ -404,7 +618,7 @@ def go_sel_pose_func(self):
     global is_jogging
     if (not is_jogging): 
         is_jogging = True
-        loop.call_soon(async_go_sel_pose_func())
+        loop.create_task(async_go_sel_pose_func())
     else:
         print_div("Jogging has not finished yet..<br>")
 
@@ -430,7 +644,7 @@ def playback_poses_func(self):
     global is_jogging
     if (not is_jogging): 
         is_jogging = True
-        loop.call_soon(async_playback_poses_func())
+        loop.create_task(async_playback_poses_func())
     else:
         print_div("Jogging has not finished yet..<br>")
 
@@ -457,7 +671,7 @@ async def async_playback_poses_func():
 
 def del_sel_pose_func(self):
     print_div("Deleting seleted Pose..<br>")
-    loop.call_soon(async_del_sel_pose_func())
+    loop.create_task(async_del_sel_pose_func())
 
 async def async_del_sel_pose_func():
     # Read the selected pose index from the browser
@@ -471,13 +685,13 @@ async def async_del_sel_pose_func():
             global plugin_savePlayback
             await plugin_savePlayback.async_del_sel_pose(index,None)
             # Delete from UI too.
-            poses_list.remove(index); 
+            poses_list.remove(index)
     except:
         pass
         
 def up_sel_pose_func(self):
     print_div("Move up seleted Pose..<br>")
-    loop.call_soon(async_up_sel_pose_func())
+    loop.create_task(async_up_sel_pose_func())
 
 async def async_up_sel_pose_func():
     # Read the selected pose index from the browser
@@ -492,8 +706,8 @@ async def async_up_sel_pose_func():
             await plugin_savePlayback.async_up_sel_pose(index,None)
             # Up it from UI too.
             if index > 0:
-                option = poses_list.options[index];
-                poses_list.remove(index);
+                option = poses_list.options[index]
+                poses_list.remove(index)
                 poses_list.add(option,index-1)
 
     except:
@@ -501,7 +715,7 @@ async def async_up_sel_pose_func():
 
 def down_sel_pose_func(self):
     print_div("Move down seleted Pose..<br>")
-    loop.call_soon(async_down_sel_pose_func())
+    loop.create_task(async_down_sel_pose_func())
 
 async def async_down_sel_pose_func():
     # Read the selected pose index from the browser
@@ -516,18 +730,15 @@ async def async_down_sel_pose_func():
             await plugin_savePlayback.async_down_sel_pose(index,None)
             # Down it from UI too.
             if index < poses_list.length-1:
-                option = poses_list.options[index];
-                poses_list.remove(index);
+                option = poses_list.options[index]
+                poses_list.remove(index)
                 poses_list.add(option,index+1)
 
     except:
         pass
-
-
 # ---------------------------END: SAVE PLAYBACK POSES --------------------------- #
 
 # ---------------------------START: Select Robot --------------------------- #
-
 async def async_select_available_robot_url(robot_urls):
     print_div("Selecting the robot URL.. <br>")
     # Read the selected robot index from the browser  
@@ -535,9 +746,7 @@ async def async_select_available_robot_url(robot_urls):
     available_robots_list = document.getElementById(element_id)
     index = available_robots_list.selectedIndex
     return robot_urls[index]
-
 # ---------------------------END: Select Robot --------------------------- #
-
 
 async def update_state_flags():
     # For reading robot state flags
@@ -562,43 +771,12 @@ async def update_joint_info():
 
 async def update_num_info():
     # For reading about number of robot joints, joint types, joint limits etc
-    # print_div_num_info("Number of Joints info updating")
-    
-    # global d    
-    # robot_info = await d.async_get_robot_info(None) 
-    # joint_info = robot_info.joint_info # A list of jointInfo
-    
-    # joint_types = [] # A list or array of N numbers containing the joint type. 1 for rotary, 3 for prismatic
-    # joint_lower_limits = [] # list or numpy.array
-    # joint_upper_limits = [] # list or numpy.array
-    # joint_vel_limits = [] # list or numpy.array
-    # joint_acc_limits = [] # list or numpy.array
-    # joint_names = [] # list of string
-    # joint_uuids = [] 
-    # for joint in joint_info:
-    #     joint_types.append(joint.joint_type)
-    #     joint_lower_limits.append(joint.joint_limits.lower)
-    #     joint_upper_limits.append(joint.joint_limits.upper)
-    #     joint_vel_limits.append(joint.joint_limits.velocity)
-    #     joint_acc_limits.append(joint.joint_limits.acceleration)
-    #     joint_names.append(joint.joint_identifier.name)
-    #     joint_uuids.append(joint.joint_identifier.uuid)
-        
-    # # convert them to numpy arrays
-    # joint_types = np.asarray(joint_types)
-    # joint_lower_limits = np.asarray(joint_lower_limits)
-    # joint_upper_limits = np.asarray(joint_upper_limits)
-    # joint_vel_limits = np.asarray(joint_vel_limits)
-    # joint_acc_limits = np.asarray(joint_acc_limits)
-    
     global plugin_updateInfo
     joint_limits_text = await plugin_updateInfo.async_joint_limits_str_array(None)
     print_div_j_limit_info(joint_limits_text[0], joint_limits_text[1])
 
     joint_num_type_vel_acc_name_text = await plugin_updateInfo.async_joint_num_type_vel_acc_name_str(None)
     print_div_num_info(joint_num_type_vel_acc_name_text) 
-    
-    # return len(joint_info), joint_types, joint_lower_limits, joint_upper_limits, joint_vel_limits, joint_acc_limits, joint_names
      
 async def update_kin_info():        
     global plugin_updateInfo
@@ -644,12 +822,11 @@ def stop_robot_func(self):
 async def client_drive():
     # rr+ws : WebSocket connection without encryption
     # ip = '192.168.50.152' # robot service ip
-    # ip = '192.168.50.40' # robot service ip
+    # ip = 'localhost' # robot service ip
     # ip = 'localhost'
     
-    ip_plugins = '192.168.50.152' # plugins ip
-    # ip_plugins = '128.113.224.154' # plugins ip lab
-    # ip_plugins = 'localhost' # plugins ip
+    ip_plugins = 'localhost' # plugins ip
+    # ip_plugins = '128.113.224.98' # plugins ip
 
     # url ='rr+ws://'+ ip +':58653?service=robot'   # Sawyer simulation
     # url ='rr+ws://128.113.224.23:58654?service=robot' # sawyer in lab
@@ -668,15 +845,15 @@ async def client_drive():
     # url_sawyer = 'rr+ws://'+ ip +':58653?service=robot' # Sawyer simulation
     # # url_sawyer = 'rr+ws://'+ ip +':58654?service=robot' # Sawyer simulation in Lab
 
-    # ip = '192.168.50.152' # robot service ip
+    # ip = 'localhost' # robot service ip
     # url_rp260 = 'rr+ws://'+ ip +':23333?service=robot'  # Dr.Wasons's Robot (rp260)
 
-    # ip = '192.168.50.152' # robot service ip
+    # ip = 'localhost' # robot service ip
     # # ip = '128.113.224.12' # robot service ip in Lab
     # url_abb = 'rr+ws://'+ ip +':58655?service=robot'  # ABB
     # # url_abb = 'rr+ws://'+ ip +':58651?service=robot'  # ABB in Lab
 
-    # ip = '192.168.50.152' # robot service ip
+    # ip = 'localhost' # robot service ip
     # # ip = '128.113.224.83' # robot service ip in Lab
     # url_ur5 = 'rr+ws://'+ ip +':58653?service=robot'  # UR5
     # # url_ur5 = 'rr+ws://'+ ip +':58653?service=robot'  # UR5 in Lab
@@ -695,12 +872,12 @@ async def client_drive():
     try:
         # Discover Available Robots
         ## Discovery plugin
-        print_div('Discovery plugin is connecting..<br>')
+        print_div('Discovery plugin is connecting (robot)..<br>')
 
         url_plugin_discovery = 'rr+ws://' + ip_plugins + ':8896?service=Discovery'
         global plugin_discovery
         plugin_discovery = await RRN.AsyncConnectService(url_plugin_discovery,None,None,None,None)
-        print_div('discovery plugin is connected..<br>')
+        print_div('discovery plugin is connected (robot)..<br>')
 
         RobotConnectionURLs = await plugin_discovery.async_available_robot_ConnectionURLs(None)
         # print_div(str(RobotConnectionURLs))
@@ -714,12 +891,13 @@ async def client_drive():
         print_div('Selected Robot url: '+ url + '<br>')
         # ------------
 
-        # Set the url of the robot
-        # url = RobotConnectionURLs[1]
-        # print_div(str(url) + "<br>")
+        ToolConnectionURLs = await plugin_discovery.async_available_tool_ConnectionURLs(None)
+        tool_node_names_lst = await plugin_discovery.async_available_tool_NodeNames(None)
 
-        # await RRN.AsyncSleep(2,None)
+        print_div("ToolConnectionURLs" + str(ToolConnectionURLs) + "<br>")
+        print_div("tool_node_names_lst" + str(tool_node_names_lst) + "<br>")
 
+       
         #Connect to the service
         # global d # d is the robot object from RR
         # d = await RRN.AsyncConnectService(url,None,None,None,None)
@@ -793,6 +971,60 @@ async def client_drive():
         plugin_savePlayback = await RRN.AsyncConnectService(url_plugin_savePlayback,None,None,None,None)
         await plugin_savePlayback.async_connect2robot(url,None)
         print_div('SavePlayback plugin is connected..<br>')
+
+        ## RobotViewer plugin
+        print_div('RobotViewer plugin is connecting..<br>')
+
+        # url_plugin_robotViewer = 'rr+ws://localhost:8901?service=RobotViewer'
+        url_plugin_robotViewer = 'rr+ws://' + ip_plugins + ':8901?service=RobotViewer'
+        global plugin_robotViewer
+        plugin_robotViewer = await RRN.AsyncConnectService(url_plugin_robotViewer,None,None,None,None)
+        await plugin_robotViewer.async_connect2robot(url,None)
+        print_div('RobotViewer plugin is connected..<br>')
+
+
+        ## Tool plugin
+        print_div('Tool plugin is connecting..<br>')
+
+        url_plugin_tool = 'rr+ws://' + ip_plugins + ':8900?service=Tool'
+        # url_plugin_tool = ''
+        if not url_plugin_tool == '':
+            global plugin_tool
+            plugin_tool = await RRN.AsyncConnectService(url_plugin_tool,None,None,None,None)
+            await plugin_tool.async_connect2robot(url,None)
+            await plugin_tool.async_connect2all_tools(ToolConnectionURLs,tool_node_names_lst,None)
+            active_tool_url_debug = await plugin_tool.async_connect2active_tool(None)
+            
+            print_div("active_tool_url_debug: " + str(active_tool_url_debug) + "<br>")
+            print_div('Tool plugin is connected..<br>')
+
+        
+        ## Simulation Tool Link Attacher plugin
+        print_div('Simulation Tool Link Attacher plugin is connecting..<br>')
+
+        # url_plugin_toolLinkAttacher = 'rr+ws://' + ip_plugins + ':8899?service=ToolLinkAttacher'
+        url_plugin_toolLinkAttacher = ''
+        if not url_plugin_toolLinkAttacher == '':
+            global plugin_toolLinkAttacher
+            plugin_toolLinkAttacher = await RRN.AsyncConnectService(url_plugin_toolLinkAttacher,None,None,None,None)
+            print_div('ToolLinkAttacher plugin is connected..<br>')
+
+        
+
+
+        ## Blockly plugin
+        print_div('Blockly plugin is connecting..<br>')
+
+        url_plugin_blockly = 'rr+ws://' + ip_plugins + ':8897?service=Blockly'
+        global plugin_blockly
+        plugin_blockly = await RRN.AsyncConnectService(url_plugin_blockly,None,None,None,None)
+        
+        url_plugins_lst = [url_plugin_discovery, url_plugin_jogJointSpace, url_plugin_jogCartesianSpace, url_plugin_savePlayback, url_plugin_tool, url_plugin_toolLinkAttacher]
+        await plugin_blockly.async_connect2plugins(url_plugins_lst,None)
+        # Update blockly saved workspaces both on UI and RunTime
+        await async_update_blockly_saved_workspaces() 
+        print_div('Blockly plugin is connected..<br>')
+
         
 
         # PLUGIN SERVICE CONNECTIONS END__________________________________
@@ -869,7 +1101,14 @@ async def client_drive():
         button_up_sel_pose = document.getElementById("up_sel_pose_btn")
         button_down_sel_pose = document.getElementById("down_sel_pose_btn")
 
-
+        # Blockly Execute buttons
+        button_execute_blockly = document.getElementById("execute_blockly_btn") 
+        button_load_blocks = document.getElementById("load_blocks_btn") 
+        button_delete_blocks = document.getElementById("delete_blocks_btn")
+        button_edit_blocks_name = document.getElementById("edit_blocks_name_btn")
+        button_save_blocks = document.getElementById("save_blocks_btn")
+        button_save_as_blocks = document.getElementById("save_as_blocks_btn")
+        button_clear_blocks = document.getElementById("clear_blocks_btn")
 
         button_stop.addEventListener("click", stop_func)
         button_j1_pos.addEventListener("mousedown", j1_pos_func)
@@ -921,6 +1160,13 @@ async def client_drive():
         button_up_sel_pose.addEventListener("click", up_sel_pose_func)
         button_down_sel_pose.addEventListener("click", down_sel_pose_func)
 
+        button_execute_blockly.addEventListener("click", execute_blockly_func)
+        button_load_blocks.addEventListener("click", load_blocks_func)
+        button_delete_blocks.addEventListener("click", delete_blocks_func)
+        button_edit_blocks_name.addEventListener("click", edit_blocks_name_func)
+        button_save_blocks.addEventListener("click", save_blocks_func)
+        button_save_as_blocks.addEventListener("click", save_as_blocks_func)
+        button_clear_blocks.addEventListener("click", clear_blocks_func)
 
         global is_jogging
         is_jogging = False
@@ -948,13 +1194,33 @@ async def client_drive():
         while not is_stop_robot:
             # Update joint angles
             # _, joints_text = await update_joint_info() # Joint angles in radian ndarray, N x 1 and str
-            joints_text = await update_joint_info() # Joint angles as str
+            joints_text = await update_joint_info() # Joint angles as str and in degrees
             print_div_j_info(joints_text)
+
+            # Prepare data for Tesseract viewer update of joint angles
+            joints_text = joints_text[:-1] # Delete the last comma
+            joints_text = joints_text.split(",") # List of strings of joints angles      
+            joints_positions = [float(i) for i in joints_text]
             
+            joints_positions = np.asarray(joints_positions)
+            joints_positions = np.deg2rad(joints_positions)
+            joints_positions = joints_positions.tolist()
+
+            # Sawyer joint names in Viewer URDF
+            joint_names = [f"right_j{i}" for i in range(7)] # Note: "head_pan" joint is not included 
+
+            try:
+                # UPdate tesseract viewer
+                viewer_update(js.python_to_js(joint_names),js.python_to_js(joints_positions))
+            except:
+                pass
+
             # UPdate the end effector pose info
             await update_end_info()
             
             await update_state_flags()
+
+            
 
 
         # Remove all event listeners before return
@@ -986,6 +1252,7 @@ async def client_drive():
         button_theta_Y_neg.removeEventListener("mousedown", tY_neg_func)
         button_theta_Z_pos.removeEventListener("mousedown", tZ_pos_func)
         button_theta_Z_neg.removeEventListener("mousedown", tZ_neg_func)
+        
         button_save_cur_pose.removeEventListener("click", save_cur_pose_func)
         button_go_sel_pose.removeEventListener("click", go_sel_pose_func)
         button_playback_poses.removeEventListener("click", playback_poses_func)
@@ -995,6 +1262,14 @@ async def client_drive():
         button_up_sel_pose.removeEventListener("click", up_sel_pose_func)
         button_down_sel_pose.removeEventListener("click", down_sel_pose_func)
 
+        button_execute_blockly.removeEventListener("click", execute_blockly_func)
+        button_load_blocks.removeEventListener("click", load_blocks_func)
+        button_delete_blocks.removeEventListener("click", delete_blocks_func)
+        button_edit_blocks_name.removeEventListener("click", edit_blocks_name_func)
+        button_save_blocks.removeEventListener("click", save_blocks_func)
+        button_save_as_blocks.removeEventListener("click", save_as_blocks_func)
+        button_clear_blocks.removeEventListener("click", clear_blocks_func)
+
         return
             
     except:
@@ -1002,7 +1277,6 @@ async def client_drive():
         print_div(traceback.format_exc())
         raise
 
-loop = RR.WebLoop()
-loop.call_soon(client_drive())
+loop = asyncio.get_event_loop()
+loop.create_task(client_drive())
 
-# RR.WebLoop.run(client_drive())

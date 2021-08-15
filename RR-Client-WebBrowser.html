@@ -10,7 +10,7 @@
 
         <!-- INCLUDE GOLDEN LAYOUT -->
         <!-- GoldenLayout needs jQuery to work -->
-        <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+        <!-- <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.1.min.js"></script> -->
         <!-- add GoldenLayout's main JS and CSS file, -->
         <script type="text/javascript" src="https://golden-layout.com/files/latest/js/goldenlayout.min.js"></script>
         <link type="text/css" rel="stylesheet" href="https://golden-layout.com/files/latest/css/goldenlayout-base.css" />
@@ -26,10 +26,18 @@
         <script src="./blockly/javascript_compressed.js"></script>
         <script src="./blockly/python_compressed.js"></script>
         <!-- include blockly custom blocks -->
-        <script src="./blockly-customBlocks/print_div_block.js"></script>
+        <!-- <script src="./blockly-customBlocks/print_div_block.js"></script> -->
         <script src="./blockly-customBlocks/jog_joint_blocks.js"></script>
+        <script src="./blockly-customBlocks/jog_cartesian_blocks.js"></script>
+        <script src="./blockly-customBlocks/camera_blocks.js"></script>
+        <script src="./blockly-customBlocks/utils_blocks.js"></script>
+        <script src="./blockly-customBlocks/tool_blocks.js"></script>
         <!-- include language for blockly msgs -->
         <script src="./blockly/msg/js/en.js"></script>
+
+        <!-- INCLUDE CROPPER -->
+        <link rel="stylesheet" href="./cropperjs/dist/cropper.css">
+        <script src="./cropperjs/dist/cropper.js"></script>
 
         <!-- INCLUDE STYLES -->
         <link rel="stylesheet" type="text/css" href="styles.css">
@@ -66,11 +74,15 @@
         </div>
 
         <!-- General JS -->
-        <script type="text/javascript" src="./scripts-robot.js"></script>
-        <!-- <script type="text/javascript" src="./scripts-vision.js"></script> -->
-        
+        <script type="text/javascript" src="./webui_bootstrap.js"></script>
+
         <!-- Auto robot discovery -->
         <script type="text/javascript" src="./scripts-discovery.js"></script>
+
+        <script type="text/javascript" src="./scripts-robot.js"></script>
+        <script type="text/javascript" src="./scripts-vision.js"></script>
+        
+        
 
 
         <!-- Content HTMLs -->
@@ -311,6 +323,16 @@
             </table>
         </template>
 
+        <template id="template_RobotPreview"> 
+            <table id="table_RobotPreview" border="1"  > <!-- CELLPADDING="4" CELLSPACING="3"> -->
+                <tr> 
+                    <td>
+                        <iframe src="http://localhost:8000/index.html?noupdate=true" style="border:none; width: 100%; height: 100%" title="Robot Preview Iframe"  id="iframe_RobotPreview"></iframe>
+                    </td>          
+                </tr>
+            </table>
+        </template>
+
         <!-- Camera Feedback Area Template -->
         <template id="template_CameraFeedback"> 
             <table id="table_CameraFeedback" border="1"  > <!-- CELLPADDING="4" CELLSPACING="3"> -->
@@ -318,6 +340,7 @@
                     <td>
                         <form>
                             <label for="chosen_cam">Camera:</label>
+                            <!-- <select name="available_cams" id="available_cams" onchange="run_vision()"> -->
                             <select name="available_cams" id="available_cams">
                                 <!-- <option value="cam0">Cam0</option>
                                 <option value="cam1">Cam1</option> -->
@@ -327,7 +350,8 @@
                 </tr>
                 <tr> 
                     <td>
-                        <canvas id="camera_image" width="320" height="240"></canvas>
+                        <!-- <canvas id="camera_image" width="320" height="240"></canvas> -->
+                        <img id="camera_image">
                     </td>          
                 </tr>
             </table>
@@ -336,68 +360,409 @@
         <!-- Train Vision Area template -->
         <template id="template_TrainVision"> 
             <table id="table_TrainVision" border="1"  > <!-- CELLPADDING="4" CELLSPACING="3"> -->
+                <col width="160"><col >
                 <tr> 
-                    <td colspan = "3" align="left">
+                    <td colspan = "2" align="left">
                         <form>
                             <label for="trained_visuals">Trained Visuals:</label>
                             <select name="trained_visuals" id="trained_visuals">
-                                <option value="vis0">Visual_00</option>
-                                <option value="vis1">Visual_01</option>
+                                <!-- <option value="vis0">Visual_00</option> -->
                             </select>
                         </form>
                     </td>          
                 </tr>
                 <tr> 
-                    <td rowspan="4">
-                        <canvas id="selected_trained_visual" width="320" height="240"></canvas>
+                    <td rowspan="2">
+                        <img id="selected_trained_visual"></img>
                     </td>   
-                    <td> Name: </td> 
-                    <td>
-                        <div align="left" id="print_div_selected_trained_visual_name"></div>
-                    </td>        
+                    <td COLSPAN="1"> <button id="edit_name_selected_trained_visual_btn" type="button" style="width: 100%;">Edit Name</button> </td>  
                 </tr>
 
                 <tr> 
-                    <td> Camera: </td> 
-                    <td>
-                        <div align="left" id="print_div_selected_trained_visual_by_camera"></div>
-                    </td>          
+                    <td COLSPAN="1"> <button id="delete_selected_trained_visual_btn" type="button" style="width: 100%;">Delete</button> </td>         
                 </tr>
                 <tr> 
-                    <td COLSPAN="2"> <button id="delete_selected_trained_visual_btn" type="button" style="width: 100%;">Delete</button> </td>         
-                </tr>
-                <tr> 
-                    <td COLSPAN="2"> <button id="edit_name_selected_trained_visual_btn" type="button" style="width: 100%;">Edit Name</button> </td>         
-                </tr>
-                <tr> 
-                    <td COLSPAN="3"> <button id="train_new_visual_btn" type="button" style="width: 100%;">Train New Visual</button> </td>         
+                    <td COLSPAN="2"> <button id="train_new_visual_btn" type="button" style="width: 100%;">Train New Visual</button> </td>         
                 </tr>
             </table>
+
+            <div id="modal_TrainVision" class="modal">
+
+              <!-- Modal content -->
+              <div class="modal-content">
+
+                <div class="modal-header">
+                  <span id="span_close" class="close">&times;</span>
+                  <h2>Crop the image</h2>
+                </div>
+
+                <div class="modal-body">
+                  <!-- <p>Some text in the Modal Body</p> -->
+                  <div class="img-container">
+                    <!-- <img id="image" src="../images/picture.jpg" alt="Picture"> -->
+                    <!-- <img id="image" src="https://fengyuanchen.github.io/cropperjs/images/picture.jpg" alt="Picture"> -->
+                    <img id="training_image">
+                  </div>
+                </div>
+
+                <div class="modal-footer">
+                  <!-- <h2>Modal Footer</h2> -->
+                  <button type="button" id="btn_close">Cancel</button>
+
+                  <button type="button" id="btn_reset">Reset</button>
+                  <button type="button" id="btn_rot_m5">Rotate -5 deg</button>
+                  <button type="button" id="btn_rot_p5">Rotate +5 deg</button>
+                  
+                  
+                  <button type="button" id="btn_crop">Crop & Save</button>
+                </div>
+
+              </div>
+
+            </div>
         </template>
 
         <!-- Camera Calibration Area Template -->
         <template id="template_CameraCalibration"> 
             <table id="table_CameraCalibration" border="1"  > <!-- CELLPADDING="4" CELLSPACING="3"> -->
+                <col><col>
                 <tr> 
-                    <td>Selected Camera: </td>   
+                    <td colspan = "2" align="left">
+                        <form>
+                            <label for="calibrated_cameras">Calibrated Cameras:</label>
+                            <select name="calibrated_cameras" id="calibrated_cameras">
+                                <!-- <option value="cam0">Camera_00</option> -->
+                            </select>
+                        </form>
+                    </td>          
+                </tr>
+
+                <tr> 
+                    <td align="right">Camera Matrix: </td>   
                     <td>
-                        <div align="left" id="print_div_selected_camera"></div>
+                        <div align="left" id="print_div_selected_camera_matrix"></div>
                     </td>       
                 </tr>
                 <tr> 
-                    <td>Internal Parameters: </td>   
+                    <td align="right">Distortion Coefficients: </td>   
                     <td>
-                        <div align="left" id="print_div_selected_camera_internal_params"></div>
+                        <div align="left" id="print_div_selected_camera_distortion_coefficients"></div>
                     </td>       
                 </tr>
                 <tr> 
-                    <td>External Parameters: </td>   
+                    <td align="right">[R|t] of the 1st Calibration Pattern: </td>   
                     <td>
-                        <div align="left" id="print_div_selected_camera_external_params"></div>
+                        <div align="left" id="print_div_selected_camera_RnT"></div>
                     </td>       
                 </tr>
                 <tr> 
-                    <td COLSPAN="2"> <button id="camera_calibration_btn" type="button" style="width: 100%;">Calibrate</button> </td>         
+                    <td align="right">RMS re-projection error: </td>   
+                    <td>
+                        <div align="left" id="print_div_selected_camera_calibration_error"></div>
+                    </td>          
+                </tr>
+                <tr>
+                    <td> <button id="delete_calibration_btn" type="button" style="width: 100%;">Delete</button> </td> 
+                    <td> <button id="calibrate_camera_btn" type="button" style="width: 100%;">Calibrate New</button> </td>         
+                </tr>
+            </table>
+
+            <div id="modal_CameraCalibration" class="modal">
+
+              <!-- Modal content -->
+              <div class="modal-content">
+
+                <div class="modal-header">
+                  <span id="span_close_calibration" class="close">&times;</span>
+                  <h2>Calibrate the Camera with a Checker Board </h2>
+                </div>
+
+                <div class="modal-body" id="modal_body_CameraCalibration">
+                  <p>You need to use a planar Checker Board as the calibration object</p>
+                  <p>If the selected camera is already calibrated, it will be overwritten. Otherwise a new calibration will be added.</p>
+                  <table id="table_calibration_modal" border="1"> <!-- CELLPADDING="4" CELLSPACING="3"> -->
+                      <col width="80%"><col width="20%"> <!-- It does not work, see css -->
+                      <tr> 
+                          <td align="left">Please enter the Number of Squares in the WIDTH of the checker board: </td>   
+                          <td>
+                              <input type="number" id="width_checkerboard_input" placeholder="width squares" value="8" min="1" style="font-size: 25px;">
+                          </td>       
+                      </tr>
+                      <tr> 
+                          <td align="left">Please enter the Number of Squares in the HEIGHT of the checker board: </td>   
+                          <td>
+                              <input type="number" id="height_checkerboard_input" placeholder="height squares" value="7" min="1" style="font-size: 25px;">
+                          </td>       
+                      </tr>
+                      <tr> 
+                          <td align="left">Please enter one side length of the squares (in millimeters): </td>   
+                          <td> 
+                            <input type="number" id="square_size_input" placeholder="one side length of the squares (mm)" value="29.0" min="0" step="0.5" style="font-size: 25px;"> 
+                          </td>     
+                      </tr>
+                      <tr> 
+                          <td colspan = "2" align="left">Now capture checkerboard images from different positions and orientations </td>        
+                      </tr>
+                      <tr> 
+                          <td align="left">For better results, at least 10 images are needed. </td>   
+                          <td> <button id="capture_img_calibration_btn" type="button" style="width: 100%;">Capture Image</button> </td>      
+                      </tr>
+                      <tr> 
+                          <td>
+                              <img id="calibration_camera_image"></img>
+                          </td>   
+                          <td >
+                            <div align="center" id="print_div_num_captured_calibration_imgs"></div> 
+                          </td>  
+                      </tr>
+                  </table>
+                </div>
+
+                <div class="modal-footer">
+                  <!-- <h2>Modal Footer</h2> -->
+                  <button type="button" id="btn_close_calibration">Cancel</button>
+                  <button type="button" id="btn_calibrate_n_save">Calibrate & Save</button>
+                </div>
+
+              </div>
+
+            </div>
+        </template>
+
+        <!-- ROBOT Calibration Area Template -->
+        <template id="template_RobotCameraCalibration"> 
+            <table id="table_RobotCameraCalibration" border="1"  > <!-- CELLPADDING="4" CELLSPACING="3"> -->
+                <col><col>
+                <tr> 
+                    <td colspan = "2" align="left">
+                        <form>
+                            <label for="calibrated_robotcamerapairs">Calibrated Robot-Camera pairs:</label>
+                            <select name="calibrated_robotcamerapairs" id="calibrated_robotcamerapairs">
+                                <!-- <option value="robot-cam0">Robot00--Camera_00</option> -->
+                            </select>
+                        </form>
+                    </td>          
+                </tr>
+
+                <tr> 
+                    <td align="right">R<sub>(robot-camera)</sub>: </td>   
+                    <td>
+                        <div align="left" id="print_div_selected_robotcamerapair_rotation_matrix"></div>
+                    </td>       
+                </tr>
+                <tr> 
+                    <td align="right">T<sub>(robot-camera)</sub>: </td>   
+                    <td>
+                        <div align="left" id="print_div_selected_robotcamerapair_translation_vector"></div>
+                    </td>       
+                </tr>
+                <!-- <tr> 
+                    <td align="right">Calibration error: </td>   
+                    <td>
+                        <div align="left" id="print_div_selected_robotcamerapair_calibration_error"></div>
+                    </td>          
+                </tr> -->
+                <tr>
+                    <td> <button id="delete_robotcamerapair_calibration_btn" type="button" style="width: 100%;">Delete</button> </td> 
+                    <td> <button id="calibrate_robotcamerapair_btn" type="button" style="width: 100%;">Calibrate New</button> </td>         
+                </tr>
+            </table>
+
+            <div id="modal_RobotCameraCalibration" class="modal">
+
+              <!-- Modal content -->
+              <div class="modal-content">
+
+                <div class="modal-header">
+                  <span id="span_close_robotcamera_calibration" class="close">&times;</span>
+                  <h2>Calibrate Robot-Camera Pair Extrinsic Parameters with an ArUco Marker</h2>
+                </div>
+
+                <div class="modal-body" id="modal_body_RobotCameraCalibration">
+                  <p>You need to attach an ArUco Marker as the calibration object to end effector of the robot</p>
+                  <p>If the selected Robot-Camera pair is already calibrated, it will be overwritten. Otherwise a new calibration will be added.</p>
+                  <table id="table_robotcamera_calibration_modal" border="1"> <!-- CELLPADDING="4" CELLSPACING="3"> -->
+                      <col width="60%"><col width="40%"> <!-- It does not work, see css -->
+                      <!-- <tr> 
+                          <td colspan = "2" align="left">Make sure you have defined a safe path in "Save & Playback" window for robot to travel during calibration. If you defined a safe path, press "OK". Otherwise press "Cancel". </td>   
+                      </tr> -->
+                      <tr> 
+                          <td align="left">Selected Robot:</td>
+                          <td>
+                              <div align="left" id="print_div_robotcamera_calibration_selected_robot"></div>
+                          </td>
+                      </tr>
+                      <tr> 
+                          <td align="left">Selected Camera: </td>
+                          <td> 
+                              <div align="left" id="print_div_robotcamera_calibration_selected_camera"></div>
+                          </td>
+                      </tr>
+                      
+                      <tr>
+                        <td align="left">
+                            <label for="dropdown_aruco_marker_dictionary">Please select the used ArUco Marker Dictionary:</label>
+                        </td>
+                        <td align="left">
+                            <form >
+                                <select name="dropdown_aruco_marker_dictionary" id="dropdown_aruco_marker_dictionary" style="width: 100%;">
+                                    <option value="cv2.aruco.DICT_4X4_50">DICT_4X4_50</option>
+                                    <option value="cv2.aruco.DICT_4X4_100">DICT_4X4_100</option>
+                                    <option value="cv2.aruco.DICT_4X4_250">DICT_4X4_250</option>
+                                    <option value="cv2.aruco.DICT_4X4_1000">DICT_4X4_1000</option>
+                                    <option value="cv2.aruco.DICT_5X5_50">DICT_5X5_50</option>
+                                    <option value="cv2.aruco.DICT_5X5_100">DICT_5X5_100</option>
+                                    <option value="cv2.aruco.DICT_5X5_250">DICT_5X5_250</option>
+                                    <option value="cv2.aruco.DICT_5X5_1000">DICT_5X5_1000</option>
+                                    <option value="cv2.aruco.DICT_6X6_50">DICT_6X6_50</option>
+                                    <option value="cv2.aruco.DICT_6X6_100">DICT_6X6_100</option>
+                                    <option value="cv2.aruco.DICT_6X6_250">DICT_6X6_250</option>
+                                    <option value="cv2.aruco.DICT_6X6_1000">DICT_6X6_1000</option>
+                                    <option value="cv2.aruco.DICT_7X7_50">DICT_7X7_50</option>
+                                    <option value="cv2.aruco.DICT_7X7_100">DICT_7X7_100</option>
+                                    <option value="cv2.aruco.DICT_7X7_250">DICT_7X7_250</option>
+                                    <option value="cv2.aruco.DICT_7X7_1000">DICT_7X7_1000</option>
+                                    <option value="cv2.aruco.DICT_ARUCO_ORIGINAL" selected>DICT_ARUCO_ORIGINAL</option>
+                                    <option value="cv2.aruco.DICT_APRILTAG_16h5">DICT_APRILTAG_16h5</option>
+                                    <option value="cv2.aruco.DICT_APRILTAG_25h9">DICT_APRILTAG_25h9</option>
+                                    <option value="cv2.aruco.DICT_APRILTAG_36h10">DICT_APRILTAG_36h10</option>
+                                    <option value="cv2.aruco.DICT_APRILTAG_36h11">DICT_APRILTAG_36h11</option>
+                                </select>
+                            </form>
+                        </td> 
+                      </tr>
+
+                      <tr> 
+                          <td align="left">Please enter the ID of the attached ArUco marker: </td>   
+                          <td>
+                              <input type="number" id="arucomarker_id_input" placeholder="ID" value="7" min="1" style="font-size: 25px;">
+                          </td>       
+                      </tr>
+                      <tr> 
+                          <td align="left">Please enter one side length of the ArUco marker (in millimeters): </td>   
+                          <td> 
+                            <input type="number" id="arucomarker_size_input" placeholder="one side length of the marker (mm)" value="50.0" min="0" step="1" style="font-size: 25px;"> 
+                          </td>     
+                      </tr>
+                      
+                      <tr> 
+                          <td align="left">Please enter position vector from End Effector to center of the ArUco marker (in meters): </td>   
+                          <td>
+                            <label for="eef_to_aruco_Tx">T<sub>X</sub>:</label> 
+                            <input type="number" id="eef_to_aruco_Tx_input" placeholder="(m)" value="0.0" step="0.01" style="font-size: 25px;">
+                            <label for="eef_to_aruco_Ty">T<sub>Y</sub>:</label>
+                            <input type="number" id="eef_to_aruco_Ty_input" placeholder="(m)" value="0.0" step="0.01" style="font-size: 25px;">
+                            <label for="eef_to_aruco_Tz">T<sub>Z</sub>:</label>
+                            <input type="number" id="eef_to_aruco_Tz_input" placeholder="(m)" value="0.05" step="0.01" style="font-size: 25px;"> 
+                          </td>     
+                      </tr>
+
+                      <tr> 
+                          <td align="left">Please enter RPY Euler angles from End Effector frame to the ArUco marker frame (in degrees): </td>   
+                          <td>
+                            <label for="eef_to_aruco_Rx">&theta;<sub>X</sub>:</label> 
+                            <input type="number" id="eef_to_aruco_Rx_input" placeholder="(deg)" value="0.0" step="1.0" style="font-size: 25px;">
+                            <label for="eef_to_aruco_Rz">&theta;<sub>Y</sub>:</label>
+                            <input type="number" id="eef_to_aruco_Ry_input" placeholder="(deg)" value="0.0" step="1.0" style="font-size: 25px;">
+                            <label for="eef_to_aruco_Rz">&theta;<sub>Z</sub>:</label>
+                            <input type="number" id="eef_to_aruco_Rz_input" placeholder="(deg)" value="-90.0" step="1.0" style="font-size: 25px;"> 
+                          </td>     
+                      </tr>
+
+                      <tr> 
+                          <td colspan = "2" align="left">Now capture ArUco marker images from different positions and orientations </td>        
+                      </tr>
+                      <tr> 
+                          <td rowspan = "4" align="left" id="table_cell_for_saved_poses"></td>   
+                          <td>
+                            <button id="jog_sel_pose_btn" type="button" style="width: 100%;">GO to Selected Pose</button>
+                          </td>      
+                      </tr>
+                      <tr>
+                          <td style="white-space: nowrap;">  
+                            <button id="jog_prev_pose_btn" type="button" style="width: 49%;">&larr;</button> 
+                            <button id="jog_next_pose_btn" type="button" style="width: 49%;">&rarr;</button>        
+                            
+                          </td>
+                      </tr>
+                      <tr>
+                          <td>
+                            <button id="stop_robot_btn" type="button" style="width: 100%;">STOP ROBOT</button>   
+                          </td>
+                      </tr>
+                      <tr>
+                          <td>
+                            <button id="capture_img_robotcamera_calibration_btn" type="button" style="width: 100%;">Capture Image</button>
+                          </td>
+                      </tr>
+                      <tr> 
+                          <td>
+                              <img id="calibration_robotcamera_image"></img>
+                          </td>   
+                          <td >
+                            <div align="center" id="print_div_num_captured_robotcamera_calibration_imgs"></div> 
+                          </td>  
+                      </tr>
+                  </table>
+                </div>
+
+                <div class="modal-footer">
+                  <!-- <h2>Modal Footer</h2> -->
+                  <button type="button" id="btn_close_robotcamera_calibration">Cancel</button>
+                  <button type="button" id="btn_robotcamera_calibrate_n_save">Calibrate & Save</button>
+                </div>
+
+              </div>
+
+            </div>
+        </template>
+
+        <!-- Camera Tracking Area Template -->
+        <template id="template_CameraTracking"> 
+            <table id="table_CameraTracking" border="1"  > <!-- CELLPADDING="4" CELLSPACING="3"> -->
+                <tr> 
+                    <td > <button id="test_detection_btn" type="button" style="width: 100%;">Test Detection</button> </td>         
+                </tr>
+                <tr> 
+                    <td>Selected Camera: 
+                        <div align="left" id="print_div_test_selected_camera"></div>
+                    </td>
+                </tr>
+                <tr> 
+                    <td>Selected Visual: 
+                        <div align="left" id="print_div_test_selected_visual"></div>
+                    </td>
+                </tr>
+                <tr> 
+                    <td>
+                        <!-- <canvas id="camera_image" width="320" height="240"></canvas> -->
+                        <img id="test_detection_result_image">
+                    </td>          
+                </tr>
+                <!-- <tr> 
+                    <td>Selected Camera Image Size: 
+                        <div align="left" id="print_div_test_selected_camera_img_size"></div>
+                    </td>
+                </tr>
+                <tr> 
+                    <td>Selected Visual Image Size: 
+                        <div align="left" id="print_div_test_selected_visual_img_size"></div>
+                    </td>
+                </tr> -->
+                <tr> 
+                    <td>Detected Object Size(width,height): 
+                        <div align="left" id="print_div_test_detected_obj_size"></div>
+                    </td>
+                </tr>
+                <tr> 
+                    <td>Detected Object Center Coordinates in Camera Image Frame (x,y): 
+                        <div align="left" id="print_div_test_detected_obj_coordinates"></div>
+                    </td>
+                </tr>
+                <tr> 
+                    <td>Detected Object Rotation Angle (+: CCW, -: CW): 
+                        <div align="left" id="print_div_test_detected_obj_angle"></div>
+                    </td>
                 </tr>
             </table>
         </template>
@@ -429,10 +794,42 @@
 
                 <tr style="height: 10%;"> 
                     <td>
-                        <button id="executeBlockly_btn" type="button">Execute Blockly Code</button>
+                        <button id="execute_blockly_btn" type="button">Execute Blockly Code</button>
                     </td>
                 </tr>
             </table>
+        </template>
+
+        <!-- Blockly File Browser -->
+        <template id="template_BlocklyBrowser">
+            <table id="table_BlocklyBrowser" border="1" > 
+                <Tr>
+                    <TH align="center" COLSPAN="3"> <H3>Blockly Browser</H3> </TH>
+                </Tr>
+                <Tr>
+                    <TH align="center" COLSPAN="3"> <H4>Saved Blocks</H4> </TH>
+                </Tr>
+                     
+                <tr>
+                    <td COLSPAN="3"> 
+                          <select id="saved_blocks_list" name="saved_blocks_list" size="5" multiple style="height:100%; width:100%; font-size: 16px;">
+                            <!-- <option value="0,0,0,0,0,0,0">0,0,0,0,0,0,0</option> -->
+                          </select>
+                    </td>    
+                </tr>
+                
+                <tr>
+                    <td> <button id="save_blocks_btn" type="button" style="width: 100%;">SAVE</button> </td>
+                    <td> <button id="save_as_blocks_btn" type="button" style="width: 100%;">SAVE AS</button> </td>
+                    <td> <button id="edit_blocks_name_btn" type="button" style="width: 100%;">EDIT NAME</button> </td>
+                </tr>
+                <tr>
+                    <td> <button id="load_blocks_btn" type="button" style="width: 100%;">LOAD</button> </td>
+                    <td> <button id="clear_blocks_btn" type="button" style="width: 100%;">CLEAR</button> </td>
+                    <td> <button id="delete_blocks_btn" type="button" style="width: 100%;">DELETE</button> </td>
+                </tr>
+            </table>
+            
         </template>
 
         <!-- Blockly Interface Template -->
@@ -556,7 +953,7 @@
                                 <block type="text"></block>
                                 <block type="text_length"></block>
                                 <block type="text_print"></block>
-                                <block type="print_div"></block>
+                                <!-- <block type="print_div"></block> -->
                             </category>
                             <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
                             <sep></sep>
@@ -571,11 +968,498 @@
                             <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
                             <category name="Robot" colour="0">
                                 <category name="JointSpaceJog">
-                                    <block type="robot_jog_joint_not_relative"></block>
-                                    <block type="robot_jog_joint_relative"></block>
-                                    
+                                    <block type="robot_jog_joint_not_relative">
+                                        <value name="DEGREE">
+                                            <block type="math_number">
+                                                <field name="NUM">0</field>
+                                            </block>
+                                        </value>
+                                    </block>
+                                    <block type="robot_jog_joint_relative">
+                                        <value name="DEGREE">
+                                            <block type="math_number">
+                                                <field name="NUM">5</field>
+                                            </block>
+                                        </value>
+                                    </block>
+                                    <block type="robot_jog_joints_not_relative">
+                                        <value name="DEGREE_1">
+                                            <block type="math_number">
+                                                <field name="NUM">0</field>
+                                            </block>
+                                        </value>
+                                        <value name="DEGREE_2">
+                                            <block type="math_number">
+                                                <field name="NUM">0</field>
+                                            </block>
+                                        </value>
+                                        <value name="DEGREE_3">
+                                            <block type="math_number">
+                                                <field name="NUM">0</field>
+                                            </block>
+                                        </value>
+                                        <value name="DEGREE_4">
+                                            <block type="math_number">
+                                                <field name="NUM">0</field>
+                                            </block>
+                                        </value>
+                                        <value name="DEGREE_5">
+                                            <block type="math_number">
+                                                <field name="NUM">0</field>
+                                            </block>
+                                        </value>
+                                        <value name="DEGREE_6">
+                                            <block type="math_number">
+                                                <field name="NUM">0</field>
+                                            </block>
+                                        </value>
+                                        <value name="DEGREE_7">
+                                            <block type="math_number">
+                                                <field name="NUM">0</field>
+                                            </block>
+                                        </value>
+                                    </block>
+                                    <block type="robot_jog_joints_relative">
+                                        <value name="DEGREE_1">
+                                            <block type="math_number">
+                                                <field name="NUM">10</field>
+                                            </block>
+                                        </value>
+                                        <value name="DEGREE_2">
+                                            <block type="math_number">
+                                                <field name="NUM">0</field>
+                                            </block>
+                                        </value>
+                                        <value name="DEGREE_3">
+                                            <block type="math_number">
+                                                <field name="NUM">0</field>
+                                            </block>
+                                        </value>
+                                        <value name="DEGREE_4">
+                                            <block type="math_number">
+                                                <field name="NUM">0</field>
+                                            </block>
+                                        </value>
+                                        <value name="DEGREE_5">
+                                            <block type="math_number">
+                                                <field name="NUM">0</field>
+                                            </block>
+                                        </value>
+                                        <value name="DEGREE_6">
+                                            <block type="math_number">
+                                                <field name="NUM">0</field>
+                                            </block>
+                                        </value>
+                                        <value name="DEGREE_7">
+                                            <block type="math_number">
+                                                <field name="NUM">0</field>
+                                            </block>
+                                        </value>
+                                    </block>
                                 </category>
+                                <category name="CartesianSpaceJog">
+                                    <block type="robot_jog_cartesian_not_relative">
+                                        <value name="POSITION">
+                                            <block type="utils_position">
+                                                <value name="X">
+                                                    <block type="math_number">
+                                                        <field name="NUM">0</field>
+                                                    </block>
+                                                </value>
+                                                <value name="Y">
+                                                    <block type="math_number">
+                                                        <field name="NUM">0</field>
+                                                    </block>
+                                                </value>
+                                                <value name="Z">
+                                                    <block type="math_number">
+                                                        <field name="NUM">0</field>
+                                                    </block>
+                                                </value>
+                                            </block>
+                                        </value>
+                                        <value name="ORIENTATION">
+                                            <block type="utils_orientation">
+                                                <value name="TX">
+                                                    <block type="math_number">
+                                                        <field name="NUM">0</field>
+                                                    </block>
+                                                </value>
+                                                <value name="TY">
+                                                    <block type="math_number">
+                                                        <field name="NUM">0</field>
+                                                    </block>
+                                                </value>
+                                                <value name="TZ">
+                                                    <block type="math_number">
+                                                        <field name="NUM">0</field>
+                                                    </block>
+                                                </value>
+                                            </block>
+                                        </value>
+                                    </block>
+                                    <block type="robot_jog_cartesian_relative">
+                                        <value name="POSITION">
+                                            <block type="utils_position">
+                                                <value name="X">
+                                                    <block type="math_number">
+                                                        <field name="NUM">0</field>
+                                                    </block>
+                                                </value>
+                                                <value name="Y">
+                                                    <block type="math_number">
+                                                        <field name="NUM">0</field>
+                                                    </block>
+                                                </value>
+                                                <value name="Z">
+                                                    <block type="math_number">
+                                                        <field name="NUM">0</field>
+                                                    </block>
+                                                </value>
+                                            </block>
+                                        </value>
+                                        <value name="ORIENTATION">
+                                            <block type="utils_orientation">
+                                                <value name="TX">
+                                                    <block type="math_number">
+                                                        <field name="NUM">0</field>
+                                                    </block>
+                                                </value>
+                                                <value name="TY">
+                                                    <block type="math_number">
+                                                        <field name="NUM">0</field>
+                                                    </block>
+                                                </value>
+                                                <value name="TZ">
+                                                    <block type="math_number">
+                                                        <field name="NUM">0</field>
+                                                    </block>
+                                                </value>
+                                            </block>
+                                        </value>
+                                    </block>
+                                </category>
+                                <block type="robot_wait"></block>
                             </category>
+                            <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+                            <sep></sep>
+                            <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+                            <category name="Camera" colour="180">
+                                <block type="camera_get_object_pose_z_required">
+                                    <value name="Z_DISTANCE">
+                                        <block type="math_number">
+                                            <field name="NUM">1.0</field>
+                                        </block>
+                                    </value>
+                                </block>
+                                <block type="camera_get_object_pose_z_not_required">
+                                    
+                                </block>
+                                <block type="camera_transform_pose_to_robot">
+                                    
+                                </block>
+                            </category>   
+                            <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+                            <sep></sep>
+                            <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+                            <category name="Utilities" colour="200">
+                                <block type="utils_position">
+                                    <value name="X">
+                                        <block type="math_number">
+                                            <field name="NUM">0</field>
+                                        </block>
+                                    </value>
+                                    <value name="Y">
+                                        <block type="math_number">
+                                            <field name="NUM">0</field>
+                                        </block>
+                                    </value>
+                                    <value name="Z">
+                                        <block type="math_number">
+                                            <field name="NUM">0</field>
+                                        </block>
+                                    </value>
+                                </block>
+                                <block type="utils_orientation">
+                                    <value name="TX">
+                                        <block type="math_number">
+                                            <field name="NUM">0</field>
+                                        </block>
+                                    </value>
+                                    <value name="TY">
+                                        <block type="math_number">
+                                            <field name="NUM">0</field>
+                                        </block>
+                                    </value>
+                                    <value name="TZ">
+                                        <block type="math_number">
+                                            <field name="NUM">0</field>
+                                        </block>
+                                    </value>
+                                </block>
+                                <block type="utils_pose_from_position_n_orientation">
+                                    <value name="POSITION">
+                                        <block type="utils_position">
+                                            <value name="X">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                            <value name="Y">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                            <value name="Z">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                        </block>
+                                    </value>
+                                    <value name="ORIENTATION">
+                                        <block type="utils_orientation">
+                                            <value name="TX">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                            <value name="TY">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                            <value name="TZ">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                        </block>
+                                    </value>
+                                </block>
+                                <block type="utils_position_in_pose">
+                                    
+                                </block>
+                                <block type="utils_orientation_in_pose">
+                                    
+                                </block>
+                                <block type="utils_sum_vectors">
+                                    <value name="position_1">
+                                        <block type="utils_position">
+                                            <value name="X">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                            <value name="Y">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                            <value name="Z">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                        </block>
+                                    </value>
+                                    <value name="position_2">
+                                        <block type="utils_position">
+                                            <value name="X">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                            <value name="Y">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                            <value name="Z">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                        </block>
+                                    </value>
+                                </block>
+                                <block type="utils_subtract_vectors">
+                                    <value name="position_1">
+                                        <block type="utils_position">
+                                            <value name="X">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                            <value name="Y">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                            <value name="Z">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                        </block>
+                                    </value>
+                                    <value name="position_2">
+                                        <block type="utils_position">
+                                            <value name="X">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                            <value name="Y">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                            <value name="Z">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                        </block>
+                                    </value>
+                                </block>
+
+                                <block type="utils_rotate_frame">
+                                    <value name="orientation_1">
+                                        <block type="utils_orientation">
+                                            <value name="TX">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                            <value name="TY">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                            <value name="TZ">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                        </block>
+                                    </value>
+                                    <value name="orientation_2">
+                                        <block type="utils_orientation">
+                                            <value name="TX">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                            <value name="TY">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                            <value name="TZ">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                        </block>
+                                    </value>
+                                </block>
+
+                                <block type="utils_rotate_vector">
+                                    <value name="orientation">
+                                        <block type="utils_orientation">
+                                            <value name="TX">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                            <value name="TY">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                            <value name="TZ">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                        </block>
+                                    </value>
+                                    <value name="position">
+                                        <block type="utils_position">
+                                            <value name="X">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                            <value name="Y">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                            <value name="Z">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                        </block>
+                                    </value>
+                                </block>
+
+                                <block type="utils_inverse_frame">
+                                    <value name="orientation">
+                                        <block type="utils_orientation">
+                                            <value name="TX">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                            <value name="TY">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                            <value name="TZ">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                        </block>
+                                    </value>
+                                </block>
+
+                                <block type="utils_minus_vector">
+                                    <value name="position">
+                                        <block type="utils_position">
+                                            <value name="X">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                            <value name="Y">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                            <value name="Z">
+                                                <block type="math_number">
+                                                    <field name="NUM">0</field>
+                                                </block>
+                                            </value>
+                                        </block>
+                                    </value>
+                                </block>
+
+                            </category>
+                            <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+                            <sep></sep>
+                            <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+                            <category name="Tools" colour="60">
+                                <block type="tool_gripper">
+                                </block>
+                                <block type="tool_link_attacher">
+                                </block>
+                            </category> 
                         </xml>
                     </td>          
                 </tr>

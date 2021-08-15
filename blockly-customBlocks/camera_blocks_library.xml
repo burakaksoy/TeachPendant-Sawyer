@@ -1,0 +1,267 @@
+<xml xmlns="https://developers.google.com/blockly/xml"><block type="factory_base" id="+#azP*xOb!1I07Antw5C" deletable="false" movable="false" x="10" y="10">
+    <mutation connections="LEFT"></mutation>
+    <field name="NAME">camera_get_object_pose_z_required</field>
+    <field name="INLINE">INT</field>
+    <field name="CONNECTIONS">LEFT</field>
+    <statement name="INPUTS">
+      <block type="input_dummy" id="#BxKG_b#^l)ggb;#~L6S">
+        <field name="ALIGN">RIGHT</field>
+        <statement name="FIELDS">
+          <block type="field_static" id="WIdUVi{R0]:p1[P;w:1q">
+            <field name="TEXT">Get Pose of</field>
+            <next>
+              <block type="field_static" id="1bhqR3aOuM;CJ$fQG]#(">
+                <field name="TEXT">object:</field>
+                <next>
+                  <block type="field_dropdown" id="]@vPVHAH8E6xuuL4:$1~">
+                    <mutation options="[&quot;image&quot;,&quot;image&quot;,&quot;image&quot;]"></mutation>
+                    <field name="FIELDNAME">TRAINED_OBJECTS</field>
+                    <field name="SRC0">https://www.gstatic.com/codesite/ph/images/star_on.gif</field>
+                    <field name="WIDTH0">30</field>
+                    <field name="HEIGHT0">30</field>
+                    <field name="ALT0">*</field>
+                    <field name="CPU0">OBJECT1</field>
+                    <field name="SRC1">https://www.gstatic.com/codesite/ph/images/star_on.gif</field>
+                    <field name="WIDTH1">30</field>
+                    <field name="HEIGHT1">30</field>
+                    <field name="ALT1">*</field>
+                    <field name="CPU1">OBJECT2</field>
+                    <field name="SRC2">https://www.gstatic.com/codesite/ph/images/star_on.gif</field>
+                    <field name="WIDTH2">30</field>
+                    <field name="HEIGHT2">30</field>
+                    <field name="ALT2">*</field>
+                    <field name="CPU2">OBJECT3</field>
+                  </block>
+                </next>
+              </block>
+            </next>
+          </block>
+        </statement>
+        <next>
+          <block type="input_dummy" id="|+%vhqrfXsOGUB|nTQ9@">
+            <field name="ALIGN">RIGHT</field>
+            <statement name="FIELDS">
+              <block type="field_static" id="/~S=T6sB*!(]V?8ERE6$">
+                <field name="TEXT">wrt. cam:</field>
+                <next>
+                  <block type="field_dropdown" id="@_IH1/_0mm0qLraUbLk}">
+                    <mutation options="[&quot;text&quot;,&quot;text&quot;,&quot;text&quot;]"></mutation>
+                    <field name="FIELDNAME">CAMS</field>
+                    <field name="USER0">cam1</field>
+                    <field name="CPU0">CAM1</field>
+                    <field name="USER1">cam2</field>
+                    <field name="CPU1">CAM2</field>
+                    <field name="USER2">cam3</field>
+                    <field name="CPU2">CAM3</field>
+                  </block>
+                </next>
+              </block>
+            </statement>
+            <next>
+              <block type="input_value" id="-$=w8~!@@BD.3]Wz!)Is">
+                <field name="INPUTNAME">Z_DISTANCE</field>
+                <field name="ALIGN">RIGHT</field>
+                <statement name="FIELDS">
+                  <block type="field_static" id="%Nu]x#O}ifff@~/xf`Za">
+                    <field name="TEXT">with z =</field>
+                  </block>
+                </statement>
+                <value name="TYPE">
+                  <shadow type="type_null" id="WpZRUfZo;y`v.vq.)(lH"></shadow>
+                  <block type="type_number" id="2akxaY:LpfbFb8NSvW7d"></block>
+                </value>
+                <next>
+                  <block type="input_dummy" id="HUDRxlrU{=$-|pjq$d*6">
+                    <field name="ALIGN">RIGHT</field>
+                    <statement name="FIELDS">
+                      <block type="field_static" id="SNnVDqxB8VIfoEyVvrz-">
+                        <field name="TEXT">(m)</field>
+                      </block>
+                    </statement>
+                  </block>
+                </next>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </statement>
+    <value name="TOOLTIP">
+      <block type="text" id="SSId*E:o7H@M{VPJP9F9" deletable="false" movable="false">
+        <field name="TEXT">Use this block to get the pose of a trained object with respect to a camera. You need to specify the z direction distance away from the camera to get correct position values</field>
+      </block>
+    </value>
+    <value name="HELPURL">
+      <block type="text" id="n[9naN9@FI(:,o04`WG!" deletable="false" movable="false">
+        <field name="TEXT"></field>
+      </block>
+    </value>
+    <value name="OUTPUTTYPE">
+      <shadow type="type_null" id="uP?.D^-BK)=:Zntwzz:G"></shadow>
+      <block type="type_other" id="Ir[lUe(K2a@-T})gcwVG">
+        <field name="TYPE">pose</field>
+      </block>
+    </value>
+    <value name="COLOUR">
+      <block type="colour_hue" id="v|4r|?C-%jvU5A@.A)ua">
+        <mutation colour="#5ba5a5"></mutation>
+        <field name="HUE">180</field>
+      </block>
+    </value>
+  </block><block type="factory_base" id="~2=j.)oejC-AbvLLh7pq" deletable="false" movable="false" x="10" y="10">
+    <mutation connections="LEFT"></mutation>
+    <field name="NAME">camera_get_object_pose_z_not_required</field>
+    <field name="INLINE">INT</field>
+    <field name="CONNECTIONS">LEFT</field>
+    <statement name="INPUTS">
+      <block type="input_dummy" id=";Xi12-`LhoI]O7pyE7{B">
+        <field name="ALIGN">RIGHT</field>
+        <statement name="FIELDS">
+          <block type="field_static" id="i7g)|B%F|0fIf^8CTxqb">
+            <field name="TEXT">Get Pose of</field>
+            <next>
+              <block type="field_static" id=",/d!W$iiMm0k^n3jx7Ar">
+                <field name="TEXT">object:</field>
+                <next>
+                  <block type="field_dropdown" id="#koL7P^XoNwFI3=Y%IzS">
+                    <mutation options="[&quot;image&quot;,&quot;image&quot;,&quot;image&quot;]"></mutation>
+                    <field name="FIELDNAME">TRAINED_OBJECTS</field>
+                    <field name="SRC0">https://www.gstatic.com/codesite/ph/images/star_on.gif</field>
+                    <field name="WIDTH0">30</field>
+                    <field name="HEIGHT0">30</field>
+                    <field name="ALT0">*</field>
+                    <field name="CPU0">OBJECT1</field>
+                    <field name="SRC1">https://www.gstatic.com/codesite/ph/images/star_on.gif</field>
+                    <field name="WIDTH1">30</field>
+                    <field name="HEIGHT1">30</field>
+                    <field name="ALT1">*</field>
+                    <field name="CPU1">OBJECT2</field>
+                    <field name="SRC2">https://www.gstatic.com/codesite/ph/images/star_on.gif</field>
+                    <field name="WIDTH2">30</field>
+                    <field name="HEIGHT2">30</field>
+                    <field name="ALT2">*</field>
+                    <field name="CPU2">OBJECT3</field>
+                  </block>
+                </next>
+              </block>
+            </next>
+          </block>
+        </statement>
+        <next>
+          <block type="input_dummy" id="f[P@@r35HOk^ZgmJq,n%">
+            <field name="ALIGN">RIGHT</field>
+            <statement name="FIELDS">
+              <block type="field_static" id="55WL7Y#1y]Wi=+tzyqKj">
+                <field name="TEXT">wrt. 3D capable cam:</field>
+                <next>
+                  <block type="field_dropdown" id="$%sg=]D(t5Ek;:P0$^3d">
+                    <mutation options="[&quot;text&quot;,&quot;text&quot;,&quot;text&quot;]"></mutation>
+                    <field name="FIELDNAME">CAMS</field>
+                    <field name="USER0">cam1</field>
+                    <field name="CPU0">CAM1</field>
+                    <field name="USER1">cam2</field>
+                    <field name="CPU1">CAM2</field>
+                    <field name="USER2">cam3</field>
+                    <field name="CPU2">CAM3</field>
+                  </block>
+                </next>
+              </block>
+            </statement>
+          </block>
+        </next>
+      </block>
+    </statement>
+    <value name="TOOLTIP">
+      <block type="text" id="9k=h}GdWMxE[vS(t*#c1" deletable="false" movable="false">
+        <field name="TEXT">Use this block to get the pose of a trained object with respect to a 3D capable camera (eg Kinect, Intel Realsense). Hence, you DON'T need to specify the z direction distance away from the camera to get correct position values. However, be careful to choose a camera with 3D capability</field>
+      </block>
+    </value>
+    <value name="HELPURL">
+      <block type="text" id="ZhgcB.M^1U=+xksE4ZqG" deletable="false" movable="false">
+        <field name="TEXT"></field>
+      </block>
+    </value>
+    <value name="OUTPUTTYPE">
+      <shadow type="type_null" id="Fw^B)2dd@]|XrhFh%B!z"></shadow>
+      <block type="type_other" id="KkS6/}S(mohRt7[_}E|^">
+        <field name="TYPE">pose</field>
+      </block>
+    </value>
+    <value name="COLOUR">
+      <block type="colour_hue" id="VhLn(eCOE3{~Lflk4pX~">
+        <mutation colour="#5ba5a5"></mutation>
+        <field name="HUE">180</field>
+      </block>
+    </value>
+  </block><block type="factory_base" id="x=Y3.C@kb{}d5aeEiqp-" deletable="false" movable="false" x="10" y="10">
+    <mutation connections="LEFT"></mutation>
+    <field name="NAME">camera_transform_pose_to_robot</field>
+    <field name="INLINE">INT</field>
+    <field name="CONNECTIONS">LEFT</field>
+    <statement name="INPUTS">
+      <block type="input_value" id="nK_wt[5P@1HQ_)%jV^-%">
+        <field name="INPUTNAME">POSE_IN_CAM</field>
+        <field name="ALIGN">RIGHT</field>
+        <statement name="FIELDS">
+          <block type="field_static" id="W#wA7aDU_hvFvvmon_v*">
+            <field name="TEXT">Transform pose</field>
+          </block>
+        </statement>
+        <value name="TYPE">
+          <shadow type="type_null" id="{y}tSns9RkRoE~Z,+${_"></shadow>
+          <block type="type_other" id="-wCGfubFeSC3T~tZuH:L">
+            <field name="TYPE">pose</field>
+          </block>
+        </value>
+        <next>
+          <block type="input_dummy" id="@@X7yV=7v12YAX0ZLB;-">
+            <field name="ALIGN">RIGHT</field>
+            <statement name="FIELDS">
+              <block type="field_static" id="ESPUUizMnqvT,hdKN-H`">
+                <field name="TEXT">in cam</field>
+                <next>
+                  <block type="field_dropdown" id="J*$9ioxX7BMgr*7.o{4!">
+                    <mutation options="[&quot;text&quot;,&quot;text&quot;,&quot;text&quot;]"></mutation>
+                    <field name="FIELDNAME">CAMS</field>
+                    <field name="USER0">cam1</field>
+                    <field name="CPU0">CAM1</field>
+                    <field name="USER1">cam2</field>
+                    <field name="CPU1">CAM2</field>
+                    <field name="USER2">cam3</field>
+                    <field name="CPU2">CAM3</field>
+                    <next>
+                      <block type="field_static" id="vLtp_:hE5o%lx@ca;mW8">
+                        <field name="TEXT">frame wrt. robot frame</field>
+                      </block>
+                    </next>
+                  </block>
+                </next>
+              </block>
+            </statement>
+          </block>
+        </next>
+      </block>
+    </statement>
+    <value name="TOOLTIP">
+      <block type="text" id="4Y|xJ)gxw+cjaK`Pn[UK" deletable="false" movable="false">
+        <field name="TEXT">Transforms the given pose in a camera frame into the robot's frame</field>
+      </block>
+    </value>
+    <value name="HELPURL">
+      <block type="text" id="u+[qh3S73o:xg49._z49" deletable="false" movable="false">
+        <field name="TEXT"></field>
+      </block>
+    </value>
+    <value name="OUTPUTTYPE">
+      <shadow type="type_null" id="X}_W$4!(VNS,WMs@z3i!"></shadow>
+      <block type="type_other" id="}fX/bDoGywPvQ0;x6Jue">
+        <field name="TYPE">pose</field>
+      </block>
+    </value>
+    <value name="COLOUR">
+      <block type="colour_hue" id="T(0ItoCB%*f|L#,3=YYJ">
+        <mutation colour="#5ba5a5"></mutation>
+        <field name="HUE">180</field>
+      </block>
+    </value>
+  </block></xml>

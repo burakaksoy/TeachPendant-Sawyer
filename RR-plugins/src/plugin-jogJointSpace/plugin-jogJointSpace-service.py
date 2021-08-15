@@ -33,13 +33,12 @@ class JogJointSpace_impl(object):
     def jog_joints2(self, q_i, sign):
         print("Jog Joints2 is called")
         if self.robot is not None:
-            if self.is_enabled_velocity_mode == False:
+            if self.robot.command_mode != self.position_mode:
                 # Put the robot to POSITION mode
                 self.robot.command_mode = self.halt_mode
                 # time.sleep(0.1)
                 self.robot.command_mode = self.position_mode
                 # time.sleep(0.1)
-
             if self.is_enabled_velocity_mode == False:
                 #enable velocity mode
                 self.vel_ctrl.enable_velocity_mode()
@@ -66,13 +65,12 @@ class JogJointSpace_impl(object):
     def stop_joints(self):
         print("stop_joints is called")
         if self.robot is not None:
-            if self.is_enabled_velocity_mode == False:
+            if self.robot.command_mode != self.position_mode:
                 # Put the robot to POSITION mode
                 self.robot.command_mode = self.halt_mode
                 # time.sleep(0.1)
                 self.robot.command_mode = self.position_mode
                 # time.sleep(0.1)
-
             if self.is_enabled_velocity_mode == False:
                 #enable velocity mode
                 self.vel_ctrl.enable_velocity_mode()
@@ -88,17 +86,66 @@ class JogJointSpace_impl(object):
             # Give an error message to show that the robot is not connected
             print("Robot is not connected to JogJointSpace service yet!")
 
+    def stop_joints2(self):
+        print("stop_joints2 is called")
+        if self.robot is not None:
+            if self.robot.command_mode != self.jog_mode:
+                # Put the robot to JOG mode
+                self.robot.command_mode = self.halt_mode
+                # time.sleep(0.1)
+                self.robot.command_mode = self.jog_mode
+                # time.sleep(0.1)
 
+            # stop the robot
+            self.robot.jog_joint(np.zeros((self.num_joints,)), 50*self.dt, True)
+
+        else:
+            # Give an error message to show that the robot is not connected
+            print("Robot is not connected to JogJointSpace service yet!")
+
+
+    def jog_joints3(self, q_i, sign):
+        print("Jog Joints3 is called")
+        if self.robot is not None:
+            try:
+                if self.robot.command_mode != self.jog_mode:
+                    # Put the robot to jogging mode
+                    self.robot.command_mode = self.halt_mode
+                    print(self.robot.command_mode)
+                    # time.sleep(0.1)
+                    self.robot.command_mode = self.jog_mode
+                    # time.sleep(0.1)
+                    print(self.robot.command_mode)
+
+                # Jog the robot
+                # # get the current joint angles
+                cur_q = self.get_current_joint_positions()
+
+                if (self.num_joints < q_i):
+                    print("Currently Controlled Robot only have " + str(self.num_joints) + " joints..")
+                else:
+                    joint_vel = np.zeros((self.num_joints,))
+                    joint_vel[q_i-1] = sign*self.joint_vel_limits[q_i-1]/10.0
+
+                    self.jog_joints_with_limits2(cur_q, joint_vel,25*self.dt, False)
+            except:
+                # print("Specified joints might be out of range222")
+                import traceback
+                print(traceback.format_exc())
+        else:
+            # Give an error message to show that the robot is not connected
+            print("Robot is not connected to JogJointSpace service yet!")
 
 
     def jog_joints(self, q_i, sign):
         print("Jog Joints is called")
         if self.robot is not None:
-            # Put the robot to jogging mode
-            self.robot.command_mode = self.halt_mode
-            # time.sleep(0.1)
-            self.robot.command_mode = self.jog_mode
-            # time.sleep(0.1)
+            if self.robot.command_mode != self.jog_mode:
+                # Put the robot to jogging mode
+                self.robot.command_mode = self.halt_mode
+                # time.sleep(0.1)
+                self.robot.command_mode = self.jog_mode
+                # time.sleep(0.1)
 
             # Jog the robot
             # # get the current joint angles
@@ -122,11 +169,12 @@ class JogJointSpace_impl(object):
             print("Specified joints might be out of range")
         else:
             try:
-                # Put the robot to jogging mode
-                self.robot.command_mode = self.halt_mode
-                # time.sleep(0.1)
-                self.robot.command_mode = self.jog_mode
-                # time.sleep(0.1)
+                if self.robot.command_mode != self.jog_mode:
+                    # Put the robot to jogging mode
+                    self.robot.command_mode = self.halt_mode
+                    # time.sleep(0.1)
+                    self.robot.command_mode = self.jog_mode
+                    # time.sleep(0.1)
 
                 # Trim joint positions according to number of joints
                 joint_position = joint_position[:self.num_joints]
@@ -137,14 +185,36 @@ class JogJointSpace_impl(object):
                 import traceback
                 print(traceback.format_exc())
 
+    def jog_joints_with_limits2(self,joint_position, joint_velocity, timeout, wait=True):
+        if not (joint_position <= self.joint_upper_limits).all() or not (joint_position >= self.joint_lower_limits).all():
+            print("Specified joints might be out of range")
+        else:
+            try:
+                if self.robot.command_mode != self.jog_mode:
+                    # Put the robot to jogging mode
+                    self.robot.command_mode = self.halt_mode
+                    # time.sleep(0.1)
+                    self.robot.command_mode = self.jog_mode
+                    # time.sleep(0.1)
+
+                # Trim joint positions according to number of joints
+                joint_velocity = joint_velocity[:self.num_joints]
+                # self.robot.jog_joint(joint_position, max_velocity, relative, wait)
+                self.robot.jog_joint(joint_velocity, timeout, wait)
+            except:
+                # print("Specified joints might be out of range222")
+                import traceback
+                print(traceback.format_exc())
+
     def jog_joints_gamepad(self,joint_speed_constants):
         print("Jog Joints Gamepad is called")
         if self.robot is not None:
-            # Put the robot to jogging mode
-            self.robot.command_mode = self.halt_mode
-            # time.sleep(0.1)
-            self.robot.command_mode = self.jog_mode
-            # time.sleep(0.1)
+            if self.robot.command_mode != self.jog_mode:
+                # Put the robot to jogging mode
+                self.robot.command_mode = self.halt_mode
+                # time.sleep(0.1)
+                self.robot.command_mode = self.jog_mode
+                # time.sleep(0.1)
             
             # get the current joint angles
             cur_q = self.get_current_joint_positions()
@@ -168,11 +238,12 @@ class JogJointSpace_impl(object):
     def jog_joints_zeros(self):
         print("Jog Joints Zeros is called")
         if self.robot is not None:
-            # Put the robot to jogging mode
-            self.robot.command_mode = self.halt_mode
-            # time.sleep(0.1)
-            self.robot.command_mode = self.jog_mode
-            # time.sleep(0.1)
+            if self.robot.command_mode != self.jog_mode:
+                # Put the robot to jogging mode
+                self.robot.command_mode = self.halt_mode
+                # time.sleep(0.1)
+                self.robot.command_mode = self.jog_mode
+                # time.sleep(0.1)
             
             self.jog_joints_with_limits(np.zeros((self.num_joints,)), self.joint_vel_limits,True)
 
@@ -185,11 +256,13 @@ class JogJointSpace_impl(object):
         # Similar to jog_joints_with_limits. But,
         # Moves the robot to the specified joint angles with max speed
         if self.robot is not None:
-            # Put the robot to jogging mode
-            self.robot.command_mode = self.halt_mode
-            # time.sleep(0.1)
-            self.robot.command_mode = self.jog_mode
-            # time.sleep(0.1)
+            if self.robot.command_mode != self.jog_mode:
+                # Put the robot to jogging mode
+                self.robot.command_mode = self.halt_mode
+                # time.sleep(0.1)
+                self.robot.command_mode = self.jog_mode
+                # time.sleep(0.1)
+
             # print(joint_position[:self.num_joints])
             # print(joint_position)
 
@@ -198,6 +271,70 @@ class JogJointSpace_impl(object):
         else:
             # Give an error message to show that the robot is not connected
             print("Robot is not connected to JogJointSpace service yet!")
+
+    # For blockly
+    def jog_joints_to_angles_relative(self,diff_joint_position, speed_perc):
+        print("Jog Joints to Angles relatively is called")
+        if self.robot is not None:
+            if self.robot.command_mode != self.jog_mode:
+                # Put the robot to jogging mode
+                self.robot.command_mode = self.halt_mode
+                # time.sleep(0.1)
+                self.robot.command_mode = self.jog_mode
+                # time.sleep(0.1)
+
+            # print(joint_position[:self.num_joints])
+            # print(joint_position)
+
+            # # get the current joint angles
+            cur_q = self.get_current_joint_positions()
+            diff_joint_position = diff_joint_position[:self.num_joints]
+
+            self.jog_joints_with_limits((diff_joint_position+cur_q), float(speed_perc)*0.01*self.joint_vel_limits,True)
+
+        else:
+            # Give an error message to show that the robot is not connected
+            print("Robot is not connected to JogJointSpace service yet!")
+
+    def jog_joint_to_angle(self, joint, position, speed_perc):
+        print("Jog Joint to Angle is called")
+        if self.robot is not None:
+            if self.robot.command_mode != self.jog_mode:
+                # Put the robot to jogging mode
+                self.robot.command_mode = self.halt_mode
+                # time.sleep(0.1)
+                self.robot.command_mode = self.jog_mode
+                # time.sleep(0.1)
+
+
+            # # get the current joint angles
+            cur_q = self.get_current_joint_positions()
+            cur_q[joint] = position
+
+            self.jog_joints_with_limits(cur_q, float(speed_perc)*0.01*self.joint_vel_limits,True)
+
+        else:
+            # Give an error message to show that the robot is not connected
+            print("Robot is not connected to JogJointSpace service yet!")
+
+    def jog_joints_to_angles2(self, joint_position, speed_perc):
+        print("Jog Joints to Angles2 (2 = with speed) is called")
+        # Similar to jog_joints_with_limits. But,
+        # Moves the robot to the specified joint angles with max speed percentage
+        if self.robot is not None:
+            if self.robot.command_mode != self.jog_mode:
+                # Put the robot to jogging mode
+                self.robot.command_mode = self.halt_mode
+                # time.sleep(0.1)
+                self.robot.command_mode = self.jog_mode
+                # time.sleep(0.1)
+
+            self.jog_joints_with_limits(joint_position[:self.num_joints], float(speed_perc)*0.01*self.joint_vel_limits,True)
+
+        else:
+            # Give an error message to show that the robot is not connected
+            print("Robot is not connected to JogJointSpace service yet!")
+
 
     def connect2robot(self, url_robot):
         if self.robot is None:
@@ -222,7 +359,7 @@ class JogJointSpace_impl(object):
 
             # ---------------------------
             # self.robot_sub=RRN.SubscribeService(self.url_robot)
-            # self.state_w = self.robot_sub.SubscribeWire("robot_state")
+            # self.state_w = self.robot_sub.SubscribeWire("robot_state")    
             self.is_enabled_velocity_mode = False
             # self.cmd_w = self.robot_sub.SubscribeWire("position_command")
             # self.vel_ctrl = EmulatedVelocityControl(self.robot,self.state_w, self.cmd_w, self.dt)
@@ -277,6 +414,7 @@ class JogJointSpace_impl(object):
         cur_robot_state = self.robot.robot_state.PeekInValue()    
         cur_q = cur_robot_state[0].joint_position
         return cur_q # in radian ndarray
+
 
 def main():
     # RR.ServerNodeSetup("NodeName", TCP listen port, optional set of flags as parameters)

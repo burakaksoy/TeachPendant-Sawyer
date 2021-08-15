@@ -1,0 +1,43 @@
+#Service to provide interface to RR-webBrowser-plugin-cameraRobotCalibration
+service experimental.pluginCameraRobotCalibration
+
+stdver 0.10
+
+struct CalibrationExtrinsicParameters
+    field double[3,3] camera_matrix
+    field double[1,5] distortion_coefficients
+    # Rotation matrix between the camera frame to robot base frame
+    field double[3,3] R_co
+    # Translation between the camera frame to robot base frame represented in camera frame 
+    field double[3] T_co
+    # Rotation matrix between the robot base frame to camera frame
+    field double[3,3] R_oc
+    # Translation between the robot base frame to camera frame represented in robot base frame 
+    field double[3] T_oc
+end
+
+
+object CameraRobotCalibration
+    function void connect2camera(string url_camera)
+
+    # returns the list of str as saved calibration file names
+    function string{list} saved_calibrations()
+
+    # Delete the specified file
+    function void delete_calibration(string filename)
+
+    # Execute Calibration and Save calibration parameters into a new file
+    function void calibrate_n_save(string filename, string aruco_dict, int32 aruco_id, double aruco_markersize, double[3] T, double[3] R_RPY, double[3,3] mtx, double[1,5] dist)
+
+    # Returns the calibration parameters from specified filename
+    function CalibrationExtrinsicParameters load_calibration(string filename)
+
+    # Capture an image into local directories of this plugin
+    function void capture_image_with_robot_pose(double[3,3] R, double[3] T)
+
+    # Returns the number of captured images in the local directories of this plugin
+    function int32 num_of_captured_images()
+
+    # Remove all the captured images in the local directories of this plugin
+    function void remove_captured_images()
+end

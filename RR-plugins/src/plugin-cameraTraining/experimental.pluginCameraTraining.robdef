@@ -3,6 +3,30 @@ service experimental.pluginCameraTraining
 
 stdver 0.10
 
+import com.robotraconteur.image
+
+using com.robotraconteur.image.Image
+# using com.robotraconteur.image.ImagePart
+# using com.robotraconteur.image.CompressedImage
+
 object CameraTraining
+    function void connect2camera(string url_camera)
+    function Image train_new_visual()
+
+    # returns the list of str as saved image file names
+    function string{list} saved_images()
+
+    # Returns the image of the specified file
+    function Image load_image(string filename)
+
+    # Delete the specified file
+    function void delete_image(string filename)
+
+    # Edit the specified file name (string filename, string filename_new)
+    function void edit_image_name(string filename, string file_name_new)
+
+    # Save (cropped) image to a new file
+    function void save_image(string filename, string img_str, int32 width, int32 height)
+    # function void save_image(string filename, Image img)
 
 end

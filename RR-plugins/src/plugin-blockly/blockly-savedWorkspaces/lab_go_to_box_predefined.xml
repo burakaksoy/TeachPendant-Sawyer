@@ -1,0 +1,90 @@
+<xml xmlns="https://developers.google.com/blockly/xml">
+  <block type="robot_jog_joints_not_relative" id="CPELTpkxv~Zin%yX%$Tm" x="41" y="123">
+    <field name="SPEED">100</field>
+    <value name="DEGREE_1">
+      <block type="math_number" id="3UFxRN!|H}X=o9{maQdR">
+        <field name="NUM">13.93</field>
+      </block>
+    </value>
+    <value name="DEGREE_2">
+      <block type="math_number" id="[AYUCq]$ov?i#4?SoRkd">
+        <field name="NUM">-13.57</field>
+      </block>
+    </value>
+    <value name="DEGREE_3">
+      <block type="math_number" id="doRgncOnxlsnzE;Yp-Kz">
+        <field name="NUM">-54.03</field>
+      </block>
+    </value>
+    <value name="DEGREE_4">
+      <block type="math_number" id="fz2YS}b^~P=}b5qLHc6?">
+        <field name="NUM">73.14</field>
+      </block>
+    </value>
+    <value name="DEGREE_5">
+      <block type="math_number" id=":`9/3C[YR8w-wsFz2lF}">
+        <field name="NUM">63.48</field>
+      </block>
+    </value>
+    <value name="DEGREE_6">
+      <block type="math_number" id="P$ERT4v(sw?a5nmOs06R">
+        <field name="NUM">61.47</field>
+      </block>
+    </value>
+    <value name="DEGREE_7">
+      <block type="math_number" id="d@q|hqf8d-GN+93!mwkw">
+        <field name="NUM">-47.78</field>
+      </block>
+    </value>
+    <next>
+      <block type="robot_wait" id="tY-X~vao?DVNlE8?MdDi">
+        <field name="WAIT_TIME">1</field>
+        <next>
+          <block type="robot_jog_joints_not_relative" id="|BfQ~qu@%Zy/THp)XW?)">
+            <field name="SPEED">100</field>
+            <value name="DEGREE_1">
+              <block type="math_number" id="+v#%h=c7ly,51hCARf*@">
+                <field name="NUM">13.93</field>
+              </block>
+            </value>
+            <value name="DEGREE_2">
+              <block type="math_number" id="-%.azRdtpa$%b)~{k1V#">
+                <field name="NUM">-13.57</field>
+              </block>
+            </value>
+            <value name="DEGREE_3">
+              <block type="math_number" id="UBEq3#(*aFF,5=yAp`|,">
+                <field name="NUM">-54.03</field>
+              </block>
+            </value>
+            <value name="DEGREE_4">
+              <block type="math_number" id="XTdi7Z0,Rp#sKyXC)^r7">
+                <field name="NUM">73.14</field>
+              </block>
+            </value>
+            <value name="DEGREE_5">
+              <block type="math_number" id="{=`O35eLjcMy!WP3QxE=">
+                <field name="NUM">63.48</field>
+              </block>
+            </value>
+            <value name="DEGREE_6">
+              <block type="math_number" id="=Oj7Rht]W}6AVyfWUMUL">
+                <field name="NUM">61.47</field>
+              </block>
+            </value>
+            <value name="DEGREE_7">
+              <block type="math_number" id="S{/9)2iNMGbmsJ6aP$2E">
+                <field name="NUM">-47.78</field>
+              </block>
+            </value>
+            <next>
+              <block type="robot_wait" id="/qxW(*Yc!=p-8X-#yL;)">
+                <field name="WAIT_TIME">1</field>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </next>
+  </block>
+</xml>

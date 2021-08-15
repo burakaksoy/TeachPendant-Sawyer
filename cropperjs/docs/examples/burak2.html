@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <!-- <meta http-equiv="x-ua-compatible" content="ie=edge"> -->
+  <!-- <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"> -->
+  <title>BurakCropper.js</title>
+  <link rel="stylesheet" href="../css/cropper.css">
+  <style>
+    .container {
+      margin: 20px auto;
+      max-width: 640px;
+    }
+
+    /*img {
+      max-width: 100%;
+      max-height: 100%;
+    }*/
+  </style>
+
+  <style>
+  body {font-family: Arial, Helvetica, sans-serif;}
+
+  /* The Modal (background) */
+  .modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    /*padding-top: 100px;  /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    
+  }
+
+  /* Modal Content */
+  .modal-content {
+    position: relative;
+    background-color: #fefefe;
+    margin: auto;
+    padding: 0;
+    border: 1px solid #888;
+    width: 80%;
+    /*height: 80%;*/
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+    -webkit-animation-name: animatetop;
+    -webkit-animation-duration: 0.4s;
+    animation-name: animatetop;
+    animation-duration: 0.4s;
+
+  }
+
+  /* Add Animation */
+  @-webkit-keyframes animatetop {
+    from {top:-300px; opacity:0} 
+    to {top:0; opacity:1}
+  }
+
+  @keyframes animatetop {
+    from {top:-300px; opacity:0}
+    to {top:0; opacity:1}
+  }
+
+  /* The Close Button */
+  .close {
+    color: white;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+  }
+
+  .close:hover,
+  .close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .modal-header {
+    padding: 2px 16px;
+    background-color: #5cb85c;
+    color: black;
+  }
+
+  .modal-body {padding: 2px 16px;}
+
+  .img-container img {
+    max-width: 50%;
+    max-height: 50%;
+  }
+
+  .modal-footer {
+    padding: 2px 16px;
+    background-color: #5cb85c;
+    color: white;
+  }
+  </style>
+
+</head>
+<body>
+  <div class="container">
+    <h1>Custom Burak 2 crop box</h1>
+    <p>The image cropping in modal.</p>
+    
+    <p>Data: <span id="data"></span></p>
+    <p>Crop Box Data: <span id="cropBoxData"></span></p>
+
+    <h3>Result Image</h3>
+    <div>
+      <div id="result"></div>
+    </div>
+
+    <p>
+      <button type="button" id="button_take_a_pic">Take A picture</button>
+    </p>
+
+    <div id="myModal" class="modal">
+
+      <!-- Modal content -->
+      <div class="modal-content">
+
+        <div class="modal-header">
+          <span class="close">&times;</span>
+          <h2>Crop the image</h2>
+        </div>
+
+        <div class="modal-body">
+          <p>Some text in the Modal Body</p>
+          <div class="img-container">
+            <!-- <img id="image" src="../images/picture.jpg" alt="Picture"> -->
+            <!-- <img id="image" src="https://fengyuanchen.github.io/cropperjs/images/picture.jpg" alt="Picture"> -->
+            <img id="image">
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <h3>Modal Footer</h3>
+          <button type="button" id="button_reset">Reset</button>
+          <button type="button" id="button_rot_m5">Rotate -5 deg</button>
+          <button type="button" id="button_rot_p5">Rotate +5 deg</button>
+          
+          <button type="button" id="button_close">Cancel</button>
+          <button type="button" id="button_crop">Crop & Save</button>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <script src="../js/cropper.js"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', function () {
+      var image = document.getElementById('image');
+      image.src = "https://fengyuanchen.github.io/cropperjs/images/picture.jpg";
+
+      var data = document.querySelector('#data');
+      var cropBoxData = document.querySelector('#cropBoxData');
+      var btn_take_a_pic = document.getElementById('button_take_a_pic');
+      var result = document.getElementById('result');
+      var cropper;
+
+      // Get the modal
+      var modal = document.getElementById("myModal");
+      // Get the <span> element that closes the modal
+      var span = document.getElementsByClassName("close")[0];
+      var btn_close = document.getElementById("button_close");
+      var btn_crop = document.getElementById("button_crop");
+
+      var btn_reset = document.getElementById("button_reset");
+      var btn_rot_p5 = document.getElementById("button_rot_p5");
+      var btn_rot_m5 = document.getElementById("button_rot_m5");
+      
+
+      // When the user clicks on <span> (x), close the modal
+      span.onclick = function() {
+        modal.style.display = "none";
+      }
+      // When the user clicks anywhere outside of the modal, close it
+      window.onclick = function(event) {
+        if (event.target == modal) {
+          modal.style.display = "none";
+        }
+      }
+      btn_close.onclick = function() {
+        modal.style.display = "none";
+      }
+
+      btn_take_a_pic.onclick = function () {
+        modal.style.display = "block";
+
+        cropper = new Cropper(image, {
+                viewMode: 2,
+
+                crop: function (event) {
+                  data.textContent = JSON.stringify(cropper.getData(true));
+                  cropBoxData.textContent = JSON.stringify(cropper.getCropBoxData());
+                },
+              });
+      };
+
+
+      btn_crop.onclick = function () {
+        // Hide cropping modal
+        modal.style.display = "none";
+        // Get the cropped image
+        var cropped_canvas = cropper.getCroppedCanvas({
+          imageSmoothingEnabled: false
+        });
+        // Put the cropped image result into the web page result div
+        result.innerHTML = '';
+        result.appendChild(cropped_canvas);
+
+        // Save the cropped image for offline usage
+        var fileName = prompt("Please enter your name", "cropped001.png");
+        if (fileName != null) {
+          var link = document.createElement("a");
+          document.body.appendChild(link); // for Firefox
+          //  Download the image
+          var base64 = cropped_canvas.toDataURL();
+          // link.setAttribute("href", base64);
+          // link.setAttribute("download", fileName);
+          // link.click();
+
+          link.href = base64;
+          link.download = fileName;
+          link.click();
+        } else{
+          alert("Enter a valid file name and try again.." );
+        }
+
+        cropper.destroy();
+        cropper = null;
+      };
+
+      btn_reset.onclick = function () {
+        cropper.reset();
+      };
+      btn_rot_p5.onclick = function () {
+        cropper.rotate(5);
+      };
+      btn_rot_m5.onclick = function () {
+        cropper.rotate(-5);
+      };
+
+
+    });
+  </script>
+</body>
+</html>

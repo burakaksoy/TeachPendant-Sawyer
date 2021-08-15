@@ -1,0 +1,117 @@
+<xml xmlns="https://developers.google.com/blockly/xml"><block type="factory_base" id="+}{|gI2|C9AQ)#+j4$eq" deletable="false" movable="false" x="10" y="10">
+    <mutation connections="BOTH"></mutation>
+    <field name="NAME">tool_gripper</field>
+    <field name="INLINE">AUTO</field>
+    <field name="CONNECTIONS">BOTH</field>
+    <statement name="INPUTS">
+      <block type="input_dummy" id="WVz*FwE0p*JQiR{*e6Z=">
+        <field name="ALIGN">LEFT</field>
+        <statement name="FIELDS">
+          <block type="field_static" id="D|[|38K}T!:4%DowhH|7">
+            <field name="TEXT">Gripper</field>
+            <next>
+              <block type="field_dropdown" id="jNT2Ch=uj(ww9KzmSdsb">
+                <mutation options="[&quot;text&quot;,&quot;text&quot;]"></mutation>
+                <field name="FIELDNAME">GRIPPER_STATUS</field>
+                <field name="USER0">OPEN</field>
+                <field name="CPU0">ON</field>
+                <field name="USER1">CLOSED</field>
+                <field name="CPU1">OFF</field>
+              </block>
+            </next>
+          </block>
+        </statement>
+      </block>
+    </statement>
+    <value name="TOOLTIP">
+      <block type="text" id=",C|JftblIqvPk5Ny8Dot" deletable="false" movable="false">
+        <field name="TEXT">Change the Gripper Mode</field>
+      </block>
+    </value>
+    <value name="HELPURL">
+      <block type="text" id="LxX[|1pDVf?rCZ-6S(Hh" deletable="false" movable="false">
+        <field name="TEXT"></field>
+      </block>
+    </value>
+    <value name="TOPTYPE">
+      <shadow type="type_null" id="mQ.Cgldbri*2p:t;Whn3"></shadow>
+    </value>
+    <value name="BOTTOMTYPE">
+      <shadow type="type_null" id="`e*POm(=_P@H$foRm]6="></shadow>
+    </value>
+    <value name="COLOUR">
+      <block type="colour_hue" id="=u0NZRZQVE]mCl?a,X?p">
+        <mutation colour="#a5a55b"></mutation>
+        <field name="HUE">60</field>
+      </block>
+    </value>
+  </block><block type="factory_base" id="iKe{i91Kh4mb]K8?i]5E" deletable="false" movable="false" x="10" y="10">
+    <mutation connections="BOTH"></mutation>
+    <field name="NAME">tool_link_attacher</field>
+    <field name="INLINE">AUTO</field>
+    <field name="CONNECTIONS">BOTH</field>
+    <statement name="INPUTS">
+      <block type="input_dummy" id="`6k.N[%P.S4:.l$nWQxS">
+        <field name="ALIGN">LEFT</field>
+        <statement name="FIELDS">
+          <block type="field_dropdown" id="{=+]m2YCHX6PaNjD,-L`">
+            <mutation options="[&quot;text&quot;,&quot;text&quot;]"></mutation>
+            <field name="FIELDNAME">STATUS</field>
+            <field name="USER0">Attach</field>
+            <field name="CPU0">1</field>
+            <field name="USER1">Detach</field>
+            <field name="CPU1">0</field>
+            <next>
+              <block type="field_static" id="{}K}IeVfn(]Kr-mh%PW)">
+                <field name="TEXT">link between:</field>
+                <next>
+                  <block type="field_static" id="Y?/iJ0;yB/Ohmaj~tTwi">
+                    <field name="TEXT">Robot:</field>
+                    <next>
+                      <block type="field_input" id="CKxHV0pX^7In1]az2}7%">
+                        <field name="TEXT">sawyer</field>
+                        <field name="FIELDNAME">ROBOT_NAME</field>
+                        <next>
+                          <block type="field_static" id="Bs.U*Qa+[8#PdU6*SX^I">
+                            <field name="TEXT">and Object:</field>
+                            <next>
+                              <block type="field_input" id="bcP0331-^8];cTPF{5q$">
+                                <field name="TEXT">toothpaste</field>
+                                <field name="FIELDNAME">OBJ_NAME</field>
+                              </block>
+                            </next>
+                          </block>
+                        </next>
+                      </block>
+                    </next>
+                  </block>
+                </next>
+              </block>
+            </next>
+          </block>
+        </statement>
+      </block>
+    </statement>
+    <value name="TOOLTIP">
+      <block type="text" id="0c/`z=h@|B)s0bxrCXpt" deletable="false" movable="false">
+        <field name="TEXT">Attach/Detach a link between Robot and Object in Gazebo Simulation</field>
+      </block>
+    </value>
+    <value name="HELPURL">
+      <block type="text" id="Su,ZX}_e{i.8GO~oU{5x" deletable="false" movable="false">
+        <field name="TEXT"></field>
+      </block>
+    </value>
+    <value name="TOPTYPE">
+      <shadow type="type_null" id="W|i0wvh!V_?k*p@~93s]"></shadow>
+    </value>
+    <value name="BOTTOMTYPE">
+      <shadow type="type_null" id="KS%l_=?kNpK2})k_wBFu"></shadow>
+    </value>
+    <value name="COLOUR">
+      <block type="colour_hue" id="zt}/dzAYasVceFqg1xKr">
+        <mutation colour="#a5a55b"></mutation>
+        <field name="HUE">60</field>
+      </block>
+    </value>
+  </block></xml>

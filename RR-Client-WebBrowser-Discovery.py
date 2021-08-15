@@ -4,6 +4,7 @@ from js import document
 
 from RobotRaconteur.Client import *
 import numpy as np
+import asyncio
 
 class ClientDiscovery(object):
     """Client Class to access client data in a more convenient way"""
@@ -24,14 +25,21 @@ class ClientDiscovery(object):
         self.define_event_listeners()
 
         # Call the async main for async opetations on browser
-        self.loop_client = RR.WebLoop()
-        self.loop_client.call_soon(self.async_client_main())
+        self.loop_client = asyncio.get_event_loop()
+        self.loop_client.create_task(self.async_client_main())
 
 
     def define_element_references(self):
         # print_div("HTML Element references are being created..<br>")
         self.available_robots_list = document.getElementById("available_robots")
         # self.button_start_robot = document.getElementById("start_robot_btn")
+
+        # try:
+        #     self.available_cams_list = document.getElementById("available_cams")
+        # except:
+        #     print_div("No available camera list found..<br>")
+        #     pass
+        self.available_cams_list = document.getElementById("available_cams")
 
 
     def define_event_listeners(self):
@@ -50,8 +58,10 @@ class ClientDiscovery(object):
         #     # Sleep for 5 seconds
         #     await RRN.AsyncSleep(5,None)
 
-        # Get available robot names and add them as options to available_cams in html
+        # Get available robot names and add them as options to available_robots in html
         await self.async_create_available_robots_list()
+        # Get available camera names and add them as options to available_cams in html
+        await self.async_create_available_cams_list()
 
 
     async def async_connect_to_plugins(self):
@@ -66,8 +76,11 @@ class ClientDiscovery(object):
 
 
     async def async_create_available_robots_list(self):
-        print_div("Auto discovering..")
+        print_div("Auto discovering robots..")
         await self.plugin_discovery.async_autodiscover(None)
+
+        print_div("Auto discovering tools..")
+        await self.plugin_discovery.async_autodiscover_tools(None)
 
         try:
             # print_div("Clearing the previous available robot options..")
@@ -92,10 +105,37 @@ class ClientDiscovery(object):
             import traceback
             print_div(traceback.format_exc())
 
+    async def async_create_available_cams_list(self):
+        print_div("Auto discovering cameras..")
+        await self.plugin_discovery.async_autodiscover_cams(None)
+
+        try:
+            # print_div("Clearing the previous available camera options..")
+            length = self.available_cams_list.options.length
+            i = length-1
+            while i >= 0:
+                self.available_cams_list.options[i] = None
+                i -= 1
+
+            print_div('Creating available cameras options..<br>')
+            self.camera_nodeNames = await self.plugin_discovery.async_available_camera_NodeNames(None) 
+            print_div(str(self.camera_nodeNames) + "<br>") 
+            i = 0
+            for nodeName in self.camera_nodeNames:
+                # print_div(str(self.camera_nodeNames[key]) + "<br>") # --> Right
+                # Add the available camera nodeName to the available_cameras list
+                option = document.createElement("option")
+                option.text = str(i) + ": " + str(nodeName)
+                self.available_cams_list.add(option)
+                i += 1 
+        except:
+            import traceback
+            print_div(traceback.format_exc())
+
 
 async def client_discovery():
-    # ip_plugins = 'localhost'
-    ip_plugins = '192.168.50.152'
+    ip_plugins = 'localhost'
+    # ip_plugins = '128.113.224.98'
     
     try:
         # Run the client as a class to access client data in a more convenient way
@@ -106,5 +146,5 @@ async def client_discovery():
         print_div(traceback.format_exc())
         raise
 
-loop = RR.WebLoop()
-loop.call_soon(client_discovery())
+loop = asyncio.get_event_loop()
+loop.create_task(client_discovery())

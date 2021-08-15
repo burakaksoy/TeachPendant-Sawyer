@@ -1,0 +1,10 @@
+#Service to provide interface to RR-webBrowser-plugin-robotViewer
+service experimental.pluginRobotViewer
+
+stdver 0.10
+
+object RobotViewer
+    function void connect2robot(string url_robot)
+
+    function void update_current_view()
+end

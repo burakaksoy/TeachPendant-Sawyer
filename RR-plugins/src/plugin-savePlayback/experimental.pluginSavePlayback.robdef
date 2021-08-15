@@ -3,10 +3,21 @@ service experimental.pluginSavePlayback
 
 stdver 0.10
 
+struct Pose
+    # Rotation matrix
+    field double[3,3] R
+    # Translation vector
+    field double[3] T
+end
+
 object SavePlayback
     function void connect2robot(string url_robot)
+    property string robot_url [readonly]
+    function Pose current_robot_pose()
+
     function void save_cur_pose()
     function void go_sel_pose(int32 index)
+    function void stop_joints()
     function void del_sel_pose(int32 index)
     function void up_sel_pose(int32 index)
     function void down_sel_pose(int32 index)

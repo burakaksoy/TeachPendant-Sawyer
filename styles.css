@@ -30,6 +30,14 @@
  font-weight: bold;
 }
 
+/*.lm_splitter { visibility: hidden; pointer-events: none; }*/
+/*.lm_splitter.lm_horizontal{
+  width: 15px;
+}
+.lm_splitter.lm_vertical{
+  height: 15px;
+}*/
+
 h2{
   font: 14px Arial, sans-serif;
   color:#fff;
@@ -97,6 +105,41 @@ table#table_BlocklyCode{
   object-fit:cover;
 }
 
+table#table_calibration_modal{
+  table-layout: fixed;
+  /*word-break: break-all;*/
+  /*word-wrap: break-word;*/
+  text-align: center; 
+  /*display: block; */
+  display: table-cell;
+  margin: 0px; 
+  padding:0px; 
+  /*width: 100%; */
+  /*height: 100%;*/
+  object-fit:cover;
+
+  /*zoom: .5;*/
+  /*transform: scale(.5);*/
+}
+
+table#table_robotcamera_calibration_modal{
+  table-layout: fixed;
+  /*word-break: break-all;*/
+  /*word-wrap: break-word;*/
+  text-align: center; 
+  /*display: block; */
+  /*display: table-cell;*/
+  display: table-caption;
+  margin: 0px; 
+  padding:0px; 
+  /*width: 100%; */
+  /*height: 100%;*/
+  object-fit:cover;
+
+  /*zoom: .5;*/
+  /*transform: scale(.5);*/
+}
+
 table#table_CameraFeedback tr{
   text-align: left; 
   margin:auto;  
@@ -122,6 +165,12 @@ table#table_TrainVision td{
   /*display:block;  */
 }
 
+table#table_CameraTracking td{
+  text-align: left; 
+  margin:auto;  
+  /*display:block;  */
+}
+
 /*table#table_JointSpaceControl td {
   width: 16.666666% ;
 }*/
@@ -135,6 +184,13 @@ table#table_SavePlaybackPoses td {
 }
 
 table#table_RobotStatus td {
+  width: 70% ;
+}
+
+table#table_calibration_modal td {
+  width: 80% ;
+}
+table#table_robotcamera_calibration_modal td {
   width: 70% ;
 }
 
@@ -281,6 +337,12 @@ textarea{
   /*display: block;  Make the buttons appear below each other */
 }
 
+#table_BlocklyBrowser button {
+  /*font: 12px Arial, sans-serif;*/
+  /*height: 33.333333% ;*/
+  padding: 0;
+}
+
 
 #layoutContainer{
   width: 85%;
@@ -321,3 +383,112 @@ textarea{
 #toolbox{
   display: none;
 }
+
+#table_TrainVision button{
+  height: unset ;
+  width: unset ;
+}
+#table_CameraCalibration button{
+  height: unset ;
+  width: unset ;
+}
+#table_RobotCameraCalibration button{
+  height: unset ;
+  width: unset ;
+}
+/*--------------------------------------------*/
+/*Cropper,Camera Training,Model styles*/
+/* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 50; /* Sit on top */
+  /*padding-top: 100px;  /* Location of the box */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  text-align: center;
+}
+
+/* Modal Content */
+.modal-content {
+  position: relative;
+  background-color: #fefefe;
+  margin: auto;
+  padding: 0;
+  border: 1px solid #888;
+  /*width: 80%;*/
+  /*height: 80%;*/
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+  -webkit-animation-name: animatetop;
+  -webkit-animation-duration: 0.4s;
+  animation-name: animatetop;
+  animation-duration: 0.4s;
+  display: inline-block;
+}
+
+/* Add Animation */
+@-webkit-keyframes animatetop {
+  from {top:-300px; opacity:0} 
+  to {top:0; opacity:1}
+}
+
+@keyframes animatetop {
+  from {top:-300px; opacity:0}
+  to {top:0; opacity:1}
+}
+
+/* The Close Button */
+.close {
+  color: white;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  /*color: #000;*/
+  text-decoration: none;
+  cursor: pointer;
+  background: #111;
+  color: #CCC;
+}
+
+.modal-header {
+  padding: 2px 16px;
+  /*background-color: #5cb85c;*/
+  /*color: black;*/
+  color: #BBB;
+  background-color: #1a1a1a;
+  
+
+}
+
+.modal-body {
+  padding: 2px 16px;
+}
+
+.img-container img {
+  max-width: 50%;
+  max-height: 50%;
+}
+
+.modal-footer {
+  padding: 2px 16px;
+  /*background-color: #5cb85c;
+  color: white;*/
+  color: #BBB;
+  background-color: #1a1a1a;
+}
+
+.modal-footer button {
+  /*font: 12px Arial, sans-serif;*/
+  height: unset ;
+  width: unset ;
+}
+/*--------------------------------------------*/

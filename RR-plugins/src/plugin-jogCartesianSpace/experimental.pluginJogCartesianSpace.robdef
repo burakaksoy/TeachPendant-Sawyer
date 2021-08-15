@@ -8,5 +8,12 @@ object JogCartesianSpace
     function void jog_cartesian(double[] P_axis, double[] R_axis)
     function void prepare_jog()
     function void jog_cartesian2(double[] P_axis, double[] R_axis)
+    function void jog_cartesian3(double[] P_axis, double[] R_axis)
+    function void jog_cartesian4(double[] P_axis, double[] R_axis)
     function void stop_joints()
+    function void stop_joints2()
+
+    # for blockly
+    function void jog_cartesian_with_speed(double[] P_axis, double[] R_axis_angles, double speed_perc)
+    function void jog_cartesian_relative_with_speed(double[] P_axis, double[] R_axis_angles, double speed_perc)
 end 

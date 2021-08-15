@@ -1,0 +1,131 @@
+<xml xmlns="https://developers.google.com/blockly/xml">
+  <variables>
+    <variable id="bSKd?-3B@%K0_-FW~7w,">pose2</variable>
+  </variables>
+  <block type="variables_set" id="9Q*N]3Kj:2cA7[!rdPTE" x="140" y="117">
+    <field name="VAR" id="bSKd?-3B@%K0_-FW~7w,">pose2</field>
+    <value name="VALUE">
+      <block type="camera_get_object_pose_z_required" id="fk:M|Um[/nPBLU;Uk1/!">
+        <field name="OPTIONS_IMAGES">perfume_lab_kinect.png</field>
+        <field name="OPTIONS_CAMS">com.robotraconteur.imaging.camera</field>
+        <value name="Z_DISTANCE">
+          <block type="math_number" id="4B52dNt0gKFOCC`Eg3##">
+            <field name="NUM">1.041</field>
+          </block>
+        </value>
+      </block>
+    </value>
+    <next>
+      <block type="variables_set" id="rXM.E)zpM@`AVu?Rd}u@">
+        <field name="VAR" id="bSKd?-3B@%K0_-FW~7w,">pose2</field>
+        <value name="VALUE">
+          <block type="camera_transform_pose_to_robot" id="jjZKV0lHQOJ]yjZ2Auv]">
+            <field name="OPTIONS_CAMS">com.robotraconteur.imaging.camera</field>
+            <value name="POSE_IN_CAM">
+              <block type="variables_get" id="/)D}u3{elxQ4kPascKn(">
+                <field name="VAR" id="bSKd?-3B@%K0_-FW~7w,">pose2</field>
+              </block>
+            </value>
+          </block>
+        </value>
+        <next>
+          <block type="robot_jog_cartesian_not_relative" id="k0S0=mX6G{FXY6|x#`y6" inline="false">
+            <field name="SPEED">30</field>
+            <value name="POSITION">
+              <block type="utils_subtract_vectors" id="bJs-vSN7HDG@8KT20Pb?">
+                <value name="position_1">
+                  <block type="utils_position_in_pose" id="trVrO]m#H$bgqS$_fMu.">
+                    <value name="POSE">
+                      <block type="variables_get" id="/q%eUz_jSy/)jRy+bFlQ">
+                        <field name="VAR" id="bSKd?-3B@%K0_-FW~7w,">pose2</field>
+                      </block>
+                    </value>
+                  </block>
+                </value>
+                <value name="position_2">
+                  <block type="utils_position" id="@M`8R7D/N18[Xr~Av.m1">
+                    <value name="X">
+                      <block type="math_number" id="$:(*lBcv_BMG/e@1sX%Y">
+                        <field name="NUM">0</field>
+                      </block>
+                    </value>
+                    <value name="Y">
+                      <block type="math_number" id=")|.W9*I=u*f*]{et:8S6">
+                        <field name="NUM">0</field>
+                      </block>
+                    </value>
+                    <value name="Z">
+                      <block type="math_number" id="#HuGeXL~!5pgkMAs7e8S">
+                        <field name="NUM">-0.2</field>
+                      </block>
+                    </value>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <value name="ORIENTATION">
+              <block type="utils_orientation_in_pose" id="O$%Bt91_s(MQ2:MY4tHU">
+                <value name="POSE">
+                  <block type="variables_get" id="RPU3o0r5G2Pt)5OvR1j3">
+                    <field name="VAR" id="bSKd?-3B@%K0_-FW~7w,">pose2</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <next>
+              <block type="robot_wait" id="3RvN!=#/ec{qI@W.*p%3">
+                <field name="WAIT_TIME">1</field>
+                <next>
+                  <block type="robot_jog_cartesian_not_relative" id="{Bw]WJXo}fG%|I#1{xo^" inline="false">
+                    <field name="SPEED">30</field>
+                    <value name="POSITION">
+                      <block type="utils_subtract_vectors" id="SA)Q[$H$IS~+~p#_ZO#U">
+                        <value name="position_1">
+                          <block type="utils_position_in_pose" id="Qih$0mZRnt^VTtt:K%3U">
+                            <value name="POSE">
+                              <block type="variables_get" id="U3AaBoKO)e.#@RWwN(wL">
+                                <field name="VAR" id="bSKd?-3B@%K0_-FW~7w,">pose2</field>
+                              </block>
+                            </value>
+                          </block>
+                        </value>
+                        <value name="position_2">
+                          <block type="utils_position" id="gDHo5ff7B8k(c:I7zTuf">
+                            <value name="X">
+                              <block type="math_number" id="B$dA5rI6``-TsU3U`XUf">
+                                <field name="NUM">0</field>
+                              </block>
+                            </value>
+                            <value name="Y">
+                              <block type="math_number" id="i,h5ql7Y(xLblZZ8jp^m">
+                                <field name="NUM">0</field>
+                              </block>
+                            </value>
+                            <value name="Z">
+                              <block type="math_number" id="IfLI]Cg=*Xg.pa5k(Fy2">
+                                <field name="NUM">-0.2</field>
+                              </block>
+                            </value>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                    <value name="ORIENTATION">
+                      <block type="utils_orientation_in_pose" id="jM@lF[fsQp_?TS:/xZrJ">
+                        <value name="POSE">
+                          <block type="variables_get" id="oEeWf_3,~+7K0WMC-Js}">
+                            <field name="VAR" id="bSKd?-3B@%K0_-FW~7w,">pose2</field>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                  </block>
+                </next>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </next>
+  </block>
+</xml>

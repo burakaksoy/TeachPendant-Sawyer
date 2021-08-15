@@ -1,0 +1,73 @@
+<xml xmlns="https://developers.google.com/blockly/xml">
+  <block type="controls_repeat_ext" id="Tn|L~(B_WWE7K?(sh,UH" x="14" y="152">
+    <value name="TIMES">
+      <block type="math_number" id="wN(Amy7]M;~wbrLAR%f4">
+        <field name="NUM">3</field>
+      </block>
+    </value>
+    <statement name="DO">
+      <block type="robot_jog_joint_relative" id="1^H5CJd/wL#9w?-/bfw,">
+        <field name="JOINT_SELECTED">1</field>
+        <field name="SPEED">100</field>
+        <value name="DEGREE">
+          <block type="math_number" id="cv-_bW;V.$8UH|3~Y8AL">
+            <field name="NUM">5</field>
+          </block>
+        </value>
+        <next>
+          <block type="robot_wait" id="exJ,U-iGv,6|mcWpbX@d">
+            <field name="WAIT_TIME">1</field>
+            <next>
+              <block type="robot_jog_cartesian_relative" id="Y6Bwa|(?z$C!r61`C:gW" inline="false">
+                <field name="SPEED">100</field>
+                <value name="POSITION">
+                  <block type="robot_jog_cartesian_position" id="KVGlaWLjj$(iht1=H$,L">
+                    <value name="X">
+                      <block type="math_number" id="_pS_cwI54HK*%w=xcQ8U">
+                        <field name="NUM">-0.1</field>
+                      </block>
+                    </value>
+                    <value name="Y">
+                      <block type="math_number" id="aW%k0%L3CoZ2MCgv9hM.">
+                        <field name="NUM">0</field>
+                      </block>
+                    </value>
+                    <value name="Z">
+                      <block type="math_number" id="T_zkY/vq;^X=HvLCfVvx">
+                        <field name="NUM">0</field>
+                      </block>
+                    </value>
+                  </block>
+                </value>
+                <value name="ORIENTATION">
+                  <block type="robot_jog_cartesian_orientation" id="*E?([wN#v`DLc/%Jg|9q">
+                    <value name="TX">
+                      <block type="math_number" id="DEa}LYb6D^Luk(=f)@U|">
+                        <field name="NUM">0</field>
+                      </block>
+                    </value>
+                    <value name="TY">
+                      <block type="math_number" id="MYdevS,1eS.C`7q/uxpM">
+                        <field name="NUM">0</field>
+                      </block>
+                    </value>
+                    <value name="TZ">
+                      <block type="math_number" id="2zYpiyUP#q_nVZ5Kfu)T">
+                        <field name="NUM">0</field>
+                      </block>
+                    </value>
+                  </block>
+                </value>
+                <next>
+                  <block type="robot_wait" id="IY0`/,LeZ}~RBa.$Ayx:">
+                    <field name="WAIT_TIME">1</field>
+                  </block>
+                </next>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </statement>
+  </block>
+</xml>

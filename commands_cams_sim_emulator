@@ -1,0 +1,18 @@
+sleep 1s;
+
+## Start simulation rip world
+# gnome-terminal --tab --title="Gazebo SensorWorld Sim" --command "bash -c \"source ~/TeachPendantSpace/catkin_ws_RR/devel/setup.bash; roslaunch gazebo_robotraconteur_server_plugin_examples rip_world.launch; exec bash\""; 
+
+## Start simulation rip sensor world
+# gnome-terminal --tab --title="Gazebo SensorWorld Sim" --command "bash -c \"source ~/TeachPendantSpace/catkin_ws_RR/devel/setup.bash; cd ~/TeachPendantSpace/catkin_ws_RR/src/RobotRaconteur_Gazebo_Server_Plugin/gazebo_robotraconteur_server_plugin_examples/worlds/; gazebo --verbose rip_sensors_world.world -s libgazebo_robotraconteur_server_plugin.so --robotraconteur-server-tcp-port=11346; exec bash\""; 
+
+sleep 5s;
+
+## Start standard camera simulation emulator
+# gnome-terminal --tab --title="Cam Sim 1" --command "bash -c \"cd ./robotraconteur_camera_driver_sim_emulator; python3 robotraconteur_camera_driver_sim_emulator.py --robotraconteur-tcp-port=59825 --camera-sim-path=default::rip::pendulum::camera --robotraconteur-nodename=camera_sim1 --camera-info-file=./config/default_camera_info.yml; exec bash\""; 
+
+gnome-terminal --tab --title="Cam Sim 1" --command "bash -c \"cd ./robotraconteur_camera_driver_sim_emulator; python3 robotraconteur_camera_driver_sim_emulator.py --robotraconteur-tcp-port=59825 --camera-sim-path=default::camera_box::link::camera_sim1 --robotraconteur-nodename=camera_sim1 --camera-info-file=./config/default_camera_info.yml; exec bash\""; 
+
+# gnome-terminal --tab --title="Cam Sim Head" --command "bash -c \"cd ./robotraconteur_camera_driver_sim_emulator; python3 robotraconteur_camera_driver_sim_emulator.py --robotraconteur-tcp-port=59826 --camera-sim-path=default::sawyer::head::head_camera --robotraconteur-nodename=camera_sim_head --camera-info-file=./config/default_camera_info.yml; exec bash\""; 
+
+# gnome-terminal --tab --title="Cam Sim Hand" --command "bash -c \"cd ./robotraconteur_camera_driver_sim_emulator; python3 robotraconteur_camera_driver_sim_emulator.py --robotraconteur-tcp-port=59827 --camera-sim-path=default::sawyer::right_l5::right_hand_camera --robotraconteur-nodename=camera_sim_hand --camera-info-file=./config/default_camera_info.yml; exec bash\""; 

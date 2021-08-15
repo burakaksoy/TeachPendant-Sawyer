@@ -1,10 +1,20 @@
+# THIS FILE IS FOR INFORMATION ONLY
+# CHANGING THIS FILE HAS NO AFFECT ON THE IMPLEMENTED SOFTWARE
+
 ("NodeName", TCP listen port)
 ("experimental.plugin-jogJointSpace-service", 8890)
 ("experimental.plugin-jogCartesianSpace-service", 8891)
 ("experimental.plugin-cameraFeedback-service", 8889)
 ("experimental.plugin-cameraTraining-service", 8892)
 ("experimental.plugin-cameraCalibration-service", 8893)
+("experimental.plugin-cameraRobotCalibration-service", 8902)
 ("experimental.plugin-savePlayback-service", 8894)
 ("experimental.plugin-updateInfo-service", 8895)
 ("experimental.plugin-discovery-service", 8896)
+("experimental.plugin-blockly-service", 8897)
+("experimental.plugin-cameraTracking-service", 8898)
+("experimental.plugin-toolLinkAttacher-service", 8899)
+("experimental.plugin-tool-service", 8900)
+("experimental.plugin-robotViewer-service", 8901)
+
 

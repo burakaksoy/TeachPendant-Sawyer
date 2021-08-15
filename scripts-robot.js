@@ -1,5 +1,6 @@
 function print_div(message)
 {
+    console.log(message) // For debug purposes 
     //$("#print_div").append("<br/>" + message +"\n");
     $("#print_div").append( message +" ");
 
@@ -126,6 +127,22 @@ function clear_div_j_limit_info(){
         id = "j" + (i+1).toString() + "_pos_limit" 
         document.getElementById(id).innerHTML = null;
     }
+}
+
+async function viewer_update(joint_names,joint_positions )
+{
+    // console.log("joint_names:")
+    // console.log(joint_names)
+    // console.log("joint_positions")
+    // console.log(joint_positions)
+    viewer = document.getElementById("iframe_RobotPreview")
+    viewer.contentWindow.postMessage(
+    {
+        "command": "joint_positions",
+        "joint_names": joint_names,
+        "joint_positions": joint_positions
+    },
+    "*")
 }
 
 function run_robot(){

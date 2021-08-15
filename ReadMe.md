@@ -45,6 +45,10 @@ sudo apt-get install ros-melodic-effort-controllers
 1. Follow the steps at:
 https://docs.microsoft.com/en-us/dotnet/core/install/linux-package-manager-ubuntu-1804
 
+***Note:*** 
+*Or you can use the tar method: 
+https://dotnet.microsoft.com/download/dotnet-core/thank-you/sdk-3.1.404-linux-x64-binaries*
+
 
 ### D. INSTALL AND START THE SAWYER SIMULATOR ###
 
@@ -259,5 +263,17 @@ python3 test_sawyer_driver3.py
 ***Note:***
 *If you have an external python package like "general_robotics_toolbox", add it to my_source.zip*
 
-Trial change solved
+### F. CONTROL SAWYER SIMULATION WITH TEACH PENDANT BROWSER INTERFACE ### 
+*Now, the simulation is running, the RR service to control the robot is runnnig, let's control the robot from the Web Browser UI.*
+*Use Mozilla Firefox Web Browser*
+1. Setup Mozilla Firefox:
+- Inside Firefox, type in `about:config` to the adress bar
+- Modify `network.websocket.allowInsecureFromHTTPS` to be `true`,
+- and `privacy.file_unique_origin` to be `false`.
 
+***Note:***
+*There's memory leak, after a while (e.g. many refreshes on the page) Firefox will be out of memory.*
+
+2. Now run `RR-Client-WebBrowser.html` with Firefox.
+- That's it!
+- You can check the console details using (Ctrl + Shift + K) combination keyboard shortcut.

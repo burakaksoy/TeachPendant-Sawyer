@@ -1,6 +1,6 @@
 import cv2
 
-num_cameras = [2,4]
+num_cameras = [0]
 cam_lst = []
 
 for n in num_cameras:

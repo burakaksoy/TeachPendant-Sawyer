@@ -16,6 +16,7 @@ from RobotRaconteur.Client import *
 import numpy as np
 import sys
 # import math
+import asyncio
 
 # sys.path.append("./my_source.zip")
 # import general_robotics_toolbox as rox
@@ -38,11 +39,13 @@ class ClientRobot(object):
 
 async def client_robot():
     # ip_robot = 'localhost'
-    ip_robot = '192.168.50.152'
+    # ip_robot = '192.168.50.152'
     # ip_robot = '192.168.50.40'
+    ip_robot = 'localhost'
     
-    # ip_plugins = 'localhost'
-    ip_plugins = '192.168.50.152'
+    # ip_plugins = '128.113.224.98'
+    # ip_plugins = '192.168.50.152'
+    ip_plugins = '128.113.224.98'
     
     try:
         # Run the client as a class to access client data in a more convenient way
@@ -53,8 +56,7 @@ async def client_robot():
         print_div(traceback.format_exc())
         raise
 
-loop = RR.WebLoop()
-loop.call_soon(client_robot())
-# RR.WebLoop.run(client_robot())
+loop = asyncio.get_event_loop()
+loop.create_task(client_robot())
 
 # RRN.PostToThreadPool(client_robot()) 

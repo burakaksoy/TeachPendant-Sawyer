@@ -1,0 +1,42 @@
+#Service to provide interface to RR-webBrowser-plugin-cameraTracking
+service experimental.pluginCameraTracking
+
+stdver 0.10
+
+import com.robotraconteur.image
+
+# using com.robotraconteur.image.Image
+# using com.robotraconteur.image.ImagePart
+using com.robotraconteur.image.CompressedImage
+
+struct DetectedObject
+    field int32 width 
+    field int32 height
+    field int32 center_x
+    field int32 center_y
+    field double angle
+    field CompressedImage result_img
+end
+
+struct Pose
+    # Rotation matrix
+    field double[3,3] R
+    # Translation vector
+    field double[3] T
+end
+
+object CameraTracking
+    # Make camera tracking connect to all vision plugins as well so that it can reach the inner files of those services with their permit
+    function void connect2plugins_vision(string{list} url_plugins_vision_lst)
+
+    # Make tracking plugin to connect to all cameras and make it get the all corresponding camera (node) names
+    function void connect2all_cameras( string{list} camera_connection_urls_lst, string{list} camera_node_names_lst )
+
+    # Get the pose of the given object image in camera IMAGE frame
+    function DetectedObject find_object_in_img_frame(string obj_img_filename, string camera_name, bool return_result_image)
+
+    # Detect the Object and return the pose in CAMERA frame for its center
+    function Pose find_object_pose_in_cam_frame(string obj_img_filename, string camera_name, double value_z_distance)
+    
+
+end
